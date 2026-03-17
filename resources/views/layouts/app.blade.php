@@ -122,18 +122,38 @@
                        class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
                         Inicio
                     </a>
-                    <a href="{{ url('/catalogo') }}"
+                    <a href="{{ route('catalogo') }}"
                        class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
                         Catálogo
                     </a>
-                    <a href="{{ url('/nosotros') }}"
+                    <a href="{{ route('nosotros') }}"
                        class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
                         Nosotros
                     </a>
-                    <a href="{{ url('/contacto') }}"
+                    <a href="{{ route('contacto') }}"
                        class="text-[14px] font-medium text-[#386641] border border-[#386641]/50 px-5 py-1.5 rounded-full hover:bg-[#386641] hover:text-[#faf6f0] hover:border-[#386641] transition-all duration-300">
                         Contacto
                     </a>
+                    @if (Auth::check())
+                        <div class="w-px h-4 bg-[#d4b896] self-center"></div>
+                        <a href="{{ route('admin.pedidos') }}" class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
+                            Pedidos
+                        </a>
+                        <a href="{{ route('admin.productos') }}" class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
+                            Productos
+                        </a>
+                        <a href="{{ route('admin.categorias') }}" class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
+                            Categorías
+                        </a>
+                        <div class="w-px h-4 bg-[#d4b896] self-center"></div>
+                            <form method="POST" action="{{ route('logout') }}" class="block">
+                            @csrf
+                            <button type="submit" class="text-[14px] font-medium text-red-600 hover:text-red-800 transition-all duration-300">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Cerrar Sesión</span>
+                            </button>
+                        </form>
+                    @endif
                 </nav>
 
                 {{-- Hamburguesa (mobile) --}}
@@ -181,6 +201,9 @@
     <main class="flex-1">
         {{ $slot }}
     </main>
+
+    {{-- CARRITO (drawer flotante, disponible en todas las páginas) --}}
+    @livewire('carrito')
 
     {{-- FOOTER --}}
     <footer class="bg-[#2c1a0e] text-[#d4b896]">

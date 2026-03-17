@@ -5,15 +5,43 @@ use App\Livewire\Dashboard;
 use App\Livewire\Catalogo;
 use App\Livewire\Nosotros;
 use App\Livewire\Contacto;
+use App\Livewire\Carrito;
+use App\Livewire\Checkout;
+use App\Livewire\ConfirmacionPedido;
+use App\Livewire\Admin\GestionPedidos;
+use App\Livewire\Admin\DetallePedido;
+use App\Livewire\Admin\GestionProductos;
+use App\Livewire\Admin\GestionCategorias;
 
-Route::get('/', Dashboard::class)->name('dashboard');
+// Ruta de logout
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('login');
+})->name('logout');
+
+// Rutas públicas
+Route::get('/', Dashboard::class)->name('inicio');
 Route::get('/dashboard', Dashboard::class)->name('dashboard');
 Route::get('/catalogo', Catalogo::class)->name('catalogo');
 Route::get('/nosotros', Nosotros::class)->name('nosotros');
 Route::get('/contacto', Contacto::class)->name('contacto');
+Route::get('/carrito', Carrito::class)->name('carrito');
+Route::get('/checkout', Checkout::class)->name('checkout');
+Route::get('/pedido/{numero}', ConfirmacionPedido::class)->name('confirmacion-pedido');
 
+// Rutas de perfil (auth)
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
+
+// Rutas de administración
+Route::middleware(['auth', 'es_admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/pedidos', GestionPedidos::class)->name('pedidos');
+    Route::get('/pedidos/{pedido}', DetallePedido::class)->name('detalle-pedido');
+    Route::get('/productos', GestionProductos::class)->name('productos');
+    Route::get('/categorias', GestionCategorias::class)->name('categorias');
+});
 
 require __DIR__.'/auth.php';
