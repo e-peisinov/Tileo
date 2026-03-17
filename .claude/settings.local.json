@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls C:/xampp/htdocs/tileo && composer --version && php --version && node --version && npm --version)",
+      "Bash(cd C:/xampp/htdocs/tileo && composer create-project laravel/laravel . \"^12.0\" 2>&1)",
+      "Read(//c/xampp/htdocs/**)",
+      "Bash(composer create-project:*)",
+      "Bash(cd C:/xampp/htdocs && cp -r tileo_temp/. tileo/ && rm -rf tileo_temp && ls tileo/)",
+      "Bash(cd C:/xampp/htdocs/tileo && composer require livewire/livewire 2>&1)",
+      "Bash(cd C:/xampp/htdocs/tileo && npm install && npm install tailwindcss @tailwindcss/vite alpinejs 2>&1)",
+      "Bash(cd C:/xampp/htdocs/tileo && npm run build 2>&1)",
+      "Bash(cd C:/xampp/htdocs/tileo && composer require livewire/volt 2>&1)",
+      "Bash(cd C:/xampp/htdocs/tileo && php artisan volt:install 2>&1)",
+      "Bash(cd C:/xampp/htdocs/tileo && php artisan make:volt auth.login 2>&1)",
+      "Bash(cd C:/xampp/htdocs/tileo && composer require laravel/breeze --dev 2>&1)",
+      "Bash(cd C:/xampp/htdocs/tileo && php artisan breeze:install livewire 2>&1)",
+      "Bash(cd C:/xampp/htdocs/tileo && npm uninstall tailwindcss && npm run build 2>&1)",
+      "Bash(ls C:/xampp/htdocs/tileo/*.config.* C:/xampp/htdocs/tileo/postcss* 2>/dev/null)",
+      "Bash(gh --version)"
+    ]
+  }
+}
