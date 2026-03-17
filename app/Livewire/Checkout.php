@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Mail\ConfirmacionClienteMail;
 use App\Mail\NuevoPedidoMail;
 use App\Models\Pedido;
 use App\Models\PedidoItem;
@@ -80,6 +81,7 @@ class Checkout extends Component
             'costo_envio'      => $this->metodo_entrega === 'envio' ? null : 0,
             'subtotal'         => $subtotal,
             'total'            => $subtotal, // el envío lo confirma el admin
+            'estado'           => 'pendiente',
             'notas_cliente'    => $this->notas ?: null,
         ]);
 
@@ -97,12 +99,21 @@ class Checkout extends Component
             Producto::where('id', $item['id'])->decrement('stock', $item['cantidad']);
         }
 
+        $pedidoConItems = $pedido->load('items');
+
         // Enviar email al admin
-        $emailAdmin = config('mail.admin_email', env('ADMIN_EMAIL', 'admin@tileo.com'));
+        $emailAdmin = config('tileo.email_admin');
         try {
-            Mail::to($emailAdmin)->send(new NuevoPedidoMail($pedido->load('items')));
+            Mail::to($emailAdmin)->send(new NuevoPedidoMail($pedidoConItems));
         } catch (\Exception $e) {
-            // El pedido se creó igual; el email no es crítico
+            \Log::error('Error al enviar email al admin: ' . $e->getMessage());
+        }
+
+        // Enviar confirmación al cliente
+        try {
+            Mail::to($pedido->email_cliente)->send(new ConfirmacionClienteMail($pedidoConItems));
+        } catch (\Exception $e) {
+            \Log::error('Error al enviar email al cliente: ' . $e->getMessage());
         }
 
         // Limpiar carrito

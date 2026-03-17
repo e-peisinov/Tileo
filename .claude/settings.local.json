@@ -16,7 +16,11 @@
       "Bash(cd C:/xampp/htdocs/tileo && php artisan breeze:install livewire 2>&1)",
       "Bash(cd C:/xampp/htdocs/tileo && npm uninstall tailwindcss && npm run build 2>&1)",
       "Bash(ls C:/xampp/htdocs/tileo/*.config.* C:/xampp/htdocs/tileo/postcss* 2>/dev/null)",
-      "Bash(gh --version)"
+      "Bash(gh --version)",
+      "Bash(cat >> \"C:\\\\xampp\\\\htdocs\\\\tileo\\\\.env\" << 'EOF'\n\n# Tileo — configuración del negocio\nTILEO_WHATSAPP=        # Ej: 5492324123456 \\(sin + ni espacios\\)\nADMIN_EMAIL=admin@tileo.com\nEOF)",
+      "Bash(cd \"C:\\\\xampp\\\\htdocs\\\\tileo\" && php artisan migrate --force 2>&1)",
+      "Bash(cd \"C:\\\\xampp\\\\htdocs\\\\tileo\" && php artisan db:seed --force 2>&1)",
+      "Bash(cd \"C:\\\\xampp\\\\htdocs\\\\tileo\" && php artisan tinker --execute=\"echo config\\('tileo.email_admin'\\);\")"
     ]
   }
 }

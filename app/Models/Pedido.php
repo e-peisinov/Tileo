@@ -47,7 +47,7 @@ class Pedido extends Model
             'entregado'    => 'Entregado',
             'rechazado'    => 'Rechazado',
             'cancelado'    => 'Cancelado',
-            default        => $this->estado,
+            default        => $this->estado ?? 'pendiente',
         };
     }
 
