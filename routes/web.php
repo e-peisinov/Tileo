@@ -5,6 +5,9 @@ use App\Livewire\Dashboard;
 use App\Livewire\Catalogo;
 use App\Livewire\Nosotros;
 use App\Livewire\Contacto;
+use App\Livewire\SeguimientoPedido;
+use App\Livewire\DetalleProducto;
+use App\Livewire\Preguntas;
 use App\Livewire\Carrito;
 use App\Livewire\Checkout;
 use App\Livewire\ConfirmacionPedido;
@@ -31,6 +34,9 @@ Route::get('/contacto', Contacto::class)->name('contacto');
 Route::get('/carrito', Carrito::class)->name('carrito');
 Route::get('/checkout', Checkout::class)->name('checkout');
 Route::get('/pedido/{numero}', ConfirmacionPedido::class)->name('confirmacion-pedido');
+Route::get('/seguimiento', SeguimientoPedido::class)->name('seguimiento-pedido');
+Route::get('/producto/{producto}', DetalleProducto::class)->name('detalle-producto');
+Route::get('/preguntas', Preguntas::class)->name('preguntas');
 
 // Rutas de perfil (auth)
 Route::view('profile', 'profile')
