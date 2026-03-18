@@ -1,107 +1,169 @@
-<div class="min-h-screen bg-[#faf6f0] py-10 px-4">
+<div class="min-h-screen py-10 px-4" style="background: linear-gradient(150deg, #faf6f0 0%, #f0e9de 100%);">
     <div class="max-w-6xl mx-auto">
 
+        {{-- Nav admin --}}
+        <nav class="flex flex-wrap gap-1 mb-8 bg-white/70 backdrop-blur-sm rounded-2xl p-1.5 border border-[#d4b896]/25 shadow-sm w-fit">
+            <a href="{{ route('admin.dashboard') }}"
+               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
+                      {{ request()->routeIs('admin.dashboard') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
+                <i class="fa-solid fa-gauge-high text-[10px]"></i> Dashboard
+            </a>
+            <a href="{{ route('admin.pedidos') }}"
+               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
+                      {{ request()->routeIs('admin.pedidos', 'admin.detalle-pedido') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
+                <i class="fa-solid fa-bag-shopping text-[10px]"></i> Pedidos
+            </a>
+            <a href="{{ route('admin.productos') }}"
+               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
+                      {{ request()->routeIs('admin.productos') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
+                <i class="fa-solid fa-seedling text-[10px]"></i> Productos
+            </a>
+            <a href="{{ route('admin.categorias') }}"
+               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
+                      {{ request()->routeIs('admin.categorias') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
+                <i class="fa-solid fa-tags text-[10px]"></i> Categorías
+            </a>
+        </nav>
+
         {{-- Encabezado --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-            <div>
-                <p class="text-[#8b5e3c]/70 tracking-[0.25em] uppercase text-[10px] font-medium mb-1">Panel de administración</p>
-                <h1 class="text-3xl text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Dashboard</h1>
-            </div>
+        <div class="mb-8">
+            <p class="text-[#8b5e3c]/60 tracking-[0.25em] uppercase text-[10px] font-semibold mb-1">Panel de administración</p>
+            <h1 class="text-4xl text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Dashboard</h1>
         </div>
 
         {{-- Tarjetas de estadísticas --}}
         <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            <div class="bg-white border border-[#d4b896]/30 p-5">
-                <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase mb-2">Total pedidos</p>
-                <p class="text-3xl font-semibold text-[#2c1a0e]">{{ $estadisticas['total_pedidos'] }}</p>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style="background-color: rgba(56,102,65,0.1);">
+                    <i class="fa-solid fa-receipt text-sm" style="color: #386641;"></i>
+                </div>
+                <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase mb-1">Total pedidos</p>
+                <p class="text-3xl font-bold text-[#2c1a0e]">{{ $estadisticas['total_pedidos'] }}</p>
             </div>
-            <div class="bg-white border border-[#d4b896]/30 p-5">
-                <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase mb-2">Pendientes</p>
-                <p class="text-3xl font-semibold {{ $estadisticas['pendientes'] > 0 ? 'text-[#8b5e3c]' : 'text-[#2c1a0e]' }}">
+
+            <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300
+                        {{ $estadisticas['pendientes'] > 0 ? 'border-l-4 border-l-[#8b5e3c]' : '' }}">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style="background-color: rgba(139,94,60,0.1);">
+                    <i class="fa-solid fa-clock text-sm" style="color: #8b5e3c;"></i>
+                </div>
+                <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase mb-1">Pendientes</p>
+                <p class="text-3xl font-bold {{ $estadisticas['pendientes'] > 0 ? 'text-[#8b5e3c]' : 'text-[#2c1a0e]' }}">
                     {{ $estadisticas['pendientes'] }}
                 </p>
                 @if($estadisticas['pendientes'] > 0)
                     <p class="text-[10px] text-[#8b5e3c]/60 mt-1">Requieren atención</p>
                 @endif
             </div>
-            <div class="bg-white border border-[#d4b896]/30 p-5">
-                <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase mb-2">Hoy</p>
-                <p class="text-3xl font-semibold text-[#2c1a0e]">{{ $estadisticas['hoy'] }}</p>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style="background-color: rgba(167,201,87,0.15);">
+                    <i class="fa-solid fa-calendar-day text-sm" style="color: #6a9c2a;"></i>
+                </div>
+                <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase mb-1">Hoy</p>
+                <p class="text-3xl font-bold text-[#2c1a0e]">{{ $estadisticas['hoy'] }}</p>
             </div>
-            <div class="bg-white border border-[#d4b896]/30 p-5">
-                <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase mb-2">Stock bajo</p>
-                <p class="text-3xl font-semibold {{ $estadisticas['stock_bajo'] > 0 ? 'text-red-600' : 'text-[#2c1a0e]' }}">
+
+            <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300
+                        {{ $estadisticas['stock_bajo'] > 0 ? 'border-l-4 border-l-red-400' : '' }}">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3 {{ $estadisticas['stock_bajo'] > 0 ? 'bg-red-50' : '' }}" style="{{ $estadisticas['stock_bajo'] == 0 ? 'background-color: rgba(56,102,65,0.1);' : '' }}">
+                    <i class="fa-solid fa-box-open text-sm {{ $estadisticas['stock_bajo'] > 0 ? 'text-red-500' : '' }}" style="{{ $estadisticas['stock_bajo'] == 0 ? 'color: #386641;' : '' }}"></i>
+                </div>
+                <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase mb-1">Stock bajo</p>
+                <p class="text-3xl font-bold {{ $estadisticas['stock_bajo'] > 0 ? 'text-red-500' : 'text-[#2c1a0e]' }}">
                     {{ $estadisticas['stock_bajo'] }}
                 </p>
                 @if($estadisticas['stock_bajo'] > 0)
-                    <p class="text-[10px] text-red-500/70 mt-1">≤ 3 unidades</p>
+                    <p class="text-[10px] text-red-400/80 mt-1">≤ 3 unidades</p>
                 @endif
             </div>
-            <div class="col-span-2 lg:col-span-1 bg-[#386641] p-5">
-                <p class="text-[10px] tracking-wider text-[#faf6f0]/70 uppercase mb-2">Ingresos del mes</p>
-                <p class="text-2xl font-semibold text-[#faf6f0]">${{ number_format($estadisticas['ingresos_mes'], 0, ',', '.') }}</p>
-                <p class="text-[10px] text-[#faf6f0]/50 mt-1">Pedidos activos</p>
+
+            <div class="col-span-2 lg:col-span-1 rounded-2xl shadow-sm p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+                 style="background: linear-gradient(135deg, #386641 0%, #2d5534 100%);">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center mb-3" style="background-color: rgba(255,255,255,0.15);">
+                    <i class="fa-solid fa-chart-line text-sm text-white"></i>
+                </div>
+                <p class="text-[10px] tracking-wider uppercase mb-1" style="color: rgba(250,246,240,0.7);">Ingresos del mes</p>
+                <p class="text-2xl font-bold text-white">${{ number_format($estadisticas['ingresos_mes'], 0, ',', '.') }}</p>
+                <p class="text-[10px] mt-1" style="color: rgba(250,246,240,0.5);">Pedidos activos</p>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             {{-- Últimos pedidos --}}
-            <div class="lg:col-span-2 bg-white border border-[#d4b896]/30">
-                <div class="px-6 py-4 border-b border-[#d4b896]/30 flex items-center justify-between">
-                    <h2 class="text-base text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Últimos pedidos</h2>
-                    <a href="{{ route('admin.pedidos') }}" class="text-[12px] text-[#386641] hover:underline">Ver todos</a>
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
+                <div class="px-6 py-4 border-b border-[#d4b896]/20 flex items-center justify-between">
+                    <h2 class="text-base text-[#2c1a0e] flex items-center gap-2" style="font-family:'DM Serif Display',serif;">
+                        <i class="fa-solid fa-clock-rotate-left text-sm text-[#8b5e3c]/50"></i>
+                        Últimos pedidos
+                    </h2>
+                    <a href="{{ route('admin.pedidos') }}" class="text-[12px] text-[#386641] hover:text-[#2d5534] font-medium transition-colors flex items-center gap-1">
+                        Ver todos <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                    </a>
                 </div>
                 <table class="w-full text-sm">
                     <tbody>
                         @forelse($ultimosPedidos as $pedido)
-                            <tr class="border-b border-[#d4b896]/20 hover:bg-[#faf6f0] transition-colors">
-                                <td class="px-4 py-3">
-                                    <p class="font-medium text-[#2c1a0e] text-[12px]">{{ $pedido->numero_pedido }}</p>
+                            <tr class="border-b border-[#d4b896]/15 hover:bg-[#faf6f0]/70 transition-colors duration-150">
+                                <td class="px-5 py-3.5">
+                                    <p class="font-semibold text-[#2c1a0e] text-[12px]">{{ $pedido->numero_pedido }}</p>
                                     <p class="text-[10px] text-[#8b5e3c]/60">{{ $pedido->created_at->format('d/m H:i') }}</p>
                                 </td>
-                                <td class="px-4 py-3 text-[12px] text-[#2c1a0e]/70">{{ $pedido->nombre_cliente }}</td>
-                                <td class="px-4 py-3 text-right text-[12px] font-medium text-[#2c1a0e]">
+                                <td class="px-4 py-3.5 text-[12px] text-[#2c1a0e]/70">{{ $pedido->nombre_cliente }}</td>
+                                <td class="px-4 py-3.5 text-right text-[12px] font-semibold text-[#2c1a0e]">
                                     ${{ number_format($pedido->total, 0, ',', '.') }}
                                 </td>
-                                <td class="px-4 py-3 text-right">
-                                    <span class="inline-block px-2 py-0.5 text-[10px] font-medium rounded-full text-white"
+                                <td class="px-4 py-3.5 text-right">
+                                    <span class="inline-block px-2.5 py-1 text-[10px] font-semibold rounded-full text-white shadow-sm"
                                           style="background-color: {{ $pedido->colorEstado() }}">
                                         {{ $pedido->etiquetaEstado() }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-right">
+                                <td class="px-5 py-3.5 text-right">
                                     <a href="{{ route('admin.detalle-pedido', $pedido->id) }}"
-                                       class="text-[#386641] text-[11px] hover:underline">Ver</a>
+                                       class="text-[#386641] text-[11px] hover:text-[#2d5534] font-medium transition-colors flex items-center gap-1 justify-end">
+                                        Ver <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                                    </a>
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="px-4 py-10 text-center text-[#8b5e3c]/60 text-sm">No hay pedidos aún.</td></tr>
+                            <tr>
+                                <td colspan="5" class="px-4 py-12 text-center">
+                                    <i class="fa-solid fa-inbox text-3xl text-[#d4b896] mb-3 block"></i>
+                                    <p class="text-[#8b5e3c]/60 text-sm">No hay pedidos aún.</p>
+                                </td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
             {{-- Productos con stock bajo --}}
-            <div class="bg-white border border-[#d4b896]/30">
-                <div class="px-6 py-4 border-b border-[#d4b896]/30 flex items-center justify-between">
-                    <h2 class="text-base text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Stock bajo</h2>
-                    <a href="{{ route('admin.productos') }}" class="text-[12px] text-[#386641] hover:underline">Gestionar</a>
+            <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
+                <div class="px-6 py-4 border-b border-[#d4b896]/20 flex items-center justify-between">
+                    <h2 class="text-base text-[#2c1a0e] flex items-center gap-2" style="font-family:'DM Serif Display',serif;">
+                        <i class="fa-solid fa-triangle-exclamation text-sm text-[#8b5e3c]/50"></i>
+                        Stock bajo
+                    </h2>
+                    <a href="{{ route('admin.productos') }}" class="text-[12px] text-[#386641] hover:text-[#2d5534] font-medium transition-colors flex items-center gap-1">
+                        Gestionar <i class="fa-solid fa-arrow-right text-[9px]"></i>
+                    </a>
                 </div>
                 @forelse($productosBajoStock as $producto)
-                    <div class="px-5 py-3 border-b border-[#d4b896]/20 flex items-center justify-between">
+                    <div class="px-5 py-3.5 border-b border-[#d4b896]/15 flex items-center justify-between hover:bg-[#faf6f0]/70 transition-colors duration-150">
                         <div>
                             <p class="text-[12px] font-medium text-[#2c1a0e]">{{ $producto->nombre }}</p>
                             <p class="text-[10px] text-[#8b5e3c]/60">{{ $producto->unidad }}</p>
                         </div>
-                        <span class="text-sm font-bold {{ $producto->stock === 0 ? 'text-red-600' : 'text-[#8b5e3c]' }}">
+                        <span class="text-sm font-bold px-2 py-0.5 rounded-lg {{ $producto->stock === 0 ? 'bg-red-50 text-red-600' : 'text-[#8b5e3c]' }}">
                             {{ $producto->stock }}
                         </span>
                     </div>
                 @empty
-                    <div class="px-5 py-10 text-center text-[#8b5e3c]/60 text-sm">
-                        <i class="fa-solid fa-check text-[#386641] text-xl mb-2 block"></i>
-                        Todo el stock está en orden.
+                    <div class="px-5 py-12 text-center">
+                        <i class="fa-solid fa-circle-check text-3xl mb-3 block" style="color: #a7c957;"></i>
+                        <p class="text-[#8b5e3c]/60 text-sm">Todo el stock está en orden.</p>
                     </div>
                 @endforelse
             </div>
