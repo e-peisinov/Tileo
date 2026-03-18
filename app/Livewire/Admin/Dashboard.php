@@ -29,7 +29,19 @@ class Dashboard extends Component
             ->limit(10)
             ->get();
 
-        return view('livewire.admin.dashboard', compact('estadisticas', 'ultimosPedidos', 'productosBajoStock'))
+        // Datos para el gráfico: últimos 7 días
+        $datosGrafico = collect(range(6, 0))->map(function ($diasAtras) {
+            $fecha = now()->subDays($diasAtras);
+            return [
+                'fecha'    => $fecha->format('d/m'),
+                'pedidos'  => \App\Models\Pedido::whereDate('created_at', $fecha)->count(),
+                'ingresos' => \App\Models\Pedido::whereDate('created_at', $fecha)
+                                ->whereNotIn('estado', ['rechazado', 'cancelado'])
+                                ->sum('total'),
+            ];
+        });
+
+        return view('livewire.admin.dashboard', compact('estadisticas', 'ultimosPedidos', 'productosBajoStock', 'datosGrafico'))
             ->layout('layouts.app', ['titulo' => 'Dashboard — Admin Tileo']);
     }
 }

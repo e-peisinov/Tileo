@@ -169,5 +169,82 @@
             </div>
         </div>
 
+        {{-- Gráfico de ventas últimos 7 días --}}
+        <div class="mt-6 bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
+            <div class="px-6 py-4 border-b border-[#d4b896]/20 flex items-center justify-between">
+                <h2 class="text-base text-[#2c1a0e] flex items-center gap-2" style="font-family:'DM Serif Display',serif;">
+                    <i class="fa-solid fa-chart-line text-sm text-[#8b5e3c]/50"></i>
+                    Actividad — últimos 7 días
+                </h2>
+            </div>
+            <div class="p-6">
+                <canvas id="graficoVentas" height="80"></canvas>
+            </div>
+        </div>
+
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    const ctx = document.getElementById('graficoVentas').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($datosGrafico->pluck('fecha')) !!},
+            datasets: [
+                {
+                    label: 'Pedidos',
+                    data: {!! json_encode($datosGrafico->pluck('pedidos')) !!},
+                    backgroundColor: 'rgba(56,102,65,0.15)',
+                    borderColor: '#386641',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    yAxisID: 'yPedidos',
+                },
+                {
+                    label: 'Ingresos ($)',
+                    data: {!! json_encode($datosGrafico->pluck('ingresos')) !!},
+                    backgroundColor: 'rgba(167,201,87,0.15)',
+                    borderColor: '#a7c957',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    type: 'line',
+                    yAxisID: 'yIngresos',
+                    tension: 0.4,
+                    pointBackgroundColor: '#a7c957',
+                    pointRadius: 4,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: {
+                    labels: { font: { family: 'Raleway', size: 11 }, color: '#8b5e3c' }
+                }
+            },
+            scales: {
+                yPedidos: {
+                    type: 'linear',
+                    position: 'left',
+                    ticks: { font: { family: 'Raleway', size: 10 }, color: '#8b5e3c', stepSize: 1 },
+                    grid: { color: 'rgba(212,184,150,0.15)' },
+                },
+                yIngresos: {
+                    type: 'linear',
+                    position: 'right',
+                    ticks: { font: { family: 'Raleway', size: 10 }, color: '#8b5e3c' },
+                    grid: { display: false },
+                },
+                x: {
+                    ticks: { font: { family: 'Raleway', size: 10 }, color: '#8b5e3c' },
+                    grid: { display: false },
+                }
+            }
+        }
+    });
+</script>
+@endpush

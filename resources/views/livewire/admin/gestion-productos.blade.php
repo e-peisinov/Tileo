@@ -97,14 +97,19 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3.5 text-center">
-                                <button wire:click="toggleActivo({{ $producto->id }})"
-                                        class="text-[11px] px-3 py-1.5 rounded-lg font-semibold transition-all duration-200 hover:shadow-sm
-                                               {{ $producto->activo
-                                                  ? 'text-[#386641] hover:bg-[#386641]/20'
-                                                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}"
-                                        style="{{ $producto->activo ? 'background-color: rgba(56,102,65,0.12);' : '' }}">
-                                    {{ $producto->activo ? '✓ Activo' : 'Inactivo' }}
-                                </button>
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button wire:click="toggleActivo({{ $producto->id }})"
+                                            class="text-[11px] px-3 py-1.5 rounded-lg font-semibold transition-all duration-200 hover:shadow-sm
+                                                   {{ $producto->activo
+                                                      ? 'text-[#386641] hover:bg-[#386641]/20'
+                                                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}"
+                                            style="{{ $producto->activo ? 'background-color: rgba(56,102,65,0.12);' : '' }}">
+                                        {{ $producto->activo ? '✓ Activo' : 'Inactivo' }}
+                                    </button>
+                                    @if($producto->destacado)
+                                        <span title="Destacado" class="text-[#a7c957]"><i class="fa-solid fa-star text-xs"></i></span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-5 py-3.5 text-center">
                                 <button wire:click="abrirEditar({{ $producto->id }})"
@@ -224,6 +229,24 @@
                     <div class="flex items-center gap-2.5 py-1">
                         <input wire:model="activo" type="checkbox" id="activo" class="accent-[#386641] w-4 h-4 rounded">
                         <label for="activo" class="text-sm text-[#2c1a0e] cursor-pointer">Producto activo (visible en catálogo)</label>
+                    </div>
+
+                    {{-- Destacado --}}
+                    <div class="flex items-center gap-3">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <div class="relative">
+                                <input type="checkbox"
+                                       wire:model="destacado"
+                                       id="destacado"
+                                       class="sr-only peer">
+                                <div class="w-9 h-5 bg-[#d4b896]/40 rounded-full peer peer-checked:bg-[#a7c957] transition-colors duration-200"></div>
+                                <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 peer-checked:translate-x-4"></div>
+                            </div>
+                            <div>
+                                <span class="text-xs font-semibold text-[#2c1a0e]">Destacado en inicio</span>
+                                <p class="text-[10px] text-[#8b5e3c]/60">Aparece en la sección de productos del inicio</p>
+                            </div>
+                        </label>
                     </div>
 
                     <div class="flex gap-3 pt-2">

@@ -24,6 +24,7 @@ class GestionProductos extends Component
     public string $imagen = '';
     public int $categoria_id = 0;
     public bool $activo = true;
+    public bool $destacado = false;
 
     public $imagenArchivo = null;
 
@@ -52,6 +53,7 @@ class GestionProductos extends Component
         $this->imagen       = $producto->imagen ?? '';
         $this->categoria_id = $producto->categoria_id;
         $this->activo       = $producto->activo;
+        $this->destacado    = $producto->destacado;
         $this->mostrarModal = true;
     }
 
@@ -66,11 +68,12 @@ class GestionProductos extends Component
             'imagen'        => 'nullable|max:255',
             'categoria_id'  => 'required|exists:categorias,id',
             'imagenArchivo' => 'nullable|image|max:2048',
+            'destacado'     => 'boolean',
         ]);
 
         if ($this->imagenArchivo) {
             $extension     = $this->imagenArchivo->getClientOriginalExtension();
-            $nombreArchivo = \Str::slug($this->nombre) . '-' . time() . '.' . $extension;
+            $nombreArchivo = \Str::slug($this->nombre) . '-' . uniqid() . '.' . $extension;
             $destino       = public_path('imagenes') . '/' . $nombreArchivo;
 
             if (! copy($this->imagenArchivo->getRealPath(), $destino)) {
@@ -90,6 +93,7 @@ class GestionProductos extends Component
             'imagen'       => $this->imagen ?: null,
             'categoria_id' => $this->categoria_id,
             'activo'       => $this->activo,
+            'destacado'    => $this->destacado,
         ];
 
         if ($this->editandoId) {
@@ -120,6 +124,7 @@ class GestionProductos extends Component
         $this->unidad = 'frasco';
         $this->categoria_id = 0;
         $this->activo = true;
+        $this->destacado = false;
         $this->imagenArchivo = null;
         $this->resetValidation();
     }
