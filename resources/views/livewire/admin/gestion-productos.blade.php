@@ -7,11 +7,20 @@
                 <p class="text-[#8b5e3c]/70 tracking-[0.25em] uppercase text-[10px] font-medium mb-1">Panel de administración</p>
                 <h1 class="text-3xl text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Productos</h1>
             </div>
-            <button wire:click="abrirCrear"
-                    class="inline-flex items-center gap-2 bg-[#386641] text-[#faf6f0] px-5 py-2.5 text-[13px] tracking-wider font-medium hover:bg-[#2d5534] transition-colors">
-                <i class="fa-solid fa-plus text-xs"></i> Nuevo producto
-            </button>
+            <div class="flex flex-wrap items-center gap-3">
+                <button wire:click="abrirCrear"
+                        class="inline-flex items-center gap-2 bg-[#386641] text-[#faf6f0] px-5 py-2.5 text-[13px] tracking-wider font-medium hover:bg-[#2d5534] transition-colors">
+                    <i class="fa-solid fa-plus text-xs"></i> Nuevo producto
+                </button>
+            </div>
         </div>
+
+        {{-- Banner de éxito --}}
+        @if($guardado)
+            <div class="flex items-center gap-2 text-[#386641] text-sm bg-[#386641]/8 border border-[#386641]/20 px-4 py-3 mb-5">
+                <i class="fa-solid fa-check"></i> Producto guardado correctamente.
+            </div>
+        @endif
 
         {{-- Búsqueda --}}
         <div class="mb-5">
@@ -62,7 +71,11 @@
                             </td>
                             <td class="px-4 py-3 text-center">
                                 <button wire:click="abrirEditar({{ $producto->id }})"
-                                        class="text-[#386641] text-[12px] hover:underline">Editar</button>
+                                        class="text-[#386641] text-[12px] hover:underline mr-3">Editar</button>
+                                <button
+                                    x-data
+                                    x-on:click="confirm('¿Eliminar {{ addslashes($producto->nombre) }}? Esta acción no se puede deshacer.') && $wire.eliminar({{ $producto->id }})"
+                                    class="text-red-500 text-[12px] hover:underline">Eliminar</button>
                             </td>
                         </tr>
                     @empty
@@ -128,10 +141,18 @@
                                class="w-full border border-[#d4b896]/50 bg-[#faf6f0] px-3 py-2.5 text-sm text-[#2c1a0e] focus:outline-none focus:border-[#386641] transition-colors">
                     </div>
                     <div>
-                        <label class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-1.5">Nombre de imagen</label>
-                        <input wire:model="imagen" type="text" placeholder="nombre-archivo.jpg"
-                               class="w-full border border-[#d4b896]/50 bg-[#faf6f0] px-3 py-2.5 text-sm text-[#2c1a0e] focus:outline-none focus:border-[#386641] transition-colors">
-                        <p class="text-[11px] text-[#8b5e3c]/60 mt-1">El archivo debe estar en public/imagenes/</p>
+                        <label class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-1.5">Imagen</label>
+                        <input wire:model="imagenArchivo" type="file" accept="image/*"
+                               class="w-full border border-[#d4b896]/50 bg-[#faf6f0] px-3 py-2 text-sm text-[#2c1a0e] focus:outline-none focus:border-[#386641] transition-colors file:mr-3 file:py-1 file:px-3 file:border-0 file:text-xs file:bg-[#386641]/10 file:text-[#386641] file:cursor-pointer">
+                        @error('imagenArchivo') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+                        @if($imagen && !$imagenArchivo)
+                            <p class="text-[11px] text-[#8b5e3c]/60 mt-1">Actual: {{ $imagen }}</p>
+                        @endif
+                        <div x-data class="mt-2">
+                            <p class="text-[10px] text-[#8b5e3c]/50 mb-1">O ingresá el nombre del archivo manualmente:</p>
+                            <input wire:model="imagen" type="text" placeholder="nombre-archivo.jpg"
+                                   class="w-full border border-[#d4b896]/30 bg-[#faf6f0] px-3 py-2 text-sm text-[#2c1a0e] focus:outline-none focus:border-[#386641] transition-colors">
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-1.5">Descripción</label>
@@ -145,8 +166,10 @@
 
                     <div class="flex gap-3 pt-2">
                         <button wire:click="guardar"
-                                class="flex-1 bg-[#386641] text-[#faf6f0] py-2.5 text-[13px] tracking-wider font-medium hover:bg-[#2d5534] transition-colors">
-                            Guardar
+                                wire:loading.attr="disabled"
+                                class="flex-1 bg-[#386641] text-[#faf6f0] py-2.5 text-[13px] tracking-wider font-medium hover:bg-[#2d5534] transition-colors disabled:opacity-60">
+                            <span wire:loading.remove wire:target="guardar">Guardar</span>
+                            <span wire:loading wire:target="guardar">Guardando...</span>
                         </button>
                         <button wire:click="$set('mostrarModal', false)"
                                 class="flex-1 border border-[#d4b896]/50 text-[#8b5e3c] py-2.5 text-[13px] hover:border-[#8b5e3c] transition-colors">

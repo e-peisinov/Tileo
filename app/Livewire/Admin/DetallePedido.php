@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Admin;
 
+use App\Mail\CambioEstadoMail;
 use App\Models\Pedido;
+use App\Models\PedidoHistorialEstado;
 use App\Models\Producto;
-use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
 class DetallePedido extends Component
@@ -18,7 +20,7 @@ class DetallePedido extends Component
 
     public function mount(Pedido $pedido): void
     {
-        $this->pedido     = $pedido->load('items.producto');
+        $this->pedido     = $pedido->load('items.producto', 'historial');
         $this->estado     = $pedido->estado;
         $this->notas_admin = $pedido->notas_admin ?? '';
         $this->costo_envio = $pedido->costo_envio !== null ? (string) $pedido->costo_envio : '';
@@ -32,14 +34,20 @@ class DetallePedido extends Component
             'costo_envio' => 'nullable|numeric|min:0',
         ]);
 
-        $estadoAnterior = $this->pedido->estado;
+        $estadoAnterior   = $this->pedido->estado;
+        $cancelados       = ['rechazado', 'cancelado'];
+        $entrandoCancelado = in_array($this->estado, $cancelados) && ! in_array($estadoAnterior, $cancelados);
+        $saliendoCancelado = ! in_array($this->estado, $cancelados) && in_array($estadoAnterior, $cancelados);
 
-        // Si se rechaza el pedido, reponer stock
-        if (in_array($this->estado, ['rechazado', 'cancelado']) &&
-            ! in_array($estadoAnterior, ['rechazado', 'cancelado'])) {
+        // Reponer stock al cancelar/rechazar; descontar si se reactiva desde cancelado
+        if ($entrandoCancelado || $saliendoCancelado) {
             foreach ($this->pedido->items as $item) {
                 if ($item->producto_id) {
-                    Producto::where('id', $item->producto_id)->increment('stock', $item->cantidad);
+                    if ($entrandoCancelado) {
+                        Producto::where('id', $item->producto_id)->increment('stock', $item->cantidad);
+                    } else {
+                        Producto::where('id', $item->producto_id)->decrement('stock', $item->cantidad);
+                    }
                 }
             }
         }
@@ -57,6 +65,22 @@ class DetallePedido extends Component
 
         $this->pedido->update($datos);
         $this->pedido->refresh();
+
+        if ($estadoAnterior !== $this->estado) {
+            PedidoHistorialEstado::create([
+                'pedido_id'       => $this->pedido->id,
+                'estado_anterior' => $estadoAnterior,
+                'estado_nuevo'    => $this->estado,
+                'notas'           => $this->notas_admin ?: null,
+            ]);
+
+            if ($this->pedido->email_cliente) {
+                Mail::to($this->pedido->email_cliente)
+                    ->send(new CambioEstadoMail($this->pedido, $estadoAnterior));
+            }
+
+            $this->pedido->load('historial');
+        }
 
         $this->guardado = true;
     }

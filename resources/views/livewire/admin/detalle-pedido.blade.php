@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-[#faf6f0] py-10 px-4">
     <div class="max-w-4xl mx-auto">
 
-        <div class="mb-6">
+        <div class="mb-6 flex items-center justify-between flex-wrap gap-3">
             <a href="{{ route('admin.pedidos') }}" class="text-[#386641] text-sm hover:underline">← Volver a pedidos</a>
         </div>
 
@@ -149,5 +149,35 @@
 
             </div>
         </div>
+
+        {{-- Historial de estados --}}
+        @if($pedido->historial->count() > 0)
+            <div class="mt-6 bg-white border border-[#d4b896]/30 p-6">
+                <h2 class="text-base font-medium text-[#2c1a0e] mb-5" style="font-family:'DM Serif Display',serif;">Historial de cambios</h2>
+                <div class="space-y-3">
+                    @foreach($pedido->historial as $entrada)
+                        <div class="flex items-start gap-4 text-sm">
+                            <div class="text-[11px] text-[#8b5e3c]/60 w-32 shrink-0 pt-0.5">
+                                {{ $entrada->created_at->format('d/m/Y H:i') }}
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="inline-block px-2 py-0.5 text-[10px] rounded-full text-white"
+                                      style="background-color: {{ App\Models\Pedido::colorParaEstado($entrada->estado_anterior) }}">
+                                    {{ App\Models\Pedido::etiquetaParaEstado($entrada->estado_anterior) }}
+                                </span>
+                                <i class="fa-solid fa-arrow-right text-[10px] text-[#8b5e3c]/40"></i>
+                                <span class="inline-block px-2 py-0.5 text-[10px] rounded-full text-white"
+                                      style="background-color: {{ App\Models\Pedido::colorParaEstado($entrada->estado_nuevo) }}">
+                                    {{ App\Models\Pedido::etiquetaParaEstado($entrada->estado_nuevo) }}
+                                </span>
+                                @if($entrada->notas)
+                                    <span class="text-[11px] text-[#2c1a0e]/60 ml-2">— {{ $entrada->notas }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     </div>
 </div>

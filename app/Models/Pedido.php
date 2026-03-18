@@ -36,9 +36,24 @@ class Pedido extends Model
         return $this->hasMany(PedidoItem::class);
     }
 
+    public function historial(): HasMany
+    {
+        return $this->hasMany(PedidoHistorialEstado::class)->latest();
+    }
+
     public function etiquetaEstado(): string
     {
-        return match ($this->estado) {
+        return static::etiquetaParaEstado($this->estado ?? 'pendiente');
+    }
+
+    public function colorEstado(): string
+    {
+        return static::colorParaEstado($this->estado ?? 'pendiente');
+    }
+
+    public static function etiquetaParaEstado(string $estado): string
+    {
+        return match ($estado) {
             'pendiente'    => 'Pendiente',
             'confirmado'   => 'Confirmado',
             'preparando'   => 'Preparando',
@@ -47,13 +62,13 @@ class Pedido extends Model
             'entregado'    => 'Entregado',
             'rechazado'    => 'Rechazado',
             'cancelado'    => 'Cancelado',
-            default        => $this->estado ?? 'pendiente',
+            default        => $estado,
         };
     }
 
-    public function colorEstado(): string
+    public static function colorParaEstado(string $estado): string
     {
-        return match ($this->estado) {
+        return match ($estado) {
             'pendiente'    => '#8b5e3c',
             'confirmado'   => '#386641',
             'preparando'   => '#a7c957',

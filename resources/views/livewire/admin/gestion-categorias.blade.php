@@ -6,11 +6,27 @@
                 <p class="text-[#8b5e3c]/70 tracking-[0.25em] uppercase text-[10px] font-medium mb-1">Panel de administración</p>
                 <h1 class="text-3xl text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Categorías</h1>
             </div>
-            <button wire:click="abrirCrear"
-                    class="inline-flex items-center gap-2 bg-[#386641] text-[#faf6f0] px-5 py-2.5 text-[13px] tracking-wider font-medium hover:bg-[#2d5534] transition-colors">
-                <i class="fa-solid fa-plus text-xs"></i> Nueva categoría
-            </button>
+            <div class="flex flex-wrap items-center gap-3">
+                <button wire:click="abrirCrear"
+                        class="inline-flex items-center gap-2 bg-[#386641] text-[#faf6f0] px-5 py-2.5 text-[13px] tracking-wider font-medium hover:bg-[#2d5534] transition-colors">
+                    <i class="fa-solid fa-plus text-xs"></i> Nueva categoría
+                </button>
+            </div>
         </div>
+
+        {{-- Banner de éxito --}}
+        @if($guardado)
+            <div class="flex items-center gap-2 text-[#386641] text-sm bg-[#386641]/8 border border-[#386641]/20 px-4 py-3 mb-5">
+                <i class="fa-solid fa-check"></i> Categoría guardada correctamente.
+            </div>
+        @endif
+
+        {{-- Error de eliminación --}}
+        @if($errorEliminar)
+            <div class="flex items-center gap-2 text-red-700 text-sm bg-red-50 border border-red-200 px-4 py-3 mb-5">
+                <i class="fa-solid fa-triangle-exclamation"></i> {{ $errorEliminar }}
+            </div>
+        @endif
 
         <div class="bg-white border border-[#d4b896]/30 overflow-hidden">
             <table class="w-full text-sm">
@@ -35,7 +51,15 @@
                             <td class="px-4 py-3 text-center text-[#2c1a0e]/70">{{ $cat->productos_count }}</td>
                             <td class="px-4 py-3 text-center">
                                 <button wire:click="abrirEditar({{ $cat->id }})"
-                                        class="text-[#386641] text-[12px] hover:underline">Editar</button>
+                                        class="text-[#386641] text-[12px] hover:underline mr-3">Editar</button>
+                                @if($cat->productos_count === 0)
+                                    <button
+                                        x-data
+                                        x-on:click="confirm('¿Eliminar la categoría {{ addslashes($cat->nombre) }}?') && $wire.eliminar({{ $cat->id }})"
+                                        class="text-red-500 text-[12px] hover:underline">Eliminar</button>
+                                @else
+                                    <span class="text-[11px] text-[#8b5e3c]/40" title="Tiene productos asociados">No eliminable</span>
+                                @endif
                             </td>
                         </tr>
                     @empty
@@ -80,8 +104,10 @@
                     </div>
                     <div class="flex gap-3 pt-2">
                         <button wire:click="guardar"
-                                class="flex-1 bg-[#386641] text-[#faf6f0] py-2.5 text-[13px] tracking-wider font-medium hover:bg-[#2d5534] transition-colors">
-                            Guardar
+                                wire:loading.attr="disabled"
+                                class="flex-1 bg-[#386641] text-[#faf6f0] py-2.5 text-[13px] tracking-wider font-medium hover:bg-[#2d5534] transition-colors disabled:opacity-60">
+                            <span wire:loading.remove wire:target="guardar">Guardar</span>
+                            <span wire:loading wire:target="guardar">Guardando...</span>
                         </button>
                         <button wire:click="$set('mostrarModal', false)"
                                 class="flex-1 border border-[#d4b896]/50 text-[#8b5e3c] py-2.5 text-[13px] hover:border-[#8b5e3c] transition-colors">

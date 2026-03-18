@@ -7,10 +7,6 @@
                 <p class="text-[#8b5e3c]/70 tracking-[0.25em] uppercase text-[10px] font-medium mb-1">Panel de administración</p>
                 <h1 class="text-3xl text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Pedidos</h1>
             </div>
-            <nav class="flex gap-3 text-[12px]">
-                <a href="{{ route('admin.productos') }}" class="border border-[#d4b896]/50 text-[#8b5e3c] px-4 py-2 hover:border-[#386641] hover:text-[#386641] transition-colors">Productos</a>
-                <a href="{{ route('admin.categorias') }}" class="border border-[#d4b896]/50 text-[#8b5e3c] px-4 py-2 hover:border-[#386641] hover:text-[#386641] transition-colors">Categorías</a>
-            </nav>
         </div>
 
         {{-- Filtros --}}

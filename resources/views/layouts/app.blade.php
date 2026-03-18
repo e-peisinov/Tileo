@@ -136,6 +136,9 @@
                     </a>
                     @if (Auth::check())
                         <div class="w-px h-4 bg-[#d4b896] self-center"></div>
+                        <a href="{{ route('admin.dashboard') }}" class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
+                            Dashboard
+                        </a>
                         <a href="{{ route('admin.pedidos') }}" class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
                             Pedidos
                         </a>

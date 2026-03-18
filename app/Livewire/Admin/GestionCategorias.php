@@ -14,10 +14,14 @@ class GestionCategorias extends Component
     public string $descripcion = '';
     public bool $activo = true;
 
+    public bool $guardado = false;
+    public string $errorEliminar = '';
+
     public function abrirCrear(): void
     {
         $this->resetCampos();
         $this->editandoId = null;
+        $this->guardado = false;
         $this->mostrarModal = true;
     }
 
@@ -28,6 +32,7 @@ class GestionCategorias extends Component
         $this->nombre      = $cat->nombre;
         $this->descripcion = $cat->descripcion ?? '';
         $this->activo      = $cat->activo;
+        $this->guardado = false;
         $this->mostrarModal = true;
     }
 
@@ -51,7 +56,21 @@ class GestionCategorias extends Component
         }
 
         $this->mostrarModal = false;
+        $this->guardado = true;
         $this->resetCampos();
+    }
+
+    public function eliminar(int $id): void
+    {
+        $cat = Categoria::withCount('productos')->findOrFail($id);
+
+        if ($cat->productos_count > 0) {
+            $this->errorEliminar = "No se puede eliminar \"{$cat->nombre}\": tiene {$cat->productos_count} producto(s) asociado(s).";
+            return;
+        }
+
+        $cat->delete();
+        $this->errorEliminar = '';
     }
 
     private function resetCampos(): void

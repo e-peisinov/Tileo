@@ -8,6 +8,7 @@ use App\Livewire\Contacto;
 use App\Livewire\Carrito;
 use App\Livewire\Checkout;
 use App\Livewire\ConfirmacionPedido;
+use App\Livewire\Admin\Dashboard as AdminDashboard;
 use App\Livewire\Admin\GestionPedidos;
 use App\Livewire\Admin\DetallePedido;
 use App\Livewire\Admin\GestionProductos;
@@ -38,6 +39,7 @@ Route::view('profile', 'profile')
 
 // Rutas de administración
 Route::middleware(['auth', 'es_admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', AdminDashboard::class)->name('dashboard');
     Route::get('/pedidos', GestionPedidos::class)->name('pedidos');
     Route::get('/pedidos/{pedido}', DetallePedido::class)->name('detalle-pedido');
     Route::get('/productos', GestionProductos::class)->name('productos');
