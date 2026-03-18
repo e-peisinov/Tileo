@@ -5,10 +5,16 @@ namespace App\Livewire;
 use App\Models\Categoria;
 use App\Models\Producto;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class Catalogo extends Component
 {
+    use WithPagination;
+
     public string $categoriaActiva = 'todos';
+    public string $busqueda = '';
+
+    public function updatingBusqueda(): void { $this->resetPage(); }
 
     public function agregarAlCarrito(int $productoId): void
     {
@@ -26,7 +32,8 @@ class Catalogo extends Component
                     $sub->where('nombre', $this->categoriaActiva)
                 );
             })
-            ->get();
+            ->when($this->busqueda, fn($q) => $q->where('nombre', 'like', "%{$this->busqueda}%"))
+            ->paginate(12);
 
         return view('livewire.catalogo', compact('productos', 'categorias'))
             ->layout('layouts.app', ['titulo' => 'Catálogo — Tileo']);

@@ -130,6 +130,83 @@
     </section>
     
     
+    {{-- USOS ESTRELLA --}}
+    <section class="bg-[#faf6f0] py-24 px-4">
+        <div class="max-w-5xl mx-auto">
+
+            <div class="text-center mb-16">
+                <p class="text-[#8b5e3c]/70 tracking-[0.28em] uppercase text-[11px] font-medium mb-3">
+                    Inspiración para tu cocina
+                </p>
+                <h2 class="text-4xl text-[#2c1a0e]"
+                    style="font-family: 'DM Serif Display', serif;">
+                    Cómo usarlos
+                </h2>
+                <p class="mt-3 text-sm text-[#2c1a0e]/55 max-w-md mx-auto leading-relaxed">
+                    Algunas ideas para incorporar nuestras especias en tu día a día.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @foreach ([
+                    [
+                        'icono'    => 'fa-bowl-rice',
+                        'titulo'   => 'Risotto de hongos',
+                        'especia'  => 'Nuez Moscada',
+                        'texto'    => 'Una pizca de nuez moscada rallada al final del risotto transforma por completo el plato. Realza la cremosidad sin opacar el sabor de los hongos.',
+                        'color'    => '#8b5e3c',
+                    ],
+                    [
+                        'icono'    => 'fa-fire-burner',
+                        'titulo'   => 'Curry casero',
+                        'especia'  => 'Cúrcuma + Pimentón',
+                        'texto'    => 'Combiná cúrcuma, pimentón dulce y comino para armar tu curry base. Salteá en aceite antes de agregar la cebolla para liberar todos los aromas.',
+                        'color'    => '#c0a020',
+                    ],
+                    [
+                        'icono'    => 'fa-drumstick-bite',
+                        'titulo'   => 'Pollo a la paprika',
+                        'especia'  => 'Paprika ahumada',
+                        'texto'    => 'Mezclá paprika ahumada con aceite de oliva y ajo en polvo para marinar el pollo. Dejalo al menos 2 horas antes de cocinar para que penetre bien el sabor.',
+                        'color'    => '#c0392b',
+                    ],
+                    [
+                        'icono'    => 'fa-pepper-hot',
+                        'titulo'   => 'Chimichurri intenso',
+                        'especia'  => 'Ají Molido Merkén',
+                        'texto'    => 'Reemplazá el ají molido clásico por merkén en tu chimichurri. Aporta un ahumado suave que eleva el clásico acompañamiento de las carnes a la parrilla.',
+                        'color'    => '#a93226',
+                    ],
+                ] as $uso)
+                    <div class="bg-[#f0e9de] p-6 flex gap-5 border border-[#d4b896]/20 hover:border-[#d4b896]/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-400">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                             style="background-color: {{ $uso['color'] }}20;">
+                            <i class="fa-solid {{ $uso['icono'] }} text-lg"
+                               style="color: {{ $uso['color'] }};"></i>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <div>
+                                <span class="text-[10px] uppercase tracking-wider font-semibold"
+                                      style="color: {{ $uso['color'] }};">
+                                    {{ $uso['especia'] }}
+                                </span>
+                                <h3 class="text-lg text-[#2c1a0e]"
+                                    style="font-family: 'DM Serif Display', serif;">
+                                    {{ $uso['titulo'] }}
+                                </h3>
+                            </div>
+                            <p class="text-sm text-[#2c1a0e]/60 leading-relaxed">
+                                {{ $uso['texto'] }}
+                            </p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+        </div>
+    </section>
+
+
     {{-- CTA --}}
     <section class="bg-[#386641] py-20 px-4 text-center">
         <div class="max-w-xl mx-auto fade-in flex flex-col items-center gap-6">

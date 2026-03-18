@@ -64,8 +64,49 @@
             </a>
         </div>
 
-        <div class="text-center">
-            <a href="{{ route('catalogo') }}" class="text-sm text-[#386641] hover:underline">← Seguir comprando</a>
+        {{-- Próximos pasos --}}
+        <div class="bg-white border border-[#d4b896]/30 p-6 mb-5">
+            <h2 class="text-base font-medium text-[#2c1a0e] mb-4" style="font-family: 'DM Serif Display', serif;">
+                ¿Qué pasa ahora?
+            </h2>
+            <div class="space-y-3">
+                <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-[#386641]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-[10px] font-bold text-[#386641]">1</span>
+                    </div>
+                    <p class="text-sm text-[#2c1a0e]/70 leading-relaxed">
+                        Revisamos tu pedido y te enviamos un email de confirmación a <strong>{{ $pedido->email_cliente }}</strong>.
+                    </p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-[#386641]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-[10px] font-bold text-[#386641]">2</span>
+                    </div>
+                    <p class="text-sm text-[#2c1a0e]/70 leading-relaxed">
+                        {{ $pedido->metodo_entrega === 'envio' ? 'Confirmamos el costo de envío y lo sumamos al total.' : 'Preparamos tu pedido para que lo retires en local.' }}
+                    </p>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div class="w-6 h-6 rounded-full bg-[#386641]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-[10px] font-bold text-[#386641]">3</span>
+                    </div>
+                    <p class="text-sm text-[#2c1a0e]/70 leading-relaxed">
+                        Te avisamos cuando esté listo. Podés rastrear el estado de tu pedido en cualquier momento.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+            <a href="{{ route('seguimiento-pedido') }}?numero={{ $pedido->numero_pedido }}"
+               class="inline-flex items-center justify-center gap-2 border border-[#386641]/40 text-[#386641] px-6 py-2.5 text-[13px] font-medium tracking-wide hover:bg-[#386641] hover:text-white transition-all duration-300">
+                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                Rastrear mi pedido
+            </a>
+            <a href="{{ route('catalogo') }}"
+               class="inline-flex items-center justify-center gap-2 border border-[#d4b896]/50 text-[#2c1a0e]/60 px-6 py-2.5 text-[13px] font-medium tracking-wide hover:border-[#2c1a0e]/30 hover:text-[#2c1a0e] transition-all duration-300">
+                ← Seguir comprando
+            </a>
         </div>
 
     </div>

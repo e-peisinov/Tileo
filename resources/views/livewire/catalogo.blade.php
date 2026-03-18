@@ -19,6 +19,19 @@
     <section class="bg-[#faf6f0] py-16 px-4">
         <div class="max-w-6xl mx-auto">
 
+            {{-- Buscador --}}
+            <div class="max-w-md mx-auto mb-8">
+                <div class="relative">
+                    <input wire:model.live.debounce.300ms="busqueda"
+                           type="text"
+                           placeholder="Buscar especias, condimentos..."
+                           class="w-full border border-[#d4b896]/40 bg-white rounded-full px-5 py-3 pr-12 text-sm text-[#2c1a0e] placeholder-[#8b5e3c]/40 focus:outline-none focus:border-[#386641]/50 focus:ring-2 focus:ring-[#386641]/10 transition-all duration-200">
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </div>
+                </div>
+            </div>
+
             {{-- Filtros por categoría --}}
             <div class="flex flex-wrap justify-center gap-2 mb-14">
                 <button wire:click="$set('categoriaActiva', 'todos')"
@@ -40,7 +53,7 @@
             </div>
 
             {{-- Grid de productos --}}
-            @if($productos->isEmpty())
+            @if($productos->count() === 0)
                 <div class="text-center py-20">
                     <p class="text-[#8b5e3c]/60 text-sm">No hay productos disponibles en esta categoría.</p>
                 </div>
@@ -66,14 +79,23 @@
                                         {{ $producto->categoria->nombre }}
                                     </span>
                                 </div>
+                                @if($producto->stock > 0 && $producto->stock <= 5)
+                                    <div class="absolute top-3 right-3">
+                                        <span class="bg-red-600 text-[#faf6f0] text-[10px] tracking-[0.12em] uppercase font-medium px-2.5 py-1">
+                                            Últimas {{ $producto->stock }}
+                                        </span>
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="p-6 flex flex-col gap-3 flex-1">
                                 <div class="flex items-start justify-between gap-3">
-                                    <h2 class="text-2xl text-[#2c1a0e] leading-tight"
-                                        style="font-family: 'DM Serif Display', serif;">
-                                        {{ $producto->nombre }}
-                                    </h2>
+                                    <a href="{{ route('detalle-producto', $producto->id) }}" class="hover:text-[#386641] transition-colors duration-200">
+                                        <h2 class="text-2xl text-[#2c1a0e] leading-tight"
+                                            style="font-family: 'DM Serif Display', serif;">
+                                            {{ $producto->nombre }}
+                                        </h2>
+                                    </a>
                                     <span class="text-[11px] text-[#8b5e3c]/70 mt-2 flex-shrink-0">{{ $producto->unidad }}</span>
                                 </div>
 
@@ -99,7 +121,8 @@
                                                 class="flex items-center gap-2 bg-[#386641] text-[#faf6f0] px-4 py-2 text-[12px] tracking-wider font-medium
                                                        hover:bg-[#2d5534] transition-colors duration-300 disabled:opacity-60">
                                             <span wire:loading.remove wire:target="agregarAlCarrito({{ $producto->id }})">
-                                                <i class="fa-solid fa-basket-shopping text-xs mr-1"></i> Agregar
+                                                <i class="fa-solid fa-basket-shopping text-xs mr-1"></i>
+                                                {{ $producto->precio > 0 ? 'Agregar' : 'Agregar*' }}
                                             </span>
                                             <span wire:loading wire:target="agregarAlCarrito({{ $producto->id }})">...</span>
                                         </button>
@@ -107,10 +130,16 @@
                                         <span class="text-[12px] text-[#c0392b]/80 font-medium">Sin stock</span>
                                     @endif
                                 </div>
+                                @if($producto->precio == 0)
+                                    <p class="text-[10px] text-[#8b5e3c]/50 italic mt-1">* El precio se confirma con el pedido</p>
+                                @endif
                             </div>
 
                         </article>
                     @endforeach
+                </div>
+                <div class="mt-10 flex justify-center">
+                    {{ $productos->links() }}
                 </div>
             @endif
 

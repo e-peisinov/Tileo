@@ -1,6 +1,7 @@
 <div>
     {{-- Botón flotante del carrito --}}
     <button wire:click="abrirCarrito"
+            data-carrito-btn
             class="fixed bottom-6 right-6 z-40 bg-[#386641] text-[#faf6f0] w-14 h-14 rounded-full shadow-lg
                    flex items-center justify-center hover:bg-[#2d5534] transition-colors duration-300 group">
         <i class="fa-solid fa-basket-shopping text-xl"></i>

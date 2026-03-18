@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Mail\ContactoMail;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 
@@ -10,7 +12,7 @@ class Contacto extends Component
     #[Validate('required|min:2')]
     public string $nombre = '';
 
-    #[Validate('required|telefono')]
+    #[Validate('required|min:6|max:30')]
     public string $telefono = '';
 
     public string $asunto = '';
@@ -24,7 +26,17 @@ class Contacto extends Component
     {
         $this->validate();
 
-        // TODO: implementar envío de teléfono o guardado en BD
+        $emailAdmin = config('tileo.email_admin');
+        try {
+            Mail::to($emailAdmin)->send(new ContactoMail(
+                $this->nombre,
+                $this->telefono,
+                $this->asunto,
+                $this->mensaje,
+            ));
+        } catch (\Exception $e) {
+            \Log::error('Error al enviar mensaje de contacto: ' . $e->getMessage());
+        }
 
         $this->enviado = true;
     }

@@ -22,7 +22,7 @@
     
     
             {{-- FORMULARIO --}}
-            <div class="lg:col-span-3 fade-desde-izq">
+            <div class="lg:col-span-3">
                 <h2 class="text-2xl text-[#2c1a0e] mb-8"
                     style="font-family: 'DM Serif Display', serif;">
                     Envianos un mensaje
@@ -122,7 +122,7 @@
     
     
             {{-- INFO --}}
-            <div class="lg:col-span-2 fade-desde-der flex flex-col gap-8">
+            <div class="lg:col-span-2 flex flex-col gap-8">
     
                 <h2 class="text-2xl text-[#2c1a0e]"
                     style="font-family: 'DM Serif Display', serif;">
@@ -183,7 +183,7 @@
              alt="Tileo"
              class="w-full h-full object-cover object-top">
         <div class="absolute inset-0 bg-[#1a0f05]/65 flex items-center justify-center">
-            <p class="text-center fade-in"
+            <p class="text-center"
                style="font-family: 'DM Serif Display', serif; font-style: italic; font-size: clamp(1.25rem, 3vw, 1.75rem); color: #faf6f0; opacity: 0.9;">
                 "Del campo a tu mesa, con cuidado artesanal"
             </p>

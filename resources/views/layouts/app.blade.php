@@ -95,6 +95,18 @@
         .hero-delay-2 { animation-delay: 0.5s;  opacity: 0; }
         .hero-delay-3 { animation-delay: 0.75s; opacity: 0; }
         .hero-delay-4 { animation-delay: 1.0s;  opacity: 0; }
+
+        /* ── Animación bounce del ícono de carrito al agregar ── */
+        @keyframes cartBounce {
+            0%   { transform: scale(1); }
+            30%  { transform: scale(1.35); }
+            60%  { transform: scale(0.9); }
+            80%  { transform: scale(1.12); }
+            100% { transform: scale(1); }
+        }
+        .carrito-bounce {
+            animation: cartBounce 0.5s ease forwards;
+        }
     </style>
 </head>
 <body class="antialiased bg-[#faf6f0] text-[#2c1a0e] flex flex-col min-h-screen">
@@ -129,6 +141,14 @@
                     <a href="{{ route('nosotros') }}"
                        class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
                         Nosotros
+                    </a>
+                    <a href="{{ route('preguntas') }}"
+                       class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
+                        Preguntas
+                    </a>
+                    <a href="{{ route('seguimiento-pedido') }}"
+                       class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
+                        Seguimiento de pedido
                     </a>
                     <a href="{{ route('contacto') }}"
                        class="text-[14px] font-medium text-[#386641] border border-[#386641]/50 px-5 py-1.5 rounded-full hover:bg-[#386641] hover:text-[#faf6f0] hover:border-[#386641] transition-all duration-300">
@@ -193,6 +213,9 @@
                 <a href="{{ url('/nosotros') }}"
                    class="text-sm font-medium text-[#2c1a0e]/70 hover:text-[#386641] transition-colors"
                    @click="menuAbierto = false">Nosotros</a>
+                <a href="{{ url('/preguntas') }}"
+                   class="text-sm font-medium text-[#2c1a0e]/70 hover:text-[#386641] transition-colors"
+                   @click="menuAbierto = false">Preguntas</a>
                 <a href="{{ url('/contacto') }}"
                    class="self-start text-sm font-medium text-[#386641] border border-[#386641]/50 px-5 py-1.5 rounded-full hover:bg-[#386641] hover:text-[#faf6f0] transition-all duration-300"
                    @click="menuAbierto = false">Contacto</a>
@@ -207,6 +230,17 @@
 
     {{-- CARRITO (drawer flotante, disponible en todas las páginas) --}}
     @livewire('carrito')
+
+    {{-- BOTÓN FLOTANTE WHATSAPP --}}
+    <a href="https://wa.me/{{ preg_replace('/\D/', '', config('tileo.whatsapp', '')) }}"
+       target="_blank"
+       rel="noopener noreferrer"
+       title="Consultanos por WhatsApp"
+       class="fixed bottom-24 right-6 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-lg
+              hover:scale-110 active:scale-95 transition-all duration-200"
+       style="background-color: #25D366;">
+        <i class="fa-brands fa-whatsapp text-white text-2xl"></i>
+    </a>
 
     {{-- FOOTER --}}
     <footer class="bg-[#2c1a0e] text-[#d4b896]">
@@ -233,6 +267,8 @@
                     <a href="{{ url('/') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Inicio</a>
                     <a href="{{ url('/catalogo') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Catálogo</a>
                     <a href="{{ url('/nosotros') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Nosotros</a>
+                    <a href="{{ url('/preguntas') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Preguntas frecuentes</a>
+                    <a href="{{ url('/seguimiento') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Seguimiento de pedido</a>
                     <a href="{{ url('/contacto') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Contacto</a>
                 </div>
 
@@ -291,7 +327,21 @@
                 link.classList.add('activo');
             }
         });
+
+        // ── Bounce del botón carrito al agregar producto ──
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('producto-agregado', () => {
+                const btnCarrito = document.querySelector('[data-carrito-btn]');
+                if (btnCarrito) {
+                    btnCarrito.classList.remove('carrito-bounce');
+                    void btnCarrito.offsetWidth; // reflow para re-trigger
+                    btnCarrito.classList.add('carrito-bounce');
+                }
+            });
+        });
     </script>
+
+    @stack('scripts')
 
 </body>
 </html>

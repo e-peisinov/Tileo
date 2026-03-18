@@ -91,11 +91,9 @@
 
 
     {{-- ============================================================
-         PRODUCTOS
+         PRODUCTOS DESTACADOS
     ============================================================ --}}
-    <section id="productos" class="bg-[#f0e9de] py-20 px-4"
-             x-data="{ categoriaActiva: 'todos' }">
-
+    <section id="productos" class="bg-[#f0e9de] py-20 px-4">
         <div class="max-w-6xl mx-auto">
 
             {{-- Encabezado --}}
@@ -109,103 +107,65 @@
                 </h2>
             </div>
 
-            {{-- Filtros --}}
-            <div class="flex flex-wrap justify-center gap-3 mb-12">
-                @foreach ([
-                    'todos'    => 'Todos',
-                    'especias' => 'Especias',
-                    'picantes' => 'Picantes',
-                ] as $clave => $etiqueta)
-                    <button @click="categoriaActiva = '{{ $clave }}'"
-                            :class="categoriaActiva === '{{ $clave }}'
-                                ? 'bg-[#386641] text-[#faf6f0]'
-                                : 'bg-transparent text-[#2c1a0e] border border-[#2c1a0e]/20 hover:border-[#386641] hover:text-[#386641]'"
-                            class="px-5 py-2 text-xs uppercase tracking-widest font-semibold transition-all duration-200">
-                        {{ $etiqueta }}
-                    </button>
-                @endforeach
-            </div>
+            {{-- Grid de productos desde DB --}}
+            @if($productosDestacados->isNotEmpty())
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                    @foreach($productosDestacados as $producto)
+                        <div class="group bg-[#faf6f0] overflow-hidden border border-[#d4b896]/25 hover:border-[#d4b896]/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-400">
+                            {{-- Imagen --}}
+                            <div class="relative h-72 overflow-hidden">
+                                @if($producto->imagen)
+                                    <img src="{{ asset('imagenes/' . rawurlencode($producto->imagen)) }}"
+                                         alt="{{ $producto->nombre }}"
+                                         class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105">
+                                @else
+                                    <div class="w-full h-full bg-[#f0e9de] flex items-center justify-center">
+                                        <i class="fa-solid fa-leaf text-5xl text-[#386641]/30"></i>
+                                    </div>
+                                @endif
+                                {{-- Overlay con descripción al hover --}}
+                                <div class="absolute inset-0 bg-[#1a0f05]/70 flex items-end p-5
+                                            opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <p class="text-[#faf6f0]/90 text-sm leading-relaxed">
+                                        {{ $producto->descripcion }}
+                                    </p>
+                                </div>
+                            </div>
 
-            {{-- Grid de productos --}}
-            @php
-                $productos = [
-                    [
-                        'nombre'      => 'Nuez Moscada',
-                        'imagen'      => 'WhatsApp Image 2026-03-17 at 13.23.44.jpeg',
-                        'descripcion' => 'De aroma intenso y sabor cálido. Ideal para bechameles, purés y postres.',
-                        'categoria'   => 'especias',
-                        'color'       => '#8b5e3c',
-                    ],
-                    [
-                        'nombre'      => 'Paprika',
-                        'imagen'      => 'WhatsApp Image 2026-03-17 at 13.23.44 (3).jpeg',
-                        'descripcion' => 'Color vibrante y sabor ahumado. Perfecta para marinadas y arroces.',
-                        'categoria'   => 'especias',
-                        'color'       => '#c0392b',
-                    ],
-                    [
-                        'nombre'      => 'Pimienta Negra',
-                        'imagen'      => 'WhatsApp Image 2026-03-17 at 13.23.44 (4).jpeg',
-                        'descripcion' => 'Clásica e imprescindible. Realza cualquier preparación con su toque picante.',
-                        'categoria'   => 'especias',
-                        'color'       => '#2c1a0e',
-                    ],
-                    [
-                        'nombre'      => 'Ají Molido Merken',
-                        'imagen'      => 'WhatsApp Image 2026-03-17 at 13.23.45.jpeg',
-                        'descripcion' => 'Mezcla mapuche ahumada con ají cacho de cabra y cilantro tostado.',
-                        'categoria'   => 'picantes',
-                        'color'       => '#a93226',
-                    ],
-                    [
-                        'nombre'      => 'Pimentón Dulce',
-                        'imagen'      => 'WhatsApp Image 2026-03-17 at 13.23.45 (2).jpeg',
-                        'descripcion' => 'Suave y aromático. Aporta color y dulzura a guisos, empanadas y carnes.',
-                        'categoria'   => 'especias',
-                        'color'       => '#c0392b',
-                    ],
-                ];
-            @endphp
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach ($productos as $producto)
-                    <div x-show="categoriaActiva === 'todos' || categoriaActiva === '{{ $producto['categoria'] }}'"
-                         x-transition:enter="transition ease-out duration-300"
-                         x-transition:enter-start="opacity-0 scale-95"
-                         x-transition:enter-end="opacity-100 scale-100"
-                         class="group bg-[#faf6f0] overflow-hidden cursor-default">
-
-                        {{-- Imagen --}}
-                        <div class="relative h-72 overflow-hidden">
-                            <img src="{{ asset('imagenes/' . rawurlencode($producto['imagen'])) }}"
-                                 alt="{{ $producto['nombre'] }}"
-                                 class="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105">
-                            {{-- Overlay con descripción al hover --}}
-                            <div class="absolute inset-0 bg-[#1a0f05]/70 flex items-end p-5
-                                        opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <p class="text-[#faf6f0]/90 text-sm leading-relaxed">
-                                    {{ $producto['descripcion'] }}
-                                </p>
+                            {{-- Info --}}
+                            <div class="p-5 flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] uppercase tracking-widest text-[#8b5e3c] font-semibold">
+                                        {{ $producto->categoria->nombre }}
+                                    </span>
+                                    <h3 class="text-lg font-semibold text-[#2c1a0e] mt-0.5"
+                                        style="font-family: 'DM Serif Display', serif;">
+                                        {{ $producto->nombre }}
+                                    </h3>
+                                </div>
+                                @if($producto->stock > 0)
+                                    <a href="{{ route('detalle-producto', $producto->id) }}"
+                                       class="text-[11px] text-[#386641] border border-[#386641]/30 px-3 py-1.5 hover:bg-[#386641] hover:text-white transition-all duration-200 flex-shrink-0">
+                                        Ver →
+                                    </a>
+                                @else
+                                    <span class="text-[11px] text-[#c0392b]/70">Sin stock</span>
+                                @endif
                             </div>
                         </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-12">
+                    <p class="text-[#8b5e3c]/60 text-sm">Próximamente nuevos productos.</p>
+                </div>
+            @endif
 
-                        {{-- Info --}}
-                        <div class="p-5 flex items-center justify-between">
-                            <div>
-                                <span class="text-[10px] uppercase tracking-widest text-[#8b5e3c] font-semibold">
-                                    {{ $producto['categoria'] === 'picantes' ? 'Picante' : 'Especia' }}
-                                </span>
-                                <h3 class="text-lg font-semibold text-[#2c1a0e] mt-0.5"
-                                    style="font-family: 'DM Serif Display', serif;">
-                                    {{ $producto['nombre'] }}
-                                </h3>
-                            </div>
-                            <div class="w-3 h-3 rounded-full flex-shrink-0"
-                                 style="background-color: {{ $producto['color'] }}"></div>
-                        </div>
-
-                    </div>
-                @endforeach
+            <div class="text-center">
+                <a href="{{ route('catalogo') }}"
+                   class="inline-block border border-[#2c1a0e]/20 text-[#2c1a0e]/70 px-8 py-3 text-xs uppercase tracking-widest font-semibold hover:border-[#386641] hover:text-[#386641] transition-all duration-300">
+                    Ver catálogo completo
+                </a>
             </div>
 
         </div>
