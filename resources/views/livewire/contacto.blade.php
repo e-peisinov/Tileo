@@ -56,21 +56,36 @@
                                     <span class="text-[11px] text-red-500">{{ $message }}</span>
                                 @enderror
                             </div>
-    
-                            {{-- Teléfono --}}
+
+                            {{-- Email --}}
                             <div class="flex flex-col gap-1.5">
-                                <label for="telefono" class="text-[11px] tracking-[0.18em] uppercase text-[#2c1a0e]/60 font-medium">
-                                    Teléfono *
+                                <label for="email" class="text-[11px] tracking-[0.18em] uppercase text-[#2c1a0e]/60 font-medium">
+                                    Email *
                                 </label>
-                                <input type="tel" id="telefono" wire:model="telefono"
+                                <input type="email" id="email" wire:model="email"
                                        class="bg-transparent border px-4 py-3 text-sm text-[#2c1a0e]
                                               placeholder-[#2c1a0e]/30 outline-none transition-colors duration-300
-                                              {{ $errors->has('telefono') ? 'border-red-400' : 'border-[#d4b896]/50 focus:border-[#386641]' }}"
-                                       placeholder="Tu teléfono">
-                                @error('telefono')
+                                              {{ $errors->has('email') ? 'border-red-400' : 'border-[#d4b896]/50 focus:border-[#386641]' }}"
+                                       placeholder="tu@email.com">
+                                @error('email')
                                     <span class="text-[11px] text-red-500">{{ $message }}</span>
                                 @enderror
                             </div>
+                        </div>
+
+                        {{-- Teléfono --}}
+                        <div class="flex flex-col gap-1.5">
+                            <label for="telefono" class="text-[11px] tracking-[0.18em] uppercase text-[#2c1a0e]/60 font-medium">
+                                Teléfono *
+                            </label>
+                            <input type="tel" id="telefono" wire:model="telefono"
+                                   class="bg-transparent border px-4 py-3 text-sm text-[#2c1a0e]
+                                          placeholder-[#2c1a0e]/30 outline-none transition-colors duration-300
+                                          {{ $errors->has('telefono') ? 'border-red-400' : 'border-[#d4b896]/50 focus:border-[#386641]' }}"
+                                   placeholder="Tu teléfono">
+                            @error('telefono')
+                                <span class="text-[11px] text-red-500">{{ $message }}</span>
+                            @enderror
                         </div>
     
                         {{-- Asunto --}}

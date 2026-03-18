@@ -2,28 +2,7 @@
     <div class="max-w-6xl mx-auto">
 
         {{-- Nav admin --}}
-        <nav class="flex flex-wrap gap-1 mb-8 bg-white/70 backdrop-blur-sm rounded-2xl p-1.5 border border-[#d4b896]/25 shadow-sm w-fit">
-            <a href="{{ route('admin.dashboard') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.dashboard') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-gauge-high text-[10px]"></i> Dashboard
-            </a>
-            <a href="{{ route('admin.pedidos') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.pedidos', 'admin.detalle-pedido') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-bag-shopping text-[10px]"></i> Pedidos
-            </a>
-            <a href="{{ route('admin.productos') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.productos') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-seedling text-[10px]"></i> Productos
-            </a>
-            <a href="{{ route('admin.categorias') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.categorias') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-tags text-[10px]"></i> Categorías
-            </a>
-        </nav>
+        @include('livewire.admin.partials.nav')
 
         {{-- Encabezado --}}
         <div class="mb-8">
@@ -87,7 +66,7 @@
                                 @if($producto->precio > 0)
                                     ${{ number_format($producto->precio, 2, ',', '.') }}
                                 @else
-                                    <span class="text-[#8b5e3c]/40 text-xs font-normal">Sin precio</span>
+                                    <span class="text-[#8b5e3c]/60 text-xs font-normal italic">A confirmar</span>
                                 @endif
                             </td>
                             <td class="px-4 py-3.5 text-right">
@@ -117,10 +96,8 @@
                                         class="inline-flex items-center gap-1 text-[#386641] text-[12px] font-medium hover:underline mr-3 transition-colors">
                                     <i class="fa-solid fa-pen text-[9px]"></i> Editar
                                 </button>
-                                <button
-                                    x-data
-                                    x-on:click="confirm('¿Eliminar {{ addslashes($producto->nombre) }}? Esta acción no se puede deshacer.') && $wire.eliminar({{ $producto->id }})"
-                                    class="inline-flex items-center gap-1 text-red-400 text-[12px] font-medium hover:text-red-600 transition-colors">
+                                <button wire:click="pedirEliminar({{ $producto->id }})"
+                                        class="inline-flex items-center gap-1 text-red-400 text-[12px] font-medium hover:text-red-600 transition-colors">
                                     <i class="fa-solid fa-trash text-[9px]"></i> Eliminar
                                 </button>
                             </td>
@@ -140,6 +117,40 @@
 
         <div class="mt-5">{{ $productos->links() }}</div>
     </div>
+
+    {{-- MODAL CONFIRMAR ELIMINACIÓN --}}
+    @if($mostrarConfirmarEliminar)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+             style="background-color: rgba(44,26,14,0.5); backdrop-filter: blur(4px);"
+             x-data x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+            <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden text-center"
+                 x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+                <div class="p-8">
+                    <div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-trash text-red-500 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-[#2c1a0e] mb-2" style="font-family:'DM Serif Display',serif;">
+                        ¿Eliminar producto?
+                    </h3>
+                    <p class="text-sm text-[#8b5e3c]/70 mb-6">
+                        Vas a eliminar <strong class="text-[#2c1a0e]">{{ $nombreParaEliminar }}</strong>. Esta acción no se puede deshacer.
+                    </p>
+                    <div class="flex gap-3">
+                        <button wire:click="cancelarEliminar"
+                                class="flex-1 border border-[#d4b896]/50 text-[#8b5e3c] rounded-xl py-2.5 text-[13px] font-medium
+                                       hover:border-[#8b5e3c] hover:bg-[#f0e9de] transition-all duration-200">
+                            Cancelar
+                        </button>
+                        <button wire:click="confirmarEliminar"
+                                class="flex-1 bg-red-500 text-white rounded-xl py-2.5 text-[13px] font-semibold
+                                       hover:bg-red-600 transition-all duration-200">
+                            Sí, eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     {{-- MODAL --}}
     @if($mostrarModal)

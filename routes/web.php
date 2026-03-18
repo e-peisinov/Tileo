@@ -16,6 +16,8 @@ use App\Livewire\Admin\GestionPedidos;
 use App\Livewire\Admin\DetallePedido;
 use App\Livewire\Admin\GestionProductos;
 use App\Livewire\Admin\GestionCategorias;
+use App\Livewire\Admin\GestionUsuarios;
+use App\Livewire\Admin\GestionConfiguracion;
 
 // Ruta de logout
 Route::post('/logout', function () {
@@ -50,6 +52,8 @@ Route::middleware(['auth', 'es_admin'])->prefix('admin')->name('admin.')->group(
     Route::get('/pedidos/{pedido}', DetallePedido::class)->name('detalle-pedido');
     Route::get('/productos', GestionProductos::class)->name('productos');
     Route::get('/categorias', GestionCategorias::class)->name('categorias');
+    Route::get('/usuarios', GestionUsuarios::class)->name('usuarios');
+    Route::get('/configuracion', GestionConfiguracion::class)->name('configuracion');
 });
 
 require __DIR__.'/auth.php';

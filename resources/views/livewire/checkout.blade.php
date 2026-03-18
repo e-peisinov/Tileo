@@ -6,7 +6,19 @@
             <h1 class="text-4xl text-[#2c1a0e]" style="font-family: 'DM Serif Display', serif;">Finalizar pedido</h1>
         </div>
 
-        @if(empty($items))
+        {{-- Modo vacaciones --}}
+        @if($modoVacaciones)
+            <div class="max-w-xl mx-auto text-center py-16">
+                <div class="w-16 h-16 bg-[#f0e9de] rounded-full flex items-center justify-center mx-auto mb-5">
+                    <i class="fa-solid fa-umbrella-beach text-3xl text-[#8b5e3c]"></i>
+                </div>
+                <h2 class="text-2xl text-[#2c1a0e] mb-3" style="font-family:'DM Serif Display',serif;">Estamos de vacaciones</h2>
+                <p class="text-[#8b5e3c]/80 text-sm leading-relaxed mb-6">{{ $msgVacaciones }}</p>
+                <a href="{{ route('catalogo') }}" class="inline-block border border-[#386641]/40 text-[#386641] px-8 py-3 text-[13px] tracking-wider hover:bg-[#386641] hover:text-white transition-colors">
+                    Ver catálogo
+                </a>
+            </div>
+        @elseif(empty($items))
             <div class="text-center py-20">
                 <i class="fa-solid fa-basket-shopping text-5xl text-[#d4b896] mb-4"></i>
                 <p class="text-[#8b5e3c] text-lg mb-6">Tu carrito está vacío</p>
@@ -84,20 +96,46 @@
                     <h2 class="text-lg text-[#2c1a0e] mb-5" style="font-family: 'DM Serif Display', serif;">Método de pago</h2>
                     <div class="grid grid-cols-2 gap-3">
                         <label class="cursor-pointer">
-                            <input type="radio" wire:model="metodo_pago" value="efectivo" class="sr-only peer">
+                            <input type="radio" wire:model.live="metodo_pago" value="efectivo" class="sr-only peer">
                             <div class="border-2 border-[#d4b896]/50 peer-checked:border-[#386641] peer-checked:bg-[#386641]/5 p-4 text-center transition-all duration-200">
                                 <i class="fa-solid fa-money-bill-wave text-xl text-[#386641] mb-2"></i>
                                 <p class="text-sm font-medium text-[#2c1a0e]">Efectivo</p>
                             </div>
                         </label>
                         <label class="cursor-pointer">
-                            <input type="radio" wire:model="metodo_pago" value="transferencia" class="sr-only peer">
+                            <input type="radio" wire:model.live="metodo_pago" value="transferencia" class="sr-only peer">
                             <div class="border-2 border-[#d4b896]/50 peer-checked:border-[#386641] peer-checked:bg-[#386641]/5 p-4 text-center transition-all duration-200">
                                 <i class="fa-solid fa-building-columns text-xl text-[#386641] mb-2"></i>
                                 <p class="text-sm font-medium text-[#2c1a0e]">Transferencia</p>
                             </div>
                         </label>
                     </div>
+
+                    @if($metodo_pago === 'transferencia' && ($cbu || $aliasCbu || $titularCuenta))
+                        <div class="mt-4 p-4 rounded-xl border border-[#d4b896]/40" style="background-color: rgba(250,246,240,0.8);">
+                            <p class="text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold mb-2.5">Datos para la transferencia</p>
+                            <div class="space-y-1.5 text-sm">
+                                @if($titularCuenta)
+                                    <p class="text-[#2c1a0e]">
+                                        <span class="text-[#8b5e3c]">Titular:</span> {{ $titularCuenta }}
+                                    </p>
+                                @endif
+                                @if($cbu)
+                                    <p class="text-[#2c1a0e] font-mono text-xs">
+                                        <span class="text-[#8b5e3c] font-sans">CBU:</span> {{ $cbu }}
+                                    </p>
+                                @endif
+                                @if($aliasCbu)
+                                    <p class="text-[#2c1a0e]">
+                                        <span class="text-[#8b5e3c]">Alias:</span> {{ $aliasCbu }}
+                                    </p>
+                                @endif
+                            </div>
+                            <p class="text-[10px] text-[#8b5e3c]/60 mt-2">Realizá la transferencia una vez confirmado el pedido.</p>
+                        </div>
+                    @elseif($metodo_pago === 'transferencia')
+                        <p class="mt-3 text-[11px] text-[#8b5e3c]/60">Los datos bancarios serán enviados por email al confirmar el pedido.</p>
+                    @endif
                 </div>
 
                 {{-- Notas --}}
@@ -144,21 +182,128 @@
                         </div>
                     </div>
 
+                    @if($tiempoEntrega)
+                        <p class="text-[11px] text-[#8b5e3c]/60 mt-3 flex items-center gap-1.5">
+                            <i class="fa-solid fa-clock text-[10px]"></i>
+                            Tiempo de entrega estimado: {{ $tiempoEntrega }}
+                        </p>
+                    @endif
+
                     @error('carrito')
                         <p class="mt-3 text-red-600 text-xs bg-red-50 border border-red-200 p-3">{{ $message }}</p>
                     @enderror
 
-                    <button wire:click="confirmarPedido"
+                    <button wire:click="revisarPedido"
                             wire:loading.attr="disabled"
                             class="mt-5 w-full bg-[#386641] text-[#faf6f0] py-3.5 text-[13px] tracking-wider font-medium
                                    hover:bg-[#2d5534] transition-colors duration-300 disabled:opacity-60">
-                        <span wire:loading.remove wire:target="confirmarPedido">Confirmar pedido</span>
-                        <span wire:loading wire:target="confirmarPedido">Procesando...</span>
+                        <span wire:loading.remove wire:target="revisarPedido">
+                            <i class="fa-solid fa-eye text-xs mr-1.5"></i> Revisar pedido
+                        </span>
+                        <span wire:loading wire:target="revisarPedido">Verificando...</span>
                     </button>
+
+                    <p class="text-[10px] text-[#2c1a0e]/40 text-center mt-3 leading-relaxed">
+                        Al confirmar aceptás que tus datos sean utilizados exclusivamente para procesar este pedido.
+                    </p>
                 </div>
             </div>
 
         </div>
         @endif
     </div>
+
+    {{-- MODAL DE REVISIÓN --}}
+    @if($revisando)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto"
+             style="background-color: rgba(44,26,14,0.6); backdrop-filter: blur(4px);">
+            <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl my-4"
+                 x-data x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100">
+
+                <div class="px-6 py-4 border-b border-[#d4b896]/30 flex items-center justify-between"
+                     style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
+                    <h2 class="text-lg text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">
+                        Revisá tu pedido
+                    </h2>
+                    <button wire:click="volverFormulario"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-[#8b5e3c] hover:bg-[#d4b896]/30 transition-all duration-200">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+
+                    {{-- Productos --}}
+                    <div>
+                        <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase font-semibold mb-2">Productos</p>
+                        <div class="space-y-1.5">
+                            @foreach($items as $item)
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-[#2c1a0e]">{{ $item['nombre'] }} <span class="text-[#8b5e3c]/60">×{{ $item['cantidad'] }}</span></span>
+                                    <span class="font-medium text-[#2c1a0e]">
+                                        {{ $item['precio'] > 0 ? '$' . number_format($item['subtotal'], 2, ',', '.') : 'A confirmar' }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-[#d4b896]/30 flex justify-between text-sm font-semibold text-[#2c1a0e]">
+                            <span>Subtotal</span>
+                            <span>${{ number_format($subtotal, 2, ',', '.') }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Datos --}}
+                    <div class="space-y-1.5 text-sm border-t border-[#d4b896]/20 pt-4">
+                        <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase font-semibold mb-2">Tus datos</p>
+                        <p class="text-[#2c1a0e]"><span class="text-[#8b5e3c]">Nombre:</span> {{ $nombre }}</p>
+                        <p class="text-[#2c1a0e]"><span class="text-[#8b5e3c]">Email:</span> {{ $email }}</p>
+                        <p class="text-[#2c1a0e]"><span class="text-[#8b5e3c]">Teléfono:</span> {{ $telefono }}</p>
+                        <p class="text-[#2c1a0e]">
+                            <span class="text-[#8b5e3c]">Entrega:</span>
+                            {{ $metodo_entrega === 'envio' ? 'Envío a domicilio' : 'Retiro en local' }}
+                            @if($metodo_entrega === 'envio' && $direccion) — {{ $direccion }}@endif
+                        </p>
+                        <p class="text-[#2c1a0e]">
+                            <span class="text-[#8b5e3c]">Pago:</span>
+                            {{ $metodo_pago === 'transferencia' ? 'Transferencia bancaria' : 'Efectivo' }}
+                        </p>
+                        @if($notas)
+                            <p class="text-[#2c1a0e]"><span class="text-[#8b5e3c]">Notas:</span> {{ $notas }}</p>
+                        @endif
+                    </div>
+
+                    {{-- Error --}}
+                    @error('carrito')
+                        <p class="text-red-600 text-xs bg-red-50 border border-red-200 p-3 rounded-lg">{{ $message }}</p>
+                    @enderror
+
+                    {{-- Privacidad --}}
+                    <p class="text-[10px] text-[#2c1a0e]/40 leading-relaxed border-t border-[#d4b896]/20 pt-4">
+                        Tus datos personales se utilizan exclusivamente para procesar este pedido y no se comparten con terceros.
+                    </p>
+                </div>
+
+                <div class="px-6 pb-6 flex gap-3">
+                    <button wire:click="volverFormulario"
+                            class="flex-1 border border-[#d4b896]/50 text-[#8b5e3c] rounded-xl py-2.5 text-[13px] font-medium
+                                   hover:border-[#8b5e3c] hover:bg-[#f0e9de] transition-all duration-200">
+                        <i class="fa-solid fa-arrow-left text-xs mr-1"></i> Modificar
+                    </button>
+                    <button wire:click="confirmarPedido"
+                            wire:loading.attr="disabled"
+                            class="flex-1 rounded-xl py-2.5 text-[13px] font-semibold text-white shadow-sm
+                                   hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-60"
+                            style="background: linear-gradient(135deg, #386641 0%, #2d5534 100%);">
+                        <span wire:loading.remove wire:target="confirmarPedido">
+                            <i class="fa-solid fa-check text-xs mr-1"></i> Confirmar pedido
+                        </span>
+                        <span wire:loading wire:target="confirmarPedido" class="flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-spinner fa-spin text-xs"></i> Procesando...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>

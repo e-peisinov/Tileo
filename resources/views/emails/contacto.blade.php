@@ -24,6 +24,13 @@
         <p class="valor">{{ $nombre }}</p>
     </div>
 
+    @if($email)
+    <div class="campo">
+        <p class="label">Email</p>
+        <p class="valor"><a href="mailto:{{ $email }}" style="color:#386641;">{{ $email }}</a></p>
+    </div>
+    @endif
+
     @if($telefono)
     <div class="campo">
         <p class="label">Teléfono</p>

@@ -115,17 +115,26 @@
                                     @endif
 
                                     @if($producto->stock > 0)
-                                        <button wire:click="agregarAlCarrito({{ $producto->id }})"
-                                                wire:loading.attr="disabled"
-                                                wire:target="agregarAlCarrito({{ $producto->id }})"
-                                                class="flex items-center gap-2 bg-[#386641] text-[#faf6f0] px-4 py-2 text-[12px] tracking-wider font-medium
-                                                       hover:bg-[#2d5534] transition-colors duration-300 disabled:opacity-60">
-                                            <span wire:loading.remove wire:target="agregarAlCarrito({{ $producto->id }})">
-                                                <i class="fa-solid fa-basket-shopping text-xs mr-1"></i>
-                                                {{ $producto->precio > 0 ? 'Agregar' : 'Agregar*' }}
-                                            </span>
-                                            <span wire:loading wire:target="agregarAlCarrito({{ $producto->id }})">...</span>
-                                        </button>
+                                        <div class="flex items-center gap-2">
+                                            <p class="text-sm text-[#2c1a0e]/55 leading-relaxed flex-1">Cantidad: </p>
+                                            <input type="number"
+                                                   wire:model="cantidades.{{ $producto->id }}"
+                                                   min="1"
+                                                   max="{{ $producto->stock }}"
+                                                   value="1"
+                                                   class="w-14 border border-[#d4b896]/50 bg-[#faf6f0] text-center text-sm text-[#2c1a0e] py-1.5
+                                                          focus:outline-none focus:border-[#386641] transition-colors">
+                                            <button wire:click="agregarAlCarrito({{ $producto->id }})"
+                                                    wire:loading.attr="disabled"
+                                                    wire:target="agregarAlCarrito({{ $producto->id }})"
+                                                    class="flex items-center gap-1.5 bg-[#386641] text-[#faf6f0] px-3 py-2 text-[12px] tracking-wider font-medium
+                                                           hover:bg-[#2d5534] transition-colors duration-300 disabled:opacity-60">
+                                                <span wire:loading.remove wire:target="agregarAlCarrito({{ $producto->id }})">
+                                                    <i class="fa-solid fa-basket-shopping text-xs"></i>
+                                                </span>
+                                                <span wire:loading wire:target="agregarAlCarrito({{ $producto->id }})">...</span>
+                                            </button>
+                                        </div>
                                     @else
                                         <span class="text-[12px] text-[#c0392b]/80 font-medium">Sin stock</span>
                                     @endif

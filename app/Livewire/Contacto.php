@@ -12,6 +12,9 @@ class Contacto extends Component
     #[Validate('required|min:2')]
     public string $nombre = '';
 
+    #[Validate('required|email|max:150')]
+    public string $email = '';
+
     #[Validate('required|min:6|max:30')]
     public string $telefono = '';
 
@@ -30,6 +33,7 @@ class Contacto extends Component
         try {
             Mail::to($emailAdmin)->send(new ContactoMail(
                 $this->nombre,
+                $this->email,
                 $this->telefono,
                 $this->asunto,
                 $this->mensaje,

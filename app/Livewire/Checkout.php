@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Mail\ConfirmacionClienteMail;
 use App\Mail\NuevoPedidoMail;
+use App\Models\Configuracion;
 use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Producto;
@@ -35,6 +36,7 @@ class Checkout extends Component
     public string $notas = '';
 
     public bool $procesando = false;
+    public bool $revisando = false; // paso de revisión antes de confirmar
 
     public function obtenerItems(): array
     {
@@ -46,8 +48,33 @@ class Checkout extends Component
         return collect($this->obtenerItems())->sum('subtotal');
     }
 
+    public function revisarPedido(): void
+    {
+        $this->validate();
+
+        $items = $this->obtenerItems();
+        if (empty($items)) {
+            $this->addError('carrito', 'Tu carrito está vacío.');
+            return;
+        }
+
+        $this->revisando = true;
+    }
+
+    public function volverFormulario(): void
+    {
+        $this->revisando = false;
+    }
+
     public function confirmarPedido(): void
     {
+        // Verificar modo vacaciones
+        if (Configuracion::obtener('modo_vacaciones', false)) {
+            $this->addError('carrito', Configuracion::obtener('mensaje_vacaciones', 'Temporalmente no estamos recibiendo pedidos.'));
+            $this->revisando = false;
+            return;
+        }
+
         $this->validate();
 
         $items = $this->obtenerItems();
@@ -125,8 +152,14 @@ class Checkout extends Component
     public function render()
     {
         return view('livewire.checkout', [
-            'items'    => $this->obtenerItems(),
-            'subtotal' => $this->obtenerSubtotal(),
+            'items'          => $this->obtenerItems(),
+            'subtotal'       => $this->obtenerSubtotal(),
+            'modoVacaciones' => Configuracion::obtener('modo_vacaciones', false),
+            'msgVacaciones'  => Configuracion::obtener('mensaje_vacaciones', ''),
+            'tiempoEntrega'  => Configuracion::obtener('tiempo_entrega', ''),
+            'cbu'            => Configuracion::obtener('cbu', ''),
+            'aliasCbu'       => Configuracion::obtener('alias_cbu', ''),
+            'titularCuenta'  => Configuracion::obtener('titular_cuenta', ''),
         ])->layout('layouts.app', ['titulo' => 'Checkout — Tileo']);
     }
 }

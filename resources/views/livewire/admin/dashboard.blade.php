@@ -2,28 +2,7 @@
     <div class="max-w-6xl mx-auto">
 
         {{-- Nav admin --}}
-        <nav class="flex flex-wrap gap-1 mb-8 bg-white/70 backdrop-blur-sm rounded-2xl p-1.5 border border-[#d4b896]/25 shadow-sm w-fit">
-            <a href="{{ route('admin.dashboard') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.dashboard') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-gauge-high text-[10px]"></i> Dashboard
-            </a>
-            <a href="{{ route('admin.pedidos') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.pedidos', 'admin.detalle-pedido') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-bag-shopping text-[10px]"></i> Pedidos
-            </a>
-            <a href="{{ route('admin.productos') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.productos') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-seedling text-[10px]"></i> Productos
-            </a>
-            <a href="{{ route('admin.categorias') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.categorias') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-tags text-[10px]"></i> Categorías
-            </a>
-        </nav>
+        @include('livewire.admin.partials.nav')
 
         {{-- Encabezado --}}
         <div class="mb-8">
@@ -170,6 +149,45 @@
                 @endforelse
             </div>
         </div>
+
+        {{-- Productos más vendidos --}}
+        @if($productosVendidos->count() > 0)
+        <div class="mt-6 bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
+            <div class="px-6 py-4 border-b border-[#d4b896]/20">
+                <h2 class="text-base text-[#2c1a0e] flex items-center gap-2" style="font-family:'DM Serif Display',serif;">
+                    <i class="fa-solid fa-trophy text-sm text-[#8b5e3c]/50"></i>
+                    Productos más vendidos
+                </h2>
+            </div>
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[380px] text-sm">
+                <thead>
+                    <tr style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
+                        <th class="text-left px-5 py-3 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">#</th>
+                        <th class="text-left px-4 py-3 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Producto</th>
+                        <th class="text-right px-4 py-3 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Vendidos</th>
+                        <th class="text-right px-5 py-3 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30 hidden sm:table-cell">Ingresos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($productosVendidos as $i => $prod)
+                        <tr class="border-b border-[#d4b896]/15 hover:bg-[#faf6f0]/70 transition-colors duration-150">
+                            <td class="px-5 py-3 text-[#8b5e3c]/60 font-bold text-xs">{{ $i + 1 }}</td>
+                            <td class="px-4 py-3 font-medium text-[#2c1a0e]">{{ $prod->nombre_producto }}</td>
+                            <td class="px-4 py-3 text-right">
+                                <span class="font-bold text-[#386641]">{{ $prod->total_vendido }}</span>
+                                <span class="text-[11px] text-[#8b5e3c]/50 ml-1">uds.</span>
+                            </td>
+                            <td class="px-5 py-3 text-right font-semibold text-[#2c1a0e] hidden sm:table-cell">
+                                ${{ number_format($prod->total_ingresos, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            </div>
+        </div>
+        @endif
 
         {{-- Gráfico de ventas últimos 7 días --}}
         <div class="mt-6 bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">

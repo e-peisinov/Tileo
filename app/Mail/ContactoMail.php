@@ -14,6 +14,7 @@ class ContactoMail extends Mailable
 
     public function __construct(
         public string $nombre,
+        public string $email,
         public string $telefono,
         public string $asunto,
         public string $mensaje,

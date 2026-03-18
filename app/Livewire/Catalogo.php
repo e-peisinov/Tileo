@@ -13,12 +13,17 @@ class Catalogo extends Component
 
     public string $categoriaActiva = 'todos';
     public string $busqueda = '';
+    public array $cantidades = []; // cantidad seleccionada por producto_id
 
     public function updatingBusqueda(): void { $this->resetPage(); }
 
     public function agregarAlCarrito(int $productoId): void
     {
-        $this->dispatch('producto-agregado', productoId: $productoId);
+        $cantidad = (int) ($this->cantidades[$productoId] ?? 1);
+        $cantidad = max(1, $cantidad);
+        $this->dispatch('producto-agregado', productoId: $productoId, cantidad: $cantidad);
+        // Resetear a 1 después de agregar
+        $this->cantidades[$productoId] = 1;
     }
 
     public function render()

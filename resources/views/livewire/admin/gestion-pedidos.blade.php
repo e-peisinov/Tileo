@@ -2,28 +2,7 @@
     <div class="max-w-6xl mx-auto">
 
         {{-- Nav admin --}}
-        <nav class="flex flex-wrap gap-1 mb-8 bg-white/70 backdrop-blur-sm rounded-2xl p-1.5 border border-[#d4b896]/25 shadow-sm w-fit">
-            <a href="{{ route('admin.dashboard') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.dashboard') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-gauge-high text-[10px]"></i> Dashboard
-            </a>
-            <a href="{{ route('admin.pedidos') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.pedidos', 'admin.detalle-pedido') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-bag-shopping text-[10px]"></i> Pedidos
-            </a>
-            <a href="{{ route('admin.productos') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.productos') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-seedling text-[10px]"></i> Productos
-            </a>
-            <a href="{{ route('admin.categorias') }}"
-               class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
-                      {{ request()->routeIs('admin.categorias') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
-                <i class="fa-solid fa-tags text-[10px]"></i> Categorías
-            </a>
-        </nav>
+        @include('livewire.admin.partials.nav')
 
         {{-- Encabezado --}}
         <div class="mb-8">
@@ -32,30 +11,60 @@
         </div>
 
         {{-- Filtros --}}
-        <div class="flex flex-col sm:flex-row gap-3 mb-6 justify-between">
-            <div class="relative sm:w-1/3">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40 text-xs"></i>
-                <input wire:model.live.debounce.300ms="busqueda" type="text"
-                       placeholder="Buscar por número, nombre o email..."
-                       class="w-full border border-[#d4b896]/40 bg-white rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#2c1a0e] shadow-sm
-                              focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200">
+        <div class="flex flex-col gap-3 mb-6">
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40 text-xs"></i>
+                    <input wire:model.live.debounce.300ms="busqueda" type="text"
+                           placeholder="Buscar por número, nombre o email..."
+                           class="w-full border border-[#d4b896]/40 bg-white rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#2c1a0e] shadow-sm
+                                  focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200">
+                </div>
+                <div class="relative sm:w-52">
+                    <i class="fa-solid fa-filter absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40 text-xs pointer-events-none"></i>
+                    <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40 text-[10px] pointer-events-none"></i>
+                    <select wire:model.live="filtroEstado"
+                            class="w-full border border-[#d4b896]/40 bg-white rounded-xl pl-9 pr-9 py-2.5 text-sm text-[#2c1a0e] shadow-sm
+                                   focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200 appearance-none">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="confirmado">Confirmado</option>
+                        <option value="preparando">Preparando</option>
+                        <option value="enviado">Enviado</option>
+                        <option value="listo_retiro">Listo para retirar</option>
+                        <option value="entregado">Entregado</option>
+                        <option value="rechazado">Rechazado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
             </div>
-            <div class="relative w-full sm:w-auto">
-                <i class="fa-solid fa-filter absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40 text-xs pointer-events-none"></i>
-                <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40 text-[10px] pointer-events-none"></i>
-                <select wire:model.live="filtroEstado"
-                        class="w-full sm:w-56 border border-[#d4b896]/40 bg-white rounded-xl pl-9 pr-9 py-2.5 text-sm text-[#2c1a0e] shadow-sm
-                               focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200 appearance-none">
-                    <option value="">Todos los estados</option>
-                    <option value="pendiente">Pendiente</option>
-                    <option value="confirmado">Confirmado</option>
-                    <option value="preparando">Preparando</option>
-                    <option value="enviado">Enviado</option>
-                    <option value="listo_retiro">Listo para retirar</option>
-                    <option value="entregado">Entregado</option>
-                    <option value="rechazado">Rechazado</option>
-                    <option value="cancelado">Cancelado</option>
-                </select>
+
+            <div class="flex flex-col sm:flex-row gap-3 items-end">
+                <div class="flex items-center gap-2 flex-1">
+                    <div class="flex-1">
+                        <label class="block text-[10px] tracking-wider text-[#8b5e3c] uppercase mb-1 font-semibold">Desde</label>
+                        <input wire:model.live="filtroFechaDesde" type="date"
+                               class="w-full border border-[#d4b896]/40 bg-white rounded-xl px-3 py-2.5 text-sm text-[#2c1a0e] shadow-sm
+                                      focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200">
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-[10px] tracking-wider text-[#8b5e3c] uppercase mb-1 font-semibold">Hasta</label>
+                        <input wire:model.live="filtroFechaHasta" type="date"
+                               class="w-full border border-[#d4b896]/40 bg-white rounded-xl px-3 py-2.5 text-sm text-[#2c1a0e] shadow-sm
+                                      focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200">
+                    </div>
+                </div>
+                <button wire:click="exportarCsv"
+                        wire:loading.attr="disabled"
+                        class="inline-flex items-center gap-2 border border-[#386641]/30 text-[#386641] rounded-xl px-4 py-2.5 text-[12px] font-semibold
+                               hover:bg-[#386641] hover:text-white transition-all duration-200 shadow-sm disabled:opacity-60 whitespace-nowrap">
+                    <span wire:loading.remove wire:target="exportarCsv">
+                        <i class="fa-solid fa-file-csv text-xs"></i> Exportar CSV
+                    </span>
+                    <span wire:loading wire:target="exportarCsv" class="flex items-center gap-2">
+                        <i class="fa-solid fa-spinner fa-spin text-xs"></i> Exportando...
+                    </span>
+                </button>
             </div>
         </div>
 

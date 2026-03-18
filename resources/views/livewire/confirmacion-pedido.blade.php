@@ -51,6 +51,28 @@
             </div>
         </div>
 
+        {{-- Datos bancarios (si pagó con transferencia) --}}
+        @if($pedido->metodo_pago === 'transferencia' && ($cbu || $aliasCbu || $titularCuenta))
+            <div class="bg-[#f0e9de] border border-[#d4b896]/40 p-5 mb-5">
+                <p class="text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-[10px]"></i>
+                    Datos para realizar la transferencia
+                </p>
+                <div class="space-y-1.5 text-sm">
+                    @if($titularCuenta)
+                        <p class="text-[#2c1a0e]"><span class="text-[#8b5e3c]">Titular:</span> {{ $titularCuenta }}</p>
+                    @endif
+                    @if($cbu)
+                        <p class="text-[#2c1a0e] font-mono text-xs"><span class="text-[#8b5e3c] font-sans">CBU:</span> {{ $cbu }}</p>
+                    @endif
+                    @if($aliasCbu)
+                        <p class="text-[#2c1a0e]"><span class="text-[#8b5e3c]">Alias:</span> {{ $aliasCbu }}</p>
+                    @endif
+                </div>
+                <p class="text-[10px] text-[#8b5e3c]/60 mt-2">Indicá el número de pedido {{ $pedido->numero_pedido }} en el concepto de la transferencia.</p>
+            </div>
+        @endif
+
         {{-- Aviso y botón WhatsApp --}}
         <div class="bg-[#386641]/8 border border-[#386641]/20 p-5 mb-8 text-center">
             <p class="text-sm text-[#2c1a0e]/80 mb-4">
@@ -91,7 +113,11 @@
                         <span class="text-[10px] font-bold text-[#386641]">3</span>
                     </div>
                     <p class="text-sm text-[#2c1a0e]/70 leading-relaxed">
-                        Te avisamos cuando esté listo. Podés rastrear el estado de tu pedido en cualquier momento.
+                        Te avisamos cuando esté listo.
+                        @if($tiempoEntrega)
+                            Tiempo estimado: <strong>{{ $tiempoEntrega }}</strong>.
+                        @endif
+                        Podés rastrear el estado de tu pedido en cualquier momento.
                     </p>
                 </div>
             </div>

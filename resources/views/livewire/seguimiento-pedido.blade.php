@@ -14,25 +14,62 @@
     <div class="py-12 px-4" style="background-color: #faf6f0;">
         <div class="max-w-lg mx-auto">
             <div class="bg-white rounded-2xl border border-[#d4b896]/40 shadow-sm p-8">
+
+                {{-- Tabs de modo --}}
+                <div class="flex gap-1 mb-6 bg-[#f0e9de] rounded-xl p-1">
+                    <button wire:click="cambiarModo('numero')"
+                            class="flex-1 py-2 rounded-lg text-xs font-semibold transition-all duration-200
+                                   {{ $modoBusqueda === 'numero' ? 'bg-white text-[#386641] shadow-sm' : 'text-[#8b5e3c]/70 hover:text-[#2c1a0e]' }}">
+                        <i class="fa-solid fa-hashtag text-[10px] mr-1"></i> Por número de pedido
+                    </button>
+                    <button wire:click="cambiarModo('email')"
+                            class="flex-1 py-2 rounded-lg text-xs font-semibold transition-all duration-200
+                                   {{ $modoBusqueda === 'email' ? 'bg-white text-[#386641] shadow-sm' : 'text-[#8b5e3c]/70 hover:text-[#2c1a0e]' }}">
+                        <i class="fa-solid fa-envelope text-[10px] mr-1"></i> Por email
+                    </button>
+                </div>
+
                 <form wire:submit="buscar" class="space-y-4">
-                    <div>
-                        <label for="numeroPedido" class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-2 font-semibold">
-                            Número de pedido
-                        </label>
-                        <input
-                            wire:model="numeroPedido"
-                            id="numeroPedido"
-                            type="text"
-                            placeholder="TIL-0001"
-                            autocomplete="off"
-                            class="w-full border border-[#d4b896]/60 bg-[#faf6f0] rounded-xl px-4 py-3 text-[#2c1a0e] text-base
-                                   focus:outline-none focus:ring-2 focus:ring-[#386641]/25 focus:border-[#386641] transition-all duration-200
-                                   placeholder:text-[#8b5e3c]/40"
-                        >
-                        @error('numeroPedido')
-                            <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    @if($modoBusqueda === 'numero')
+                        <div>
+                            <label for="numeroPedido" class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-2 font-semibold">
+                                Número de pedido
+                            </label>
+                            <input
+                                wire:model="numeroPedido"
+                                id="numeroPedido"
+                                type="text"
+                                placeholder="TIL-0001"
+                                autocomplete="off"
+                                class="w-full border border-[#d4b896]/60 bg-[#faf6f0] rounded-xl px-4 py-3 text-[#2c1a0e] text-base
+                                       focus:outline-none focus:ring-2 focus:ring-[#386641]/25 focus:border-[#386641] transition-all duration-200
+                                       placeholder:text-[#8b5e3c]/40"
+                            >
+                            @error('numeroPedido')
+                                <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @else
+                        <div>
+                            <label for="emailPedido" class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-2 font-semibold">
+                                Email del pedido
+                            </label>
+                            <input
+                                wire:model="emailPedido"
+                                id="emailPedido"
+                                type="email"
+                                placeholder="tu@email.com"
+                                autocomplete="off"
+                                class="w-full border border-[#d4b896]/60 bg-[#faf6f0] rounded-xl px-4 py-3 text-[#2c1a0e] text-base
+                                       focus:outline-none focus:ring-2 focus:ring-[#386641]/25 focus:border-[#386641] transition-all duration-200
+                                       placeholder:text-[#8b5e3c]/40"
+                            >
+                            @error('emailPedido')
+                                <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
+                            @enderror
+                            <p class="text-[11px] text-[#8b5e3c]/60 mt-1.5">Mostramos tu pedido más reciente con ese email.</p>
+                        </div>
+                    @endif
 
                     <button
                         type="submit"
@@ -56,8 +93,14 @@
             @if($buscado && !$pedido)
                 <div class="mt-6 bg-white rounded-2xl border border-[#d4b896]/40 shadow-sm p-6 text-center">
                     <i class="fa-solid fa-circle-exclamation text-2xl mb-3" style="color: #8b5e3c;"></i>
-                    <p class="text-[#2c1a0e] font-medium">No encontramos ningún pedido con ese número.</p>
-                    <p class="text-sm text-[#8b5e3c]/70 mt-1">Verificá que el número sea correcto (ejemplo: TIL-0001).</p>
+                    <p class="text-[#2c1a0e] font-medium">No encontramos ningún pedido.</p>
+                    <p class="text-sm text-[#8b5e3c]/70 mt-1">
+                        @if($modoBusqueda === 'numero')
+                            Verificá que el número sea correcto (ejemplo: TIL-0001).
+                        @else
+                            Verificá que el email sea el mismo que usaste al hacer el pedido.
+                        @endif
+                    </p>
                 </div>
             @endif
         </div>

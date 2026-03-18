@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Configuracion;
 use App\Models\Pedido;
 use Livewire\Component;
 
@@ -55,7 +56,11 @@ class ConfirmacionPedido extends Component
     public function render()
     {
         return view('livewire.confirmacion-pedido', [
-            'mensajeWa' => $this->generarMensajeWhatsApp(),
+            'mensajeWa'     => $this->generarMensajeWhatsApp(),
+            'tiempoEntrega' => Configuracion::obtener('tiempo_entrega', ''),
+            'cbu'           => Configuracion::obtener('cbu', ''),
+            'aliasCbu'      => Configuracion::obtener('alias_cbu', ''),
+            'titularCuenta' => Configuracion::obtener('titular_cuenta', ''),
         ])->layout('layouts.app', ['titulo' => 'Pedido confirmado — Tileo']);
     }
 }

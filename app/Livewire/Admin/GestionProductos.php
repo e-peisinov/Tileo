@@ -16,6 +16,11 @@ class GestionProductos extends Component
     public ?int $editandoId = null;
     public bool $guardado = false;
 
+    // Confirmación de eliminación
+    public bool $mostrarConfirmarEliminar = false;
+    public ?int $idParaEliminar = null;
+    public string $nombreParaEliminar = '';
+
     public string $nombre = '';
     public string $descripcion = '';
     public string $precio = '';
@@ -105,6 +110,31 @@ class GestionProductos extends Component
         $this->mostrarModal = false;
         $this->guardado = true;
         $this->resetCampos();
+    }
+
+    public function pedirEliminar(int $id): void
+    {
+        $producto = Producto::findOrFail($id);
+        $this->idParaEliminar     = $id;
+        $this->nombreParaEliminar = $producto->nombre;
+        $this->mostrarConfirmarEliminar = true;
+    }
+
+    public function confirmarEliminar(): void
+    {
+        if ($this->idParaEliminar) {
+            Producto::findOrFail($this->idParaEliminar)->delete();
+        }
+        $this->mostrarConfirmarEliminar = false;
+        $this->idParaEliminar = null;
+        $this->nombreParaEliminar = '';
+    }
+
+    public function cancelarEliminar(): void
+    {
+        $this->mostrarConfirmarEliminar = false;
+        $this->idParaEliminar = null;
+        $this->nombreParaEliminar = '';
     }
 
     public function eliminar(int $id): void
