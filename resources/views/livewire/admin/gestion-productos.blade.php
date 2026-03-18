@@ -59,7 +59,8 @@
 
         {{-- Tabla --}}
         <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
-            <table class="w-full text-sm">
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[560px] text-sm">
                 <thead>
                     <tr style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
                         <th class="text-left px-5 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Nombre</th>
@@ -134,6 +135,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="mt-5">{{ $productos->links() }}</div>

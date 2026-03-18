@@ -102,7 +102,8 @@
                         Ver todos <i class="fa-solid fa-arrow-right text-[9px]"></i>
                     </a>
                 </div>
-                <table class="w-full text-sm">
+                <div class="overflow-x-auto">
+                <table class="w-full min-w-[420px] text-sm">
                     <tbody>
                         @forelse($ultimosPedidos as $pedido)
                             <tr class="border-b border-[#d4b896]/15 hover:bg-[#faf6f0]/70 transition-colors duration-150">
@@ -110,7 +111,7 @@
                                     <p class="font-semibold text-[#2c1a0e] text-[12px]">{{ $pedido->numero_pedido }}</p>
                                     <p class="text-[10px] text-[#8b5e3c]/60">{{ $pedido->created_at->format('d/m H:i') }}</p>
                                 </td>
-                                <td class="px-4 py-3.5 text-[12px] text-[#2c1a0e]/70">{{ $pedido->nombre_cliente }}</td>
+                                <td class="px-4 py-3.5 text-[12px] text-[#2c1a0e]/70 hidden sm:table-cell">{{ $pedido->nombre_cliente }}</td>
                                 <td class="px-4 py-3.5 text-right text-[12px] font-semibold text-[#2c1a0e]">
                                     ${{ number_format($pedido->total, 0, ',', '.') }}
                                 </td>
@@ -137,6 +138,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
 
             {{-- Productos con stock bajo --}}

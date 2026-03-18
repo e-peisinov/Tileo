@@ -40,11 +40,11 @@
                        class="w-full border border-[#d4b896]/40 bg-white rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#2c1a0e] shadow-sm
                               focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200">
             </div>
-            <div class="relative">
+            <div class="relative w-full sm:w-auto">
                 <i class="fa-solid fa-filter absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40 text-xs pointer-events-none"></i>
                 <i class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40 text-[10px] pointer-events-none"></i>
                 <select wire:model.live="filtroEstado"
-                        class="w-56 border border-[#d4b896]/40 bg-white rounded-xl pl-9 pr-9 py-2.5 text-sm text-[#2c1a0e] shadow-sm
+                        class="w-full sm:w-56 border border-[#d4b896]/40 bg-white rounded-xl pl-9 pr-9 py-2.5 text-sm text-[#2c1a0e] shadow-sm
                                focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200 appearance-none">
                     <option value="">Todos los estados</option>
                     <option value="pendiente">Pendiente</option>
@@ -61,7 +61,8 @@
 
         {{-- Tabla --}}
         <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
-            <table class="w-full text-sm">
+            <div class="overflow-x-auto">
+            <table class="w-full min-w-[520px] text-sm">
                 <thead>
                     <tr style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
                         <th class="text-left px-5 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Pedido</th>
@@ -118,6 +119,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="mt-5">{{ $pedidos->links() }}</div>
