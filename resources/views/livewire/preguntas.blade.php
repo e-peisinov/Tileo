@@ -23,10 +23,15 @@
                     <i class="fa-solid fa-plus text-[#8b5e3c] text-xs shrink-0 transition-transform duration-200"
                        :class="abierto ? 'rotate-45' : ''"></i>
                 </button>
-                <div x-show="abierto" x-collapse class="px-6 pb-5">
-                    <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
-                        Los pedidos se realizan desde el catálogo online. Agregás los productos al carrito y completás el formulario de checkout con tus datos.
-                    </p>
+                <div class="grid transition-all duration-300 ease-in-out"
+                     :style="abierto ? 'grid-template-rows: 1fr' : 'grid-template-rows: 0fr'">
+                    <div class="overflow-hidden">
+                        <div class="px-6 pb-5 pt-1">
+                            <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
+                                Los pedidos se realizan desde el catálogo online. Agregás los productos al carrito y completás el formulario de checkout con tus datos.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -39,10 +44,15 @@
                     <i class="fa-solid fa-plus text-[#8b5e3c] text-xs shrink-0 transition-transform duration-200"
                        :class="abierto ? 'rotate-45' : ''"></i>
                 </button>
-                <div x-show="abierto" x-collapse class="px-6 pb-5">
-                    <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
-                        Sí, realizamos envíos a todo el país. El costo de envío se calcula y confirma por el equipo de Tileo una vez recibido el pedido.
-                    </p>
+                <div class="grid transition-all duration-300 ease-in-out"
+                     :style="abierto ? 'grid-template-rows: 1fr' : 'grid-template-rows: 0fr'">
+                    <div class="overflow-hidden">
+                        <div class="px-6 pb-5 pt-1">
+                            <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
+                                Sí, realizamos envíos a todo el país. El costo de envío se calcula y confirma por el equipo de Tileo una vez recibido el pedido.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -55,10 +65,15 @@
                     <i class="fa-solid fa-plus text-[#8b5e3c] text-xs shrink-0 transition-transform duration-200"
                        :class="abierto ? 'rotate-45' : ''"></i>
                 </button>
-                <div x-show="abierto" x-collapse class="px-6 pb-5">
-                    <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
-                        Todos nuestros productos vienen en tubos de vidrio transparente con tapa de corcho natural. Podés ver el producto directamente, y el corcho lo sella de forma natural y segura.
-                    </p>
+                <div class="grid transition-all duration-300 ease-in-out"
+                     :style="abierto ? 'grid-template-rows: 1fr' : 'grid-template-rows: 0fr'">
+                    <div class="overflow-hidden">
+                        <div class="px-6 pb-5 pt-1">
+                            <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
+                                Todos nuestros productos vienen en tubos de vidrio transparente con tapa de corcho natural. Podés ver el producto directamente, y el corcho lo sella de forma natural y segura.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -71,10 +86,15 @@
                     <i class="fa-solid fa-plus text-[#8b5e3c] text-xs shrink-0 transition-transform duration-200"
                        :class="abierto ? 'rotate-45' : ''"></i>
                 </button>
-                <div x-show="abierto" x-collapse class="px-6 pb-5">
-                    <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
-                        No. Todos nuestros productos son 100% naturales, sin aditivos ni conservantes. Son especias puras, molidas y preparadas de forma artesanal.
-                    </p>
+                <div class="grid transition-all duration-300 ease-in-out"
+                     :style="abierto ? 'grid-template-rows: 1fr' : 'grid-template-rows: 0fr'">
+                    <div class="overflow-hidden">
+                        <div class="px-6 pb-5 pt-1">
+                            <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
+                                No. Todos nuestros productos son 100% naturales, sin aditivos ni conservantes. Son especias puras, molidas y preparadas de forma artesanal.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -87,10 +107,15 @@
                     <i class="fa-solid fa-plus text-[#8b5e3c] text-xs shrink-0 transition-transform duration-200"
                        :class="abierto ? 'rotate-45' : ''"></i>
                 </button>
-                <div x-show="abierto" x-collapse class="px-6 pb-5">
-                    <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
-                        Los pedidos con retiro en local están listos en 24-48hs. Los envíos a domicilio dependen del destino, pero generalmente demoran entre 3 y 7 días hábiles.
-                    </p>
+                <div class="grid transition-all duration-300 ease-in-out"
+                     :style="abierto ? 'grid-template-rows: 1fr' : 'grid-template-rows: 0fr'">
+                    <div class="overflow-hidden">
+                        <div class="px-6 pb-5 pt-1">
+                            <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
+                                Los pedidos con retiro en local están listos en 24-48hs. Los envíos a domicilio dependen del destino, pero generalmente demoran entre 3 y 7 días hábiles.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -103,10 +128,15 @@
                     <i class="fa-solid fa-plus text-[#8b5e3c] text-xs shrink-0 transition-transform duration-200"
                        :class="abierto ? 'rotate-45' : ''"></i>
                 </button>
-                <div x-show="abierto" x-collapse class="px-6 pb-5">
-                    <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
-                        Por el momento aceptamos efectivo o transferencia bancaria. Al confirmar tu pedido, te enviamos los datos de transferencia por email.
-                    </p>
+                <div class="grid transition-all duration-300 ease-in-out"
+                     :style="abierto ? 'grid-template-rows: 1fr' : 'grid-template-rows: 0fr'">
+                    <div class="overflow-hidden">
+                        <div class="px-6 pb-5 pt-1">
+                            <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
+                                Por el momento aceptamos efectivo o transferencia bancaria. Al confirmar tu pedido, te enviamos los datos de transferencia por email.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -119,10 +149,15 @@
                     <i class="fa-solid fa-plus text-[#8b5e3c] text-xs shrink-0 transition-transform duration-200"
                        :class="abierto ? 'rotate-45' : ''"></i>
                 </button>
-                <div x-show="abierto" x-collapse class="px-6 pb-5">
-                    <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
-                        Estamos presentes en ferias y eventos de Mercedes, Buenos Aires. Seguinos en redes o escribinos por WhatsApp para saber cuándo y dónde estaremos.
-                    </p>
+                <div class="grid transition-all duration-300 ease-in-out"
+                     :style="abierto ? 'grid-template-rows: 1fr' : 'grid-template-rows: 0fr'">
+                    <div class="overflow-hidden">
+                        <div class="px-6 pb-5 pt-1">
+                            <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
+                                Estamos presentes en ferias y eventos de Mercedes, Buenos Aires. Seguinos en redes o escribinos por WhatsApp para saber cuándo y dónde estaremos.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -135,10 +170,15 @@
                     <i class="fa-solid fa-plus text-[#8b5e3c] text-xs shrink-0 transition-transform duration-200"
                        :class="abierto ? 'rotate-45' : ''"></i>
                 </button>
-                <div x-show="abierto" x-collapse class="px-6 pb-5">
-                    <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
-                        Absolutamente. Los tubos de vidrio con corcho son una presentación ideal para regalo. También ofrecemos combinaciones de productos y soportes de madera artesanales.
-                    </p>
+                <div class="grid transition-all duration-300 ease-in-out"
+                     :style="abierto ? 'grid-template-rows: 1fr' : 'grid-template-rows: 0fr'">
+                    <div class="overflow-hidden">
+                        <div class="px-6 pb-5 pt-1">
+                            <p class="text-sm leading-relaxed" style="color: rgba(44,26,14,0.6);">
+                                Absolutamente. Los tubos de vidrio con corcho son una presentación ideal para regalo. También ofrecemos combinaciones de productos y soportes de madera artesanales.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
