@@ -40,14 +40,40 @@
                 </a>
             </div>
         </div>
-
-        {{-- Flecha scroll --}}
-        <a href="#propuesta"
-           class="absolute bottom-8 left-1/2 -translate-x-1/2 text-[#d4b896]/60 hover:text-[#d4b896] transition-colors duration-300 animate-bounce">
-            <i class="fa-solid fa-chevron-down text-lg"></i>
-        </a>
-
     </section>
+
+
+    {{-- ============================================================
+         BANNERS VIGENTES
+    ============================================================ --}}
+    @if($banners->isNotEmpty())
+        @foreach($banners as $banner)
+            <div class="w-full py-3 px-4 text-center"
+                 style="background-color: {{ $banner->color_fondo ?: '#386641' }};">
+                <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+                    <p class="text-sm font-semibold" style="color: #faf6f0;">
+                        {{ $banner->titulo }}
+                    </p>
+                    @if($banner->imagen)
+                        <img src="{{ asset('imagenes/' . rawurlencode($banner->imagen)) }}"
+                             alt="Banner"
+                             class="h-20 object-contain">
+                    @endif
+                    @if($banner->subtitulo)
+                        <span class="hidden sm:inline text-sm" style="color: rgba(250,246,240,0.45);">·</span>
+                        <p class="text-xs" style="color: rgba(250,246,240,0.75);">{{ $banner->subtitulo }}</p>
+                    @endif
+                    @if($banner->url_destino && $banner->texto_boton)
+                        <a href="{{ $banner->url_destino }}"
+                           class="text-xs border px-4 py-1 hover:bg-white/10 transition-colors duration-200"
+                           style="border-color: rgba(250,246,240,0.45); color: #faf6f0;">
+                            {{ $banner->texto_boton }} →
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @endforeach
+    @endif
 
 
     {{-- ============================================================
