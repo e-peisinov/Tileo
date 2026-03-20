@@ -248,6 +248,9 @@ class Checkout extends Component
             'cbu'            => Configuracion::obtener('cbu', ''),
             'aliasCbu'       => Configuracion::obtener('alias_cbu', ''),
             'titularCuenta'  => Configuracion::obtener('titular_cuenta', ''),
-        ])->layout('layouts.app', ['titulo' => 'Checkout — Tileo']);
+        ])->layout('layouts.app', [
+            'titulo'      => 'Checkout — Tileo',
+            'descripcion' => 'Completá tu pedido de especias artesanales Tileo. Pago por transferencia o efectivo, envío o retiro en local.',
+        ]);
     }
 }

@@ -68,6 +68,9 @@ class SeguimientoPedido extends Component
     public function render()
     {
         return view('livewire.seguimiento-pedido')
-            ->layout('layouts.app', ['titulo' => 'Seguimiento de Pedido — Tileo']);
+            ->layout('layouts.app', [
+                'titulo'      => 'Seguimiento de Pedido — Tileo',
+                'descripcion' => 'Seguí el estado de tu pedido Tileo ingresando tu número de pedido o email.',
+            ]);
     }
 }

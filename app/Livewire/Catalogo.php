@@ -57,6 +57,9 @@ class Catalogo extends Component
             ->paginate(12);
 
         return view('livewire.catalogo', compact('productos', 'categorias'))
-            ->layout('layouts.app', ['titulo' => 'Catálogo — Tileo']);
+            ->layout('layouts.app', [
+                'titulo'      => 'Catálogo — Tileo',
+                'descripcion' => 'Explorá nuestro catálogo de hierbas, especias y condimentos artesanales. Filtrá por categoría, precio y stock. Envíos a todo el país.',
+            ]);
     }
 }

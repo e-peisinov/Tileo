@@ -59,6 +59,9 @@ class Contacto extends Component
     public function render()
     {
         return view('livewire.contacto')
-            ->layout('layouts.app', ['titulo' => 'Contacto — Tileo']);
+            ->layout('layouts.app', [
+                'titulo'      => 'Contacto — Tileo',
+                'descripcion' => 'Contactate con Tileo. Respondemos consultas sobre productos, pedidos y próximas ferias artesanales de Mercedes, Buenos Aires.',
+            ]);
     }
 }

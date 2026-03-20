@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Banner;
 use App\Models\Producto;
 use Livewire\Component;
 
@@ -23,7 +24,12 @@ class Dashboard extends Component
                 ->get();
         }
 
-        return view('livewire.dashboard', compact('productosDestacados'))
-            ->layout('layouts.app', ['titulo' => 'Inicio — Tileo']);
+        $banners = Banner::vigentes()->get();
+
+        return view('livewire.dashboard', compact('productosDestacados', 'banners'))
+            ->layout('layouts.app', [
+                'titulo'      => 'Inicio — Tileo',
+                'descripcion' => 'Hierbas, especias y condimentos artesanales elaborados con dedicación en Mercedes, Buenos Aires. Presentados en tubos de vidrio con tapa de corcho.',
+            ]);
     }
 }

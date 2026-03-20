@@ -7,6 +7,17 @@
 
     <title>{{ $titulo ?? 'Tileo — Hierbas & Especias Artesanales' }}</title>
 
+    {{-- SEO --}}
+    <meta name="description" content="{{ $descripcion ?? 'Hierbas, especias y condimentos artesanales elaborados con dedicación en Mercedes, Buenos Aires.' }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $titulo ?? 'Tileo — Hierbas & Especias Artesanales' }}">
+    <meta property="og:description" content="{{ $descripcion ?? 'Hierbas, especias y condimentos artesanales elaborados con dedicación en Mercedes, Buenos Aires.' }}">
+    @isset($ogImagen)
+    <meta property="og:image" content="{{ $ogImagen }}">
+    @endisset
+    <link rel="canonical" href="{{ url()->current() }}">
+
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

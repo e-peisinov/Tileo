@@ -28,6 +28,14 @@ class DetalleProducto extends Component
         $promedio        = $this->producto->promedioCalificacion();
 
         return view('livewire.detalle-producto', compact('relacionados', 'imagenesGaleria', 'resenas', 'promedio'))
-            ->layout('layouts.app', ['titulo' => $this->producto->nombre . ' — Tileo']);
+            ->layout('layouts.app', [
+                'titulo'      => $this->producto->nombre . ' — Tileo',
+                'descripcion' => $this->producto->descripcion
+                    ? mb_strimwidth(strip_tags($this->producto->descripcion), 0, 155, '…')
+                    : 'Especia artesanal de Tileo. Elaborada con dedicación en Mercedes, Buenos Aires.',
+                'ogImagen'    => $this->producto->imagen
+                    ? asset('imagenes/' . $this->producto->imagen)
+                    : null,
+            ]);
     }
 }
