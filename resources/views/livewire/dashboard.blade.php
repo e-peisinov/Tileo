@@ -144,7 +144,7 @@
                                     </h3>
                                 </div>
                                 @if($producto->stock > 0)
-                                    <a href="{{ route('detalle-producto', $producto->id) }}"
+                                    <a href="{{ route('detalle-producto', $producto->id) }}" wire:navigate
                                        class="text-[11px] text-[#386641] border border-[#386641]/30 px-3 py-1.5 hover:bg-[#386641] hover:text-white transition-all duration-200 flex-shrink-0">
                                         Ver →
                                     </a>
@@ -162,7 +162,7 @@
             @endif
 
             <div class="text-center">
-                <a href="{{ route('catalogo') }}"
+                <a href="{{ route('catalogo') }}" wire:navigate
                    class="inline-block border border-[#2c1a0e]/20 text-[#2c1a0e]/70 px-8 py-3 text-xs uppercase tracking-widest font-semibold hover:border-[#386641] hover:text-[#386641] transition-all duration-300">
                     Ver catálogo completo
                 </a>

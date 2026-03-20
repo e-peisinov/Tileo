@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Pedido;
+use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class SeguimientoPedido extends Component
@@ -11,10 +12,19 @@ class SeguimientoPedido extends Component
     public string $emailPedido = '';
     public string $modoBusqueda = 'numero'; // numero | email
     public ?Pedido $pedido = null;
+    public Collection $pedidos;
     public bool $buscado = false;
+
+    public function mount(): void
+    {
+        $this->pedidos = collect();
+    }
 
     public function buscar(): void
     {
+        $this->pedido  = null;
+        $this->pedidos = collect();
+
         if ($this->modoBusqueda === 'numero') {
             $this->validate([
                 'numeroPedido' => 'required|min:3',
@@ -34,11 +44,13 @@ class SeguimientoPedido extends Component
                 'emailPedido.email'    => 'El email no es válido.',
             ]);
 
-            // Si hay múltiples pedidos con ese email, mostramos el más reciente
-            $this->pedido = Pedido::with(['items', 'historial'])
+            $this->pedidos = Pedido::with(['items', 'historial'])
                 ->where('email_cliente', strtolower(trim($this->emailPedido)))
                 ->latest()
-                ->first();
+                ->get();
+
+            // Para compatibilidad con la vista (primer pedido como "principal")
+            $this->pedido = $this->pedidos->first();
         }
 
         $this->buscado = true;
@@ -47,8 +59,9 @@ class SeguimientoPedido extends Component
     public function cambiarModo(string $modo): void
     {
         $this->modoBusqueda = $modo;
-        $this->pedido = null;
-        $this->buscado = false;
+        $this->pedido       = null;
+        $this->pedidos      = collect();
+        $this->buscado      = false;
         $this->resetValidation();
     }
 

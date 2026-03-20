@@ -2,13 +2,16 @@
 
 namespace App\Livewire;
 
+use App\Models\Contenido;
 use Livewire\Component;
 
 class Nosotros extends Component
 {
     public function render()
     {
-        return view('livewire.nosotros')
+        $historia = Contenido::obtener('nosotros_historia', '');
+
+        return view('livewire.nosotros', compact('historia'))
             ->layout('layouts.app', ['titulo' => 'Nosotros — Tileo']);
     }
 }

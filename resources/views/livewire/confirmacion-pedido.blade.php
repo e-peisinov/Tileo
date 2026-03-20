@@ -124,13 +124,18 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3 justify-center mb-8">
-            <a href="{{ route('seguimiento-pedido') }}?numero={{ $pedido->numero_pedido }}"
+            <a href="{{ route('seguimiento-pedido') }}?numero={{ $pedido->numero_pedido }}" wire:navigate
                class="inline-flex items-center justify-center gap-2 border border-[#386641]/40 text-[#386641] px-6 py-2.5 text-[13px] font-medium tracking-wide hover:bg-[#386641] hover:text-white transition-all duration-300">
                 <i class="fa-solid fa-magnifying-glass text-xs"></i>
                 Rastrear mi pedido
             </a>
-            <a href="{{ route('catalogo') }}"
-               class="inline-flex items-center justify-center gap-2 border border-[#d4b896]/50 text-[#2c1a0e]/60 px-6 py-2.5 text-[13px] font-medium tracking-wide hover:border-[#2c1a0e]/30 hover:text-[#2c1a0e] transition-all duration-300">
+            <button onclick="window.print()"
+               class="inline-flex items-center justify-center gap-2 border border-[#d4b896]/50 text-[#2c1a0e]/60 px-6 py-2.5 text-[13px] font-medium tracking-wide hover:border-[#2c1a0e]/30 hover:text-[#2c1a0e] transition-all duration-300 print:hidden">
+                <i class="fa-solid fa-print text-xs"></i>
+                Imprimir pedido
+            </button>
+            <a href="{{ route('catalogo') }}" wire:navigate
+               class="inline-flex items-center justify-center gap-2 border border-[#d4b896]/50 text-[#2c1a0e]/60 px-6 py-2.5 text-[13px] font-medium tracking-wide hover:border-[#2c1a0e]/30 hover:text-[#2c1a0e] transition-all duration-300 print:hidden">
                 ← Seguir comprando
             </a>
         </div>

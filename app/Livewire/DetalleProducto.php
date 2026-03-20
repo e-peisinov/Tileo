@@ -23,7 +23,11 @@ class DetalleProducto extends Component
             ->limit(3)
             ->get();
 
-        return view('livewire.detalle-producto', compact('relacionados'))
+        $imagenesGaleria = $this->producto->imagenesGaleria()->orderBy('orden')->get();
+        $resenas         = $this->producto->resenasAprobadas()->latest()->limit(10)->get();
+        $promedio        = $this->producto->promedioCalificacion();
+
+        return view('livewire.detalle-producto', compact('relacionados', 'imagenesGaleria', 'resenas', 'promedio'))
             ->layout('layouts.app', ['titulo' => $this->producto->nombre . ' — Tileo']);
     }
 }

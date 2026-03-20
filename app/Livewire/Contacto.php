@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Mail\ContactoMail;
+use App\Mail\ConfirmacionContactoMail;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
@@ -40,6 +41,16 @@ class Contacto extends Component
             ));
         } catch (\Exception $e) {
             \Log::error('Error al enviar mensaje de contacto: ' . $e->getMessage());
+        }
+
+        // Confirmación al cliente
+        try {
+            Mail::to($this->email)->send(new ConfirmacionContactoMail(
+                $this->nombre,
+                $this->asunto,
+            ));
+        } catch (\Exception $e) {
+            \Log::error('Error al enviar confirmación de contacto al cliente: ' . $e->getMessage());
         }
 
         $this->enviado = true;

@@ -31,19 +31,16 @@
                     Del amor por la cocina<br>
                     <em>a un proyecto propio</em>
                 </h2>
-                <p class="text-sm text-[#2c1a0e]/60 leading-relaxed">
-                    Tileo nació en Mercedes, Buenos Aires, de las ganas de llevar al plato algo más que sabor:
-                    la historia detrás de cada ingrediente, el cuidado en cada detalle y la calidez de lo hecho a mano.
-                </p>
-                <p class="text-sm text-[#2c1a0e]/60 leading-relaxed">
-                    Empezamos eligiendo hierbas y especias de origen conocido, moliéndolas y presentándolas en
-                    tubos de vidrio con tapa de corcho que combinan funcionalidad y estética. Cada producto
-                    cuenta una historia, la del ingrediente que viajó hasta nuestra mesa.
-                </p>
-                <p class="text-sm text-[#2c1a0e]/60 leading-relaxed">
-                    Hoy Tileo es un emprendimiento familiar que creció de feria en feria, de cocina en cocina,
-                    con el respaldo de quienes nos eligieron y la convicción de que lo artesanal siempre tiene lugar.
-                </p>
+                @if($historia)
+                    <div class="text-sm text-[#2c1a0e]/60 leading-relaxed space-y-4 [&_p]:leading-relaxed">
+                        {!! $historia !!}
+                    </div>
+                @else
+                    <p class="text-sm text-[#2c1a0e]/60 leading-relaxed">
+                        Tileo nació en Mercedes, Buenos Aires, de las ganas de llevar al plato algo más que sabor:
+                        la historia detrás de cada ingrediente, el cuidado en cada detalle y la calidez de lo hecho a mano.
+                    </p>
+                @endif
             </div>
     
             <div class="fade-desde-der h-96 overflow-hidden">
@@ -218,12 +215,12 @@
                 Escribinos, seguinos en nuestras redes o buscanos en la próxima feria de Mercedes.
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
-                <a href="{{ route('contacto') }}"
+                <a href="{{ route('contacto') }}" wire:navigate
                    class="bg-[#faf6f0] text-[#386641] px-8 py-3 text-[13px] tracking-wider font-medium
                           hover:bg-[#f0e9de] transition-all duration-300 hover:-translate-y-0.5">
                     Contactanos
                 </a>
-                <a href="{{ route('catalogo') }}"
+                <a href="{{ route('catalogo') }}" wire:navigate
                    class="border border-[#faf6f0]/40 text-[#faf6f0] px-8 py-3 text-[13px] tracking-wider font-medium
                           hover:border-[#faf6f0] transition-all duration-300 hover:-translate-y-0.5">
                     Ver catálogo

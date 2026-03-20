@@ -14,7 +14,7 @@
                 </div>
                 <h2 class="text-2xl text-[#2c1a0e] mb-3" style="font-family:'DM Serif Display',serif;">Estamos de vacaciones</h2>
                 <p class="text-[#8b5e3c]/80 text-sm leading-relaxed mb-6">{{ $msgVacaciones }}</p>
-                <a href="{{ route('catalogo') }}" class="inline-block border border-[#386641]/40 text-[#386641] px-8 py-3 text-[13px] tracking-wider hover:bg-[#386641] hover:text-white transition-colors">
+                <a href="{{ route('catalogo') }}" wire:navigate class="inline-block border border-[#386641]/40 text-[#386641] px-8 py-3 text-[13px] tracking-wider hover:bg-[#386641] hover:text-white transition-colors">
                     Ver catálogo
                 </a>
             </div>
@@ -22,7 +22,7 @@
             <div class="text-center py-20">
                 <i class="fa-solid fa-basket-shopping text-5xl text-[#d4b896] mb-4"></i>
                 <p class="text-[#8b5e3c] text-lg mb-6">Tu carrito está vacío</p>
-                <a href="{{ route('catalogo') }}" class="inline-block bg-[#386641] text-[#faf6f0] px-8 py-3 text-[13px] tracking-wider hover:bg-[#2d5534] transition-colors">
+                <a href="{{ route('catalogo') }}" wire:navigate class="inline-block bg-[#386641] text-[#faf6f0] px-8 py-3 text-[13px] tracking-wider hover:bg-[#2d5534] transition-colors">
                     Ver catálogo
                 </a>
             </div>
@@ -167,18 +167,58 @@
                         @endforeach
                     </div>
 
+                    {{-- Código de descuento --}}
+                    <div class="border-t border-[#d4b896]/30 pt-4 mb-2">
+                        <p class="text-[10px] tracking-wider text-[#8b5e3c] uppercase font-semibold mb-2">Código de descuento</p>
+                        @if($descuentoAplicado)
+                            <div class="flex items-center justify-between bg-[#386641]/8 border border-[#386641]/30 rounded-xl px-3 py-2.5">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <i class="fa-solid fa-tag text-[#386641] text-xs flex-shrink-0"></i>
+                                    <span class="text-xs font-semibold text-[#386641] truncate">{{ $mensajeDescuento }}</span>
+                                </div>
+                                <button wire:click="quitarDescuento"
+                                        class="text-[#8b5e3c]/60 hover:text-red-500 transition-colors ml-2 flex-shrink-0">
+                                    <i class="fa-solid fa-xmark text-xs"></i>
+                                </button>
+                            </div>
+                        @else
+                            <div class="flex gap-2">
+                                <input wire:model="codigoDescuentoInput"
+                                       type="text"
+                                       placeholder="CÓDIGO"
+                                       class="flex-1 min-w-0 border border-[#d4b896]/50 bg-[#faf6f0] px-3 py-2 text-sm text-[#2c1a0e] uppercase tracking-wider focus:outline-none focus:border-[#386641] transition-colors">
+                                <button wire:click="aplicarDescuento"
+                                        wire:loading.attr="disabled"
+                                        class="px-4 py-2 bg-[#8b5e3c]/10 border border-[#d4b896]/50 text-[#8b5e3c] text-xs font-semibold hover:bg-[#8b5e3c] hover:text-white transition-all duration-200 flex-shrink-0">
+                                    Aplicar
+                                </button>
+                            </div>
+                            @if($mensajeDescuento)
+                                <p class="text-xs mt-1.5 {{ $descuentoExitoso ? 'text-[#386641]' : 'text-red-500' }}">
+                                    {{ $mensajeDescuento }}
+                                </p>
+                            @endif
+                        @endif
+                    </div>
+
                     <div class="border-t border-[#d4b896]/30 pt-4 space-y-2">
                         <div class="flex justify-between text-sm text-[#2c1a0e]/70">
                             <span>Subtotal</span>
                             <span>${{ number_format($subtotal, 2, ',', '.') }}</span>
                         </div>
+                        @if($montoDescuento > 0)
+                            <div class="flex justify-between text-sm text-[#386641]">
+                                <span>Descuento</span>
+                                <span>− ${{ number_format($montoDescuento, 2, ',', '.') }}</span>
+                            </div>
+                        @endif
                         <div class="flex justify-between text-sm text-[#2c1a0e]/70">
                             <span>Envío</span>
                             <span>{{ $metodo_entrega === 'retiro' ? 'Sin costo' : 'A confirmar' }}</span>
                         </div>
                         <div class="flex justify-between text-base font-semibold text-[#2c1a0e] pt-2 border-t border-[#d4b896]/30">
                             <span>Total estimado</span>
-                            <span>${{ number_format($subtotal, 2, ',', '.') }}</span>
+                            <span>${{ number_format($total, 2, ',', '.') }}</span>
                         </div>
                     </div>
 
@@ -247,9 +287,21 @@
                                 </div>
                             @endforeach
                         </div>
-                        <div class="mt-3 pt-3 border-t border-[#d4b896]/30 flex justify-between text-sm font-semibold text-[#2c1a0e]">
-                            <span>Subtotal</span>
-                            <span>${{ number_format($subtotal, 2, ',', '.') }}</span>
+                        <div class="mt-3 pt-3 border-t border-[#d4b896]/30 space-y-1.5">
+                            <div class="flex justify-between text-sm text-[#2c1a0e]/70">
+                                <span>Subtotal</span>
+                                <span>${{ number_format($subtotal, 2, ',', '.') }}</span>
+                            </div>
+                            @if($montoDescuento > 0)
+                                <div class="flex justify-between text-sm text-[#386641]">
+                                    <span>Descuento</span>
+                                    <span>− ${{ number_format($montoDescuento, 2, ',', '.') }}</span>
+                                </div>
+                            @endif
+                            <div class="flex justify-between text-sm font-semibold text-[#2c1a0e] pt-1 border-t border-[#d4b896]/20">
+                                <span>Total</span>
+                                <span>${{ number_format($total, 2, ',', '.') }}</span>
+                            </div>
                         </div>
                     </div>
 

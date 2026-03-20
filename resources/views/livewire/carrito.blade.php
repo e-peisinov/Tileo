@@ -2,10 +2,12 @@
     {{-- Botón flotante del carrito --}}
     <button wire:click="abrirCarrito"
             data-carrito-btn
-            class="fixed bottom-6 right-6 z-40 bg-[#386641] text-[#faf6f0] w-14 h-14 rounded-full shadow-lg
-                   flex items-center justify-center hover:bg-[#2d5534] transition-colors duration-300 group">
+            class="fixed bottom-6 right-6 z-40 bg-[#386641] text-[#faf6f0] shadow-lg
+                   flex items-center hover:bg-[#2d5534] transition-colors duration-300 group
+                   {{ $cantidadTotal > 0 ? 'rounded-full pl-3 pr-4 py-2.5 gap-2' : 'w-14 h-14 rounded-full justify-center' }}">
         <i class="fa-solid fa-basket-shopping text-xl"></i>
         @if($cantidadTotal > 0)
+            <span class="text-sm font-semibold">${{ number_format($total, 0, ',', '.') }}</span>
             <span class="absolute -top-1 -right-1 bg-[#8b5e3c] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {{ $cantidadTotal }}
             </span>
@@ -112,7 +114,7 @@
                         <span class="text-base font-semibold text-[#2c1a0e]">${{ number_format($total, 2, ',', '.') }}</span>
                     </div>
                     <p class="text-[11px] text-[#8b5e3c]/60">El costo de envío se calcula al finalizar el pedido.</p>
-                    <a href="{{ route('checkout') }}"
+                    <a href="{{ route('checkout') }}" wire:navigate
                        class="block w-full text-center bg-[#386641] text-[#faf6f0] py-3 text-[13px] tracking-wider font-medium
                               hover:bg-[#2d5534] transition-colors duration-300">
                         Finalizar pedido
