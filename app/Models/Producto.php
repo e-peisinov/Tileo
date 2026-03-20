@@ -31,6 +31,31 @@ class Producto extends Model
         return $this->hasMany(PedidoItem::class);
     }
 
+    public function imagenesGaleria(): HasMany
+    {
+        return $this->hasMany(ImagenProducto::class)->orderBy('orden');
+    }
+
+    public function avisos(): HasMany
+    {
+        return $this->hasMany(AvisoStock::class);
+    }
+
+    public function resenas(): HasMany
+    {
+        return $this->hasMany(Resena::class);
+    }
+
+    public function resenasAprobadas(): HasMany
+    {
+        return $this->hasMany(Resena::class)->where('aprobada', true);
+    }
+
+    public function promedioCalificacion(): float
+    {
+        return $this->resenasAprobadas()->avg('calificacion') ?? 0;
+    }
+
     public function hayStock(int $cantidad = 1): bool
     {
         return $this->stock >= $cantidad;

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pedido extends Model
@@ -14,12 +15,14 @@ class Pedido extends Model
         'metodo_entrega', 'metodo_pago', 'direccion_envio',
         'costo_envio', 'subtotal', 'total', 'estado',
         'notas_cliente', 'notas_admin',
+        'codigo_descuento_id', 'monto_descuento',
     ];
 
     protected $casts = [
-        'subtotal'    => 'decimal:2',
-        'total'       => 'decimal:2',
-        'costo_envio' => 'decimal:2',
+        'subtotal'         => 'decimal:2',
+        'total'            => 'decimal:2',
+        'costo_envio'      => 'decimal:2',
+        'monto_descuento'  => 'decimal:2',
     ];
 
     protected static function booted(): void
@@ -39,6 +42,11 @@ class Pedido extends Model
     public function historial(): HasMany
     {
         return $this->hasMany(PedidoHistorialEstado::class)->latest();
+    }
+
+    public function codigoDescuento(): BelongsTo
+    {
+        return $this->belongsTo(CodigoDescuento::class);
     }
 
     public function etiquetaEstado(): string
@@ -83,7 +91,7 @@ class Pedido extends Model
 
     public function calcularTotal(): void
     {
-        $this->total = $this->subtotal + ($this->costo_envio ?? 0);
+        $this->total = $this->subtotal + ($this->costo_envio ?? 0) - ($this->monto_descuento ?? 0);
         $this->save();
     }
 }
