@@ -14,11 +14,52 @@ class GestionPedidos extends Component
     public string $busqueda = '';
     public string $filtroFechaDesde = '';
     public string $filtroFechaHasta = '';
+    public string $filtroMontoDesde = '';
+    public string $filtroMontoHasta = '';
+    public array $seleccionados = [];
+    public string $accionMasiva = '';
 
     public function updatingFiltroEstado(): void { $this->resetPage(); }
     public function updatingBusqueda(): void { $this->resetPage(); }
     public function updatingFiltroFechaDesde(): void { $this->resetPage(); }
     public function updatingFiltroFechaHasta(): void { $this->resetPage(); }
+    public function updatingFiltroMontoDesde(): void { $this->resetPage(); }
+    public function updatingFiltroMontoHasta(): void { $this->resetPage(); }
+
+    public function aplicarAccionMasiva(): void
+    {
+        if (empty($this->seleccionados) || empty($this->accionMasiva)) {
+            return;
+        }
+
+        $cancelados = ['rechazado', 'cancelado'];
+
+        foreach ($this->seleccionados as $id) {
+            $pedido = Pedido::find($id);
+            if (! $pedido) continue;
+
+            $estadoAnterior    = $pedido->estado;
+            $entrandoCancelado = in_array($this->accionMasiva, $cancelados) && ! in_array($estadoAnterior, $cancelados);
+            $saliendoCancelado = ! in_array($this->accionMasiva, $cancelados) && in_array($estadoAnterior, $cancelados);
+
+            if ($entrandoCancelado || $saliendoCancelado) {
+                foreach ($pedido->items as $item) {
+                    if ($item->producto_id) {
+                        if ($entrandoCancelado) {
+                            \App\Models\Producto::where('id', $item->producto_id)->increment('stock', $item->cantidad);
+                        } else {
+                            \App\Models\Producto::where('id', $item->producto_id)->decrement('stock', $item->cantidad);
+                        }
+                    }
+                }
+            }
+
+            $pedido->update(['estado' => $this->accionMasiva]);
+        }
+
+        $this->seleccionados = [];
+        $this->accionMasiva  = '';
+    }
 
     private function queryFiltrada()
     {
@@ -33,6 +74,8 @@ class GestionPedidos extends Component
             })
             ->when($this->filtroFechaDesde, fn($q) => $q->whereDate('created_at', '>=', $this->filtroFechaDesde))
             ->when($this->filtroFechaHasta, fn($q) => $q->whereDate('created_at', '<=', $this->filtroFechaHasta))
+            ->when($this->filtroMontoDesde !== '', fn($q) => $q->where('total', '>=', $this->filtroMontoDesde))
+            ->when($this->filtroMontoHasta !== '', fn($q) => $q->where('total', '<=', $this->filtroMontoHasta))
             ->latest();
     }
 
@@ -78,6 +121,6 @@ class GestionPedidos extends Component
         $pedidos = $this->queryFiltrada()->paginate(20);
 
         return view('livewire.admin.gestion-pedidos', compact('pedidos'))
-            ->layout('layouts.app', ['titulo' => 'Pedidos — Admin Tileo']);
+            ->layout('layouts.admin', ['titulo' => 'Pedidos — Admin Tileo']);
     }
 }

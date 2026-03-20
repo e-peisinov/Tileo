@@ -123,6 +123,6 @@ class GestionUsuarios extends Component
         $usuarios = User::orderBy('name')->get();
 
         return view('livewire.admin.gestion-usuarios', compact('usuarios'))
-            ->layout('layouts.app', ['titulo' => 'Usuarios — Admin Tileo']);
+            ->layout('layouts.admin', ['titulo' => 'Usuarios — Admin Tileo']);
     }
 }

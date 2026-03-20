@@ -25,15 +25,18 @@ class GestionConfiguracion extends Component
     public function guardar(): void
     {
         $this->validate([
-            'valores.tiempo_entrega'    => 'nullable|max:100',
+            'valores.tiempo_entrega'     => 'nullable|max:100',
             'valores.mensaje_vacaciones' => 'nullable|max:500',
-            'valores.cbu'               => 'nullable|max:22',
-            'valores.alias_cbu'         => 'nullable|max:50',
-            'valores.titular_cuenta'    => 'nullable|max:100',
+            'valores.cbu'                => 'nullable|max:22',
+            'valores.alias_cbu'          => 'nullable|max:50',
+            'valores.titular_cuenta'     => 'nullable|max:100',
         ]);
 
         foreach ($this->valores as $clave => $valor) {
-            Configuracion::where('clave', $clave)->update(['valor' => $valor]);
+            Configuracion::updateOrCreate(
+                ['clave' => $clave],
+                ['valor' => $valor]
+            );
         }
 
         $this->guardado = true;
@@ -44,6 +47,6 @@ class GestionConfiguracion extends Component
         $configuraciones = Configuracion::orderBy('id')->get();
 
         return view('livewire.admin.gestion-configuracion', compact('configuraciones'))
-            ->layout('layouts.app', ['titulo' => 'Configuración — Admin Tileo']);
+            ->layout('layouts.admin', ['titulo' => 'Configuración — Admin Tileo']);
     }
 }

@@ -1,97 +1,92 @@
-<div class="min-h-screen py-10 px-4" style="background: linear-gradient(150deg, #faf6f0 0%, #f0e9de 100%);">
-    <div class="max-w-3xl mx-auto">
+<div>
 
-        {{-- Nav admin --}}
-        @include('livewire.admin.partials.nav')
-
-        {{-- Encabezado --}}
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-            <div>
-                <p class="text-[#8b5e3c]/60 tracking-[0.25em] uppercase text-[10px] font-semibold mb-1">Panel de administración</p>
-                <h1 class="text-4xl text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Categorías</h1>
-            </div>
-            <button wire:click="abrirCrear"
-                    class="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm
-                           hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-                    style="background: linear-gradient(135deg, #386641 0%, #2d5534 100%);">
-                <i class="fa-solid fa-plus text-xs"></i> Nueva categoría
-            </button>
+    {{-- Encabezado --}}
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <div>
+            <p class="text-[#8b5e3c]/60 tracking-[0.25em] uppercase text-[10px] font-semibold mb-1">Panel de administración</p>
+            <h1 class="text-4xl text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Categorías</h1>
         </div>
+        <button wire:click="abrirCrear"
+                class="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm
+                       hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                style="background: linear-gradient(135deg, #386641 0%, #2d5534 100%);">
+            <i class="fa-solid fa-plus text-xs"></i> Nueva categoría
+        </button>
+    </div>
 
-        {{-- Banner de éxito --}}
-        @if($guardado)
-            <div class="flex items-center gap-2.5 text-[#386641] text-sm rounded-xl border border-[#386641]/20 px-4 py-3 mb-5 shadow-sm"
-                 style="background-color: rgba(56,102,65,0.06);">
-                <div class="w-5 h-5 rounded-full flex items-center justify-center" style="background-color: rgba(56,102,65,0.15);">
-                    <i class="fa-solid fa-check text-[10px]"></i>
-                </div>
-                Categoría guardada correctamente.
+    {{-- Banner de éxito --}}
+    @if($guardado)
+        <div class="flex items-center gap-2.5 text-[#386641] text-sm rounded-xl border border-[#386641]/20 px-4 py-3 mb-5 shadow-sm"
+             style="background-color: rgba(56,102,65,0.06);">
+            <div class="w-5 h-5 rounded-full flex items-center justify-center" style="background-color: rgba(56,102,65,0.15);">
+                <i class="fa-solid fa-check text-[10px]"></i>
             </div>
-        @endif
+            Categoría guardada correctamente.
+        </div>
+    @endif
 
-        {{-- Error de eliminación --}}
-        @if($errorEliminar)
-            <div class="flex items-center gap-2.5 text-red-700 text-sm bg-red-50 rounded-xl border border-red-200 px-4 py-3 mb-5 shadow-sm">
-                <div class="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-                    <i class="fa-solid fa-exclamation text-[10px] text-red-600"></i>
-                </div>
-                {{ $errorEliminar }}
+    {{-- Error de eliminación --}}
+    @if($errorEliminar)
+        <div class="flex items-center gap-2.5 text-red-700 text-sm bg-red-50 rounded-xl border border-red-200 px-4 py-3 mb-5 shadow-sm">
+            <div class="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-exclamation text-[10px] text-red-600"></i>
             </div>
-        @endif
+            {{ $errorEliminar }}
+        </div>
+    @endif
 
-        <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
-            <div class="overflow-x-auto">
-            <table class="w-full min-w-[380px] text-sm">
-                <thead>
-                    <tr style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
-                        <th class="text-left px-5 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Nombre</th>
-                        <th class="text-left px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30 hidden sm:table-cell">Descripción</th>
-                        <th class="text-center px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Productos</th>
-                        <th class="text-center px-5 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($categorias as $cat)
-                        <tr class="border-b border-[#d4b896]/15 hover:bg-[#faf6f0]/70 transition-colors duration-150">
-                            <td class="px-5 py-3.5">
-                                <p class="font-semibold text-[#2c1a0e]">{{ $cat->nombre }}</p>
-                                <span class="inline-flex items-center gap-1 text-[10px] mt-0.5 {{ $cat->activo ? 'text-[#386641]' : 'text-gray-400' }}">
-                                    <span class="w-1.5 h-1.5 rounded-full inline-block {{ $cat->activo ? 'bg-[#a7c957]' : 'bg-gray-300' }}"></span>
-                                    {{ $cat->activo ? 'Activa' : 'Inactiva' }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3.5 hidden sm:table-cell text-[#2c1a0e]/60 text-xs">{{ $cat->descripcion ?? '—' }}</td>
-                            <td class="px-4 py-3.5 text-center">
-                                <span class="inline-block text-[12px] font-medium px-2.5 py-1 rounded-lg text-[#8b5e3c]" style="background-color: rgba(139,94,60,0.08);">
-                                    {{ $cat->productos_count }}
-                                </span>
-                            </td>
-                            <td class="px-5 py-3.5 text-center">
-                                <button wire:click="abrirEditar({{ $cat->id }})"
-                                        class="inline-flex items-center gap-1 text-[#386641] text-[12px] font-medium hover:underline mr-3 transition-colors">
-                                    <i class="fa-solid fa-pen text-[9px]"></i> Editar
+    <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
+        <div class="overflow-x-auto">
+        <table class="w-full min-w-[380px] text-sm">
+            <thead>
+                <tr style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
+                    <th class="text-left px-5 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Nombre</th>
+                    <th class="text-left px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30 hidden sm:table-cell">Descripción</th>
+                    <th class="text-center px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Productos</th>
+                    <th class="text-center px-5 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($categorias as $cat)
+                    <tr class="border-b border-[#d4b896]/15 hover:bg-[#faf6f0]/70 transition-colors duration-150">
+                        <td class="px-5 py-3.5">
+                            <p class="font-semibold text-[#2c1a0e]">{{ $cat->nombre }}</p>
+                            <span class="inline-flex items-center gap-1 text-[10px] mt-0.5 {{ $cat->activo ? 'text-[#386641]' : 'text-gray-400' }}">
+                                <span class="w-1.5 h-1.5 rounded-full inline-block {{ $cat->activo ? 'bg-[#a7c957]' : 'bg-gray-300' }}"></span>
+                                {{ $cat->activo ? 'Activa' : 'Inactiva' }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 hidden sm:table-cell text-[#2c1a0e]/60 text-xs">{{ $cat->descripcion ?? '—' }}</td>
+                        <td class="px-4 py-3.5 text-center">
+                            <span class="inline-block text-[12px] font-medium px-2.5 py-1 rounded-lg text-[#8b5e3c]" style="background-color: rgba(139,94,60,0.08);">
+                                {{ $cat->productos_count }}
+                            </span>
+                        </td>
+                        <td class="px-5 py-3.5 text-center">
+                            <button wire:click="abrirEditar({{ $cat->id }})"
+                                    class="inline-flex items-center gap-1 text-[#386641] text-[12px] font-medium hover:underline mr-3 transition-colors">
+                                <i class="fa-solid fa-pen text-[9px]"></i> Editar
+                            </button>
+                            @if($cat->productos_count === 0)
+                                <button wire:click="pedirEliminar({{ $cat->id }})"
+                                        class="inline-flex items-center gap-1 text-red-400 text-[12px] font-medium hover:text-red-600 transition-colors">
+                                    <i class="fa-solid fa-trash text-[9px]"></i> Eliminar
                                 </button>
-                                @if($cat->productos_count === 0)
-                                    <button wire:click="pedirEliminar({{ $cat->id }})"
-                                            class="inline-flex items-center gap-1 text-red-400 text-[12px] font-medium hover:text-red-600 transition-colors">
-                                        <i class="fa-solid fa-trash text-[9px]"></i> Eliminar
-                                    </button>
-                                @else
-                                    <span class="text-[11px] text-[#8b5e3c]/40" title="Tiene productos asociados">No eliminable</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="px-4 py-14 text-center">
-                                <i class="fa-solid fa-tags text-4xl text-[#d4b896] mb-3 block"></i>
-                                <p class="text-[#8b5e3c]/60">No hay categorías.</p>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            </div>
+                            @else
+                                <span class="text-[11px] text-[#8b5e3c]/40" title="Tiene productos asociados">No eliminable</span>
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="px-4 py-14 text-center">
+                            <i class="fa-solid fa-tags text-4xl text-[#d4b896] mb-3 block"></i>
+                            <p class="text-[#8b5e3c]/60">No hay categorías.</p>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
         </div>
     </div>
 

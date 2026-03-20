@@ -1,122 +1,117 @@
-<div class="min-h-screen py-10 px-4" style="background: linear-gradient(150deg, #faf6f0 0%, #f0e9de 100%);">
-    <div class="max-w-6xl mx-auto">
+<div>
 
-        {{-- Nav admin --}}
-        @include('livewire.admin.partials.nav')
-
-        {{-- Encabezado --}}
-        <div class="mb-8">
-            <p class="text-[#8b5e3c]/60 tracking-[0.25em] uppercase text-[10px] font-semibold mb-1">Panel de administración</p>
-            <h1 class="text-4xl text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Productos</h1>
-        </div>
-
-        {{-- Banner de éxito --}}
-        @if($guardado)
-            <div class="flex items-center gap-2.5 text-[#386641] text-sm rounded-xl border border-[#386641]/20 px-4 py-3 mb-5 shadow-sm"
-                 style="background-color: rgba(56,102,65,0.06);">
-                <div class="w-5 h-5 rounded-full flex items-center justify-center" style="background-color: rgba(56,102,65,0.15);">
-                    <i class="fa-solid fa-check text-[10px]"></i>
-                </div>
-                Producto guardado correctamente.
-            </div>
-        @endif
-
-        {{-- Búsqueda --}}
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
-            <div class="relative w-full sm:w-80">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40 text-xs"></i>
-                <input wire:model.live.debounce.300ms="busqueda" type="text"
-                       placeholder="Buscar producto..."
-                       class="w-full border border-[#d4b896]/40 bg-white rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#2c1a0e] shadow-sm
-                              focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200">
-            </div>
-            <button wire:click="abrirCrear"
-                class="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200" style="background: linear-gradient(135deg, #386641 0%, #2d5534 100%);">
-                <i class="fa-solid fa-plus text-xs"></i> Nuevo producto
-            </button>
-        </div>
-
-        {{-- Tabla --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
-            <div class="overflow-x-auto">
-            <table class="w-full min-w-[560px] text-sm">
-                <thead>
-                    <tr style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
-                        <th class="text-left px-5 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Nombre</th>
-                        <th class="text-left px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30 hidden md:table-cell">Categoría</th>
-                        <th class="text-right px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Precio</th>
-                        <th class="text-right px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Stock</th>
-                        <th class="text-center px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Estado</th>
-                        <th class="text-center px-5 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($productos as $producto)
-                        <tr class="border-b border-[#d4b896]/15 hover:bg-[#faf6f0]/70 transition-colors duration-150">
-                            <td class="px-5 py-3.5">
-                                <p class="font-semibold text-[#2c1a0e]">{{ $producto->nombre }}</p>
-                                <p class="text-[11px] text-[#8b5e3c]/60">{{ $producto->unidad }}</p>
-                            </td>
-                            <td class="px-4 py-3.5 hidden md:table-cell">
-                                <span class="inline-block text-[11px] px-2.5 py-1 rounded-lg font-medium text-[#8b5e3c]" style="background-color: rgba(139,94,60,0.08);">
-                                    {{ $producto->categoria->nombre }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3.5 text-right font-semibold text-[#2c1a0e]">
-                                @if($producto->precio > 0)
-                                    ${{ number_format($producto->precio, 2, ',', '.') }}
-                                @else
-                                    <span class="text-[#8b5e3c]/60 text-xs font-normal italic">A confirmar</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3.5 text-right">
-                                <span class="font-bold {{ $producto->stock <= 3 ? 'text-red-500' : 'text-[#2c1a0e]' }}
-                                             inline-block px-2 py-0.5 rounded-lg text-sm
-                                             {{ $producto->stock <= 3 ? 'bg-red-50' : '' }}">
-                                    {{ $producto->stock }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3.5 text-center">
-                                <div class="flex items-center justify-center gap-1.5">
-                                    <button wire:click="toggleActivo({{ $producto->id }})"
-                                            class="text-[11px] px-3 py-1.5 rounded-lg font-semibold transition-all duration-200 hover:shadow-sm
-                                                   {{ $producto->activo
-                                                      ? 'text-[#386641] hover:bg-[#386641]/20'
-                                                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}"
-                                            style="{{ $producto->activo ? 'background-color: rgba(56,102,65,0.12);' : '' }}">
-                                        {{ $producto->activo ? '✓ Activo' : 'Inactivo' }}
-                                    </button>
-                                    @if($producto->destacado)
-                                        <span title="Destacado" class="text-[#a7c957]"><i class="fa-solid fa-star text-xs"></i></span>
-                                    @endif
-                                </div>
-                            </td>
-                            <td class="px-5 py-3.5 text-center">
-                                <button wire:click="abrirEditar({{ $producto->id }})"
-                                        class="inline-flex items-center gap-1 text-[#386641] text-[12px] font-medium hover:underline mr-3 transition-colors">
-                                    <i class="fa-solid fa-pen text-[9px]"></i> Editar
-                                </button>
-                                <button wire:click="pedirEliminar({{ $producto->id }})"
-                                        class="inline-flex items-center gap-1 text-red-400 text-[12px] font-medium hover:text-red-600 transition-colors">
-                                    <i class="fa-solid fa-trash text-[9px]"></i> Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="px-4 py-14 text-center">
-                                <i class="fa-solid fa-seedling text-4xl text-[#d4b896] mb-3 block"></i>
-                                <p class="text-[#8b5e3c]/60">No hay productos.</p>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            </div>
-        </div>
-
-        <div class="mt-5">{{ $productos->links() }}</div>
+    {{-- Encabezado --}}
+    <div class="mb-8">
+        <p class="text-[#8b5e3c]/60 tracking-[0.25em] uppercase text-[10px] font-semibold mb-1">Panel de administración</p>
+        <h1 class="text-4xl text-[#2c1a0e]" style="font-family:'DM Serif Display',serif;">Productos</h1>
     </div>
+
+    {{-- Banner de éxito --}}
+    @if($guardado)
+        <div class="flex items-center gap-2.5 text-[#386641] text-sm rounded-xl border border-[#386641]/20 px-4 py-3 mb-5 shadow-sm"
+             style="background-color: rgba(56,102,65,0.06);">
+            <div class="w-5 h-5 rounded-full flex items-center justify-center" style="background-color: rgba(56,102,65,0.15);">
+                <i class="fa-solid fa-check text-[10px]"></i>
+            </div>
+            Producto guardado correctamente.
+        </div>
+    @endif
+
+    {{-- Búsqueda --}}
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-5">
+        <div class="relative w-full sm:w-80">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8b5e3c]/40 text-xs"></i>
+            <input wire:model.live.debounce.300ms="busqueda" type="text"
+                   placeholder="Buscar producto..."
+                   class="w-full border border-[#d4b896]/40 bg-white rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#2c1a0e] shadow-sm
+                          focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200">
+        </div>
+        <button wire:click="abrirCrear"
+            class="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200" style="background: linear-gradient(135deg, #386641 0%, #2d5534 100%);">
+            <i class="fa-solid fa-plus text-xs"></i> Nuevo producto
+        </button>
+    </div>
+
+    {{-- Tabla --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
+        <div class="overflow-x-auto">
+        <table class="w-full min-w-[560px] text-sm">
+            <thead>
+                <tr style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
+                    <th class="text-left px-5 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Nombre</th>
+                    <th class="text-left px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30 hidden md:table-cell">Categoría</th>
+                    <th class="text-right px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Precio</th>
+                    <th class="text-right px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Stock</th>
+                    <th class="text-center px-4 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Estado</th>
+                    <th class="text-center px-5 py-3.5 text-[11px] tracking-wider text-[#8b5e3c] uppercase font-semibold border-b border-[#d4b896]/30">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($productos as $producto)
+                    <tr class="border-b border-[#d4b896]/15 hover:bg-[#faf6f0]/70 transition-colors duration-150">
+                        <td class="px-5 py-3.5">
+                            <p class="font-semibold text-[#2c1a0e]">{{ $producto->nombre }}</p>
+                            <p class="text-[11px] text-[#8b5e3c]/60">{{ $producto->unidad }}</p>
+                        </td>
+                        <td class="px-4 py-3.5 hidden md:table-cell">
+                            <span class="inline-block text-[11px] px-2.5 py-1 rounded-lg font-medium text-[#8b5e3c]" style="background-color: rgba(139,94,60,0.08);">
+                                {{ $producto->categoria->nombre }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-right font-semibold text-[#2c1a0e]">
+                            @if($producto->precio > 0)
+                                ${{ number_format($producto->precio, 2, ',', '.') }}
+                            @else
+                                <span class="text-[#8b5e3c]/60 text-xs font-normal italic">A confirmar</span>
+                            @endif
+                        </td>
+                        <td class="px-4 py-3.5 text-right">
+                            <span class="font-bold {{ $producto->stock <= 3 ? 'text-red-500' : 'text-[#2c1a0e]' }}
+                                         inline-block px-2 py-0.5 rounded-lg text-sm
+                                         {{ $producto->stock <= 3 ? 'bg-red-50' : '' }}">
+                                {{ $producto->stock }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-center">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <button wire:click="toggleActivo({{ $producto->id }})"
+                                        class="text-[11px] px-3 py-1.5 rounded-lg font-semibold transition-all duration-200 hover:shadow-sm
+                                               {{ $producto->activo
+                                                  ? 'text-[#386641] hover:bg-[#386641]/20'
+                                                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}"
+                                        style="{{ $producto->activo ? 'background-color: rgba(56,102,65,0.12);' : '' }}">
+                                    {{ $producto->activo ? '✓ Activo' : 'Inactivo' }}
+                                </button>
+                                @if($producto->destacado)
+                                    <span title="Destacado" class="text-[#a7c957]"><i class="fa-solid fa-star text-xs"></i></span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="px-5 py-3.5 text-center">
+                            <button wire:click="abrirEditar({{ $producto->id }})"
+                                    class="inline-flex items-center gap-1 text-[#386641] text-[12px] font-medium hover:underline mr-3 transition-colors">
+                                <i class="fa-solid fa-pen text-[9px]"></i> Editar
+                            </button>
+                            <button wire:click="pedirEliminar({{ $producto->id }})"
+                                    class="inline-flex items-center gap-1 text-red-400 text-[12px] font-medium hover:text-red-600 transition-colors">
+                                <i class="fa-solid fa-trash text-[9px]"></i> Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="px-4 py-14 text-center">
+                            <i class="fa-solid fa-seedling text-4xl text-[#d4b896] mb-3 block"></i>
+                            <p class="text-[#8b5e3c]/60">No hay productos.</p>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <div class="mt-5">{{ $productos->links() }}</div>
 
     {{-- MODAL CONFIRMAR ELIMINACIÓN --}}
     @if($mostrarConfirmarEliminar)
@@ -233,6 +228,52 @@
                                           focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200">
                         </div>
                     </div>
+                    {{-- Galería de imágenes adicionales --}}
+                    @if($editandoId)
+                    <div class="border border-[#d4b896]/30 rounded-xl p-4" style="background-color: rgba(250,246,240,0.5);">
+                        <p class="text-xs tracking-wider text-[#8b5e3c] uppercase mb-3 font-semibold">Galería de imágenes</p>
+
+                        {{-- Thumbnails existentes --}}
+                        @if(count($galeriaExistente) > 0)
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                @foreach($galeriaExistente as $img)
+                                    <div class="relative group w-20 h-20">
+                                        <img src="{{ asset('imagenes/' . rawurlencode($img['archivo'])) }}"
+                                             alt="Imagen galería"
+                                             class="w-full h-full object-cover rounded-lg border border-[#d4b896]/40">
+                                        <button wire:click="eliminarImagenGaleria({{ $img['id'] }})"
+                                                wire:confirm="¿Eliminar esta imagen de la galería?"
+                                                class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-[9px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        {{-- Slots para nuevas imágenes --}}
+                        @php $slotsLibres = 4 - count($galeriaExistente); @endphp
+                        @if($slotsLibres > 0)
+                            <p class="text-[10px] text-[#8b5e3c]/60 mb-2">
+                                Podés agregar hasta {{ $slotsLibres }} imagen{{ $slotsLibres !== 1 ? 'es' : '' }} más:
+                            </p>
+                            <div class="space-y-2">
+                                @for($slot = 0; $slot < $slotsLibres; $slot++)
+                                    <input wire:model="galeriaArchivo{{ $slot }}" type="file" accept="image/*"
+                                           class="w-full border border-[#d4b896]/40 bg-white rounded-lg px-3 py-1.5 text-xs text-[#2c1a0e]
+                                                  focus:outline-none focus:border-[#386641] transition-colors
+                                                  file:mr-2 file:py-1 file:px-2.5 file:border-0 file:rounded-md file:text-[10px] file:font-medium
+                                                  file:text-[#386641] file:cursor-pointer"
+                                           style="file:background-color: rgba(56,102,65,0.1);">
+                                    @error('galeriaArchivo' . $slot) <p class="text-red-500 text-[10px] mt-0.5">{{ $message }}</p> @enderror
+                                @endfor
+                            </div>
+                        @else
+                            <p class="text-[10px] text-[#8b5e3c]/60 italic">La galería está completa (máx. 4 imágenes). Eliminá alguna para agregar nuevas.</p>
+                        @endif
+                    </div>
+                    @endif
+
                     <div>
                         <label class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-1.5 font-semibold">Descripción</label>
                         <textarea wire:model="descripcion" rows="3"

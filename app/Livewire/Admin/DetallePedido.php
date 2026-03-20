@@ -88,6 +88,6 @@ class DetallePedido extends Component
     public function render()
     {
         return view('livewire.admin.detalle-pedido')
-            ->layout('layouts.app', ['titulo' => 'Pedido ' . $this->pedido->numero_pedido . ' — Admin Tileo']);
+            ->layout('layouts.admin', ['titulo' => 'Pedido ' . $this->pedido->numero_pedido . ' — Admin Tileo']);
     }
 }

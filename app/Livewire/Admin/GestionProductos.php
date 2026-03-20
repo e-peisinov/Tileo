@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Categoria;
+use App\Models\ImagenProducto;
 use App\Models\Producto;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -33,6 +34,13 @@ class GestionProductos extends Component
 
     public $imagenArchivo = null;
 
+    // Galería de imágenes adicionales
+    public array $galeriaExistente = []; // [{id, archivo, url}] — imágenes ya guardadas
+    public $galeriaArchivo0 = null;
+    public $galeriaArchivo1 = null;
+    public $galeriaArchivo2 = null;
+    public $galeriaArchivo3 = null;
+
     public string $busqueda = '';
 
     public function updatingBusqueda(): void { $this->resetPage(); }
@@ -59,21 +67,30 @@ class GestionProductos extends Component
         $this->categoria_id = $producto->categoria_id;
         $this->activo       = $producto->activo;
         $this->destacado    = $producto->destacado;
+        $this->galeriaExistente = $producto->imagenesGaleria()
+            ->orderBy('orden')
+            ->get()
+            ->map(fn($img) => ['id' => $img->id, 'archivo' => $img->archivo, 'url' => $img->url])
+            ->toArray();
         $this->mostrarModal = true;
     }
 
     public function guardar(): void
     {
         $this->validate([
-            'nombre'        => 'required|min:2|max:120',
-            'descripcion'   => 'nullable|max:1000',
-            'precio'        => 'required|numeric|min:0',
-            'stock'         => 'required|integer|min:0',
-            'unidad'        => 'required|max:30',
-            'imagen'        => 'nullable|max:255',
-            'categoria_id'  => 'required|exists:categorias,id',
-            'imagenArchivo' => 'nullable|image|max:2048',
-            'destacado'     => 'boolean',
+            'nombre'         => 'required|min:2|max:120',
+            'descripcion'    => 'nullable|max:1000',
+            'precio'         => 'required|numeric|min:0',
+            'stock'          => 'required|integer|min:0',
+            'unidad'         => 'required|max:30',
+            'imagen'         => 'nullable|max:255',
+            'categoria_id'   => 'required|exists:categorias,id',
+            'imagenArchivo'  => 'nullable|image|max:2048',
+            'galeriaArchivo0' => 'nullable|image|max:2048',
+            'galeriaArchivo1' => 'nullable|image|max:2048',
+            'galeriaArchivo2' => 'nullable|image|max:2048',
+            'galeriaArchivo3' => 'nullable|image|max:2048',
+            'destacado'      => 'boolean',
         ]);
 
         if ($this->imagenArchivo) {
@@ -102,14 +119,56 @@ class GestionProductos extends Component
         ];
 
         if ($this->editandoId) {
-            Producto::findOrFail($this->editandoId)->update($datos);
+            $producto = Producto::findOrFail($this->editandoId);
+            $producto->update($datos);
         } else {
-            Producto::create($datos);
+            $producto = Producto::create($datos);
+        }
+
+        // Guardar imágenes de galería adicionales
+        $galeriaSlots = ['galeriaArchivo0', 'galeriaArchivo1', 'galeriaArchivo2', 'galeriaArchivo3'];
+        $ordenActual  = $producto->imagenesGaleria()->max('orden') ?? 0;
+
+        foreach ($galeriaSlots as $slot) {
+            if ($this->$slot) {
+                $ext      = $this->$slot->getClientOriginalExtension();
+                $archivo  = \Str::slug($producto->nombre) . '-galeria-' . uniqid() . '.' . $ext;
+                $destino  = public_path('imagenes') . '/' . $archivo;
+
+                if (copy($this->$slot->getRealPath(), $destino)) {
+                    $ordenActual++;
+                    ImagenProducto::create([
+                        'producto_id' => $producto->id,
+                        'archivo'     => $archivo,
+                        'orden'       => $ordenActual,
+                    ]);
+                }
+            }
         }
 
         $this->mostrarModal = false;
         $this->guardado = true;
         $this->resetCampos();
+    }
+
+    public function eliminarImagenGaleria(int $id): void
+    {
+        $img = ImagenProducto::findOrFail($id);
+        $ruta = public_path('imagenes') . '/' . $img->archivo;
+        if (file_exists($ruta)) {
+            unlink($ruta);
+        }
+        $img->delete();
+
+        // Refrescar lista si sigue abierto el modal
+        if ($this->editandoId) {
+            $producto = Producto::findOrFail($this->editandoId);
+            $this->galeriaExistente = $producto->imagenesGaleria()
+                ->orderBy('orden')
+                ->get()
+                ->map(fn($img) => ['id' => $img->id, 'archivo' => $img->archivo, 'url' => $img->url])
+                ->toArray();
+        }
     }
 
     public function pedirEliminar(int $id): void
@@ -156,6 +215,11 @@ class GestionProductos extends Component
         $this->activo = true;
         $this->destacado = false;
         $this->imagenArchivo = null;
+        $this->galeriaExistente = [];
+        $this->galeriaArchivo0 = null;
+        $this->galeriaArchivo1 = null;
+        $this->galeriaArchivo2 = null;
+        $this->galeriaArchivo3 = null;
         $this->resetValidation();
     }
 
@@ -169,6 +233,6 @@ class GestionProductos extends Component
         $categorias = Categoria::orderBy('nombre')->get();
 
         return view('livewire.admin.gestion-productos', compact('productos', 'categorias'))
-            ->layout('layouts.app', ['titulo' => 'Productos — Admin Tileo']);
+            ->layout('layouts.admin', ['titulo' => 'Productos — Admin Tileo']);
     }
 }

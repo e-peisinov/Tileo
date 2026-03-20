@@ -122,6 +122,6 @@ class GestionCategorias extends Component
         $categorias = Categoria::withCount('productos')->orderBy('nombre')->get();
 
         return view('livewire.admin.gestion-categorias', compact('categorias'))
-            ->layout('layouts.app', ['titulo' => 'Categorías — Admin Tileo']);
+            ->layout('layouts.admin', ['titulo' => 'Categorías — Admin Tileo']);
     }
 }

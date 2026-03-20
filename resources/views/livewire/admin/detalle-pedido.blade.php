@@ -6,7 +6,7 @@
 
         {{-- Volver --}}
         <div class="mb-5">
-            <a href="{{ route('admin.pedidos') }}"
+            <a href="{{ route('admin.pedidos') }}" wire:navigate
                class="inline-flex items-center gap-1.5 text-[#386641] text-sm font-medium hover:text-[#2d5534] transition-colors">
                 <i class="fa-solid fa-arrow-left text-xs"></i> Volver a pedidos
             </a>
