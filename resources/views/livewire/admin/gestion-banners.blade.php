@@ -19,7 +19,12 @@
                 {{-- Miniatura --}}
                 <div class="w-full sm:w-28 h-16 rounded-xl overflow-hidden shrink-0 bg-[#f0e9de] border border-[#d4b896]/30">
                     @if ($banner->imagen)
-                        <img src="{{ $banner->imagen }}" alt="{{ $banner->titulo }}" class="w-full h-full object-cover">
+                        @php
+                            $src = str_starts_with($banner->imagen, 'http')
+                                ? $banner->imagen
+                                : asset('imagenes/' . $banner->imagen);
+                        @endphp
+                        <img src="{{ $src }}" alt="{{ $banner->titulo }}" class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full flex items-center justify-center text-[#d4b896]">
                             <i class="fa-solid fa-image text-xl"></i>
@@ -103,10 +108,30 @@
                 </div>
                 <div class="p-6 space-y-4">
                     {{-- Imagen --}}
-                    <div>
-                        <label class="block text-xs font-semibold text-[#2c1a0e]/60 uppercase tracking-wider mb-1.5">URL de imagen *</label>
-                        <input type="text" wire:model="imagen" placeholder="https://..." class="w-full px-3 py-2 text-sm border border-[#d4b896]/50 rounded-xl bg-[#faf6f0] text-[#2c1a0e] focus:outline-none focus:ring-2 focus:ring-[#386641]/30">
-                        @error('imagen') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                    <div x-data="{ preview: null }">
+                        <label class="block text-xs font-semibold text-[#2c1a0e]/60 uppercase tracking-wider mb-1.5">Imagen del banner</label>
+
+                        {{-- Preview de imagen actual --}}
+                        @if ($imagenArchivo)
+                            <div class="mb-2 rounded-xl overflow-hidden border border-[#d4b896]/50 bg-[#f0e9de] h-32">
+                                <img src="{{ $imagenArchivo->temporaryUrl() }}" class="w-full h-full object-cover">
+                            </div>
+                        @elseif ($imagen)
+                            @php
+                                $srcActual = str_starts_with($imagen, 'http') ? $imagen : asset('imagenes/' . $imagen);
+                            @endphp
+                            <div class="mb-2 rounded-xl overflow-hidden border border-[#d4b896]/50 bg-[#f0e9de] h-32">
+                                <img src="{{ $srcActual }}" class="w-full h-full object-cover">
+                            </div>
+                        @endif
+
+                        {{-- Input de archivo --}}
+                        <label class="flex items-center gap-2 cursor-pointer px-3 py-2.5 border border-dashed border-[#d4b896] rounded-xl bg-[#faf6f0] hover:bg-[#f0e9de] transition-colors text-sm text-[#8b5e3c]">
+                            <i class="fa-solid fa-upload text-xs"></i>
+                            <span>{{ $imagenArchivo ? 'Cambiar imagen' : ($imagen ? 'Reemplazar imagen' : 'Seleccionar imagen') }}</span>
+                            <input type="file" wire:model="imagenArchivo" accept="image/*" class="hidden">
+                        </label>
+                        @error('imagenArchivo') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Título --}}

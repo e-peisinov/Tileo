@@ -4,9 +4,12 @@ namespace App\Livewire\Admin;
 
 use App\Models\Banner;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class GestionBanners extends Component
 {
+    use WithFileUploads;
+
     public bool $mostrarModal = false;
     public ?int $editandoId = null;
 
@@ -14,6 +17,7 @@ class GestionBanners extends Component
     public string $titulo = '';
     public string $subtitulo = '';
     public string $imagen = '';
+    public $imagenArchivo = null;
     public string $urlDestino = '';
     public string $textoBoton = '';
     public string $colorFondo = '';
@@ -25,7 +29,7 @@ class GestionBanners extends Component
     public function abrirCrear(): void
     {
         $this->reset([
-            'titulo', 'subtitulo', 'imagen', 'urlDestino',
+            'titulo', 'subtitulo', 'imagen', 'imagenArchivo', 'urlDestino',
             'textoBoton', 'colorFondo', 'mostrarDesde', 'mostrarHasta',
         ]);
         $this->activo = true;
@@ -41,6 +45,7 @@ class GestionBanners extends Component
         $this->titulo       = $b->titulo ?? '';
         $this->subtitulo    = $b->subtitulo ?? '';
         $this->imagen       = $b->imagen ?? '';
+        $this->imagenArchivo = null;
         $this->urlDestino   = $b->url_destino ?? '';
         $this->textoBoton   = $b->texto_boton ?? '';
         $this->colorFondo   = $b->color_fondo ?? '';
@@ -54,21 +59,35 @@ class GestionBanners extends Component
     public function guardar(): void
     {
         $this->validate([
-            'titulo'       => 'nullable|max:200',
-            'subtitulo'    => 'nullable|max:300',
-            'imagen'       => 'required|max:500',
-            'urlDestino'   => 'nullable|url|max:500',
-            'textoBoton'   => 'nullable|max:100',
-            'colorFondo'   => 'nullable|max:20',
-            'orden'        => 'integer|min:0',
-            'mostrarDesde' => 'nullable|date',
-            'mostrarHasta' => 'nullable|date|after_or_equal:mostrarDesde',
+            'titulo'        => 'nullable|max:200',
+            'subtitulo'     => 'nullable|max:300',
+            'imagen'        => 'nullable|max:500',
+            'imagenArchivo' => 'nullable|image|max:4096',
+            'urlDestino'    => 'nullable|url|max:500',
+            'textoBoton'    => 'nullable|max:100',
+            'colorFondo'    => 'nullable|max:20',
+            'orden'         => 'integer|min:0',
+            'mostrarDesde'  => 'nullable|date',
+            'mostrarHasta'  => 'nullable|date|after_or_equal:mostrarDesde',
         ]);
+
+        if ($this->imagenArchivo) {
+            $extension     = $this->imagenArchivo->getClientOriginalExtension();
+            $nombreArchivo = 'banner-' . uniqid() . '.' . $extension;
+            $destino       = public_path('imagenes/banners') . '/' . $nombreArchivo;
+
+            if (! copy($this->imagenArchivo->getRealPath(), $destino)) {
+                $this->addError('imagenArchivo', 'No se pudo guardar la imagen. Verificá los permisos del directorio.');
+                return;
+            }
+
+            $this->imagen = 'banners/' . $nombreArchivo;
+        }
 
         $datos = [
             'titulo'        => $this->titulo ?: null,
             'subtitulo'     => $this->subtitulo ?: null,
-            'imagen'        => $this->imagen,
+            'imagen'        => $this->imagen ?: null,
             'url_destino'   => $this->urlDestino ?: null,
             'texto_boton'   => $this->textoBoton ?: null,
             'color_fondo'   => $this->colorFondo ?: null,
