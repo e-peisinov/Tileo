@@ -118,7 +118,7 @@
             <div class="flex items-center justify-between h-16">
 
                 {{-- Logo --}}
-                <a href="{{ url('/') }}" class="flex flex-col leading-tight">
+                <a href="{{ url('/') }}" wire:navigate class="flex flex-col leading-tight">
                     <span class="text-2xl font-semibold text-[#386641]"
                           style="font-family: 'DM Serif Display', serif; letter-spacing: 0.02em;">
                         Tileo
@@ -130,46 +130,36 @@
 
                 {{-- Navegación desktop --}}
                 <nav class="hidden md:flex items-center gap-7">
-                    <a href="{{ url('/') }}"
+                    <a href="{{ url('/') }}" wire:navigate
                        class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
                         Inicio
                     </a>
-                    <a href="{{ route('catalogo') }}"
+                    <a href="{{ route('catalogo') }}" wire:navigate
                        class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
                         Catálogo
                     </a>
-                    <a href="{{ route('nosotros') }}"
+                    <a href="{{ route('nosotros') }}" wire:navigate
                        class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
                         Nosotros
                     </a>
-                    <a href="{{ route('preguntas') }}"
+                    <a href="{{ route('preguntas') }}" wire:navigate
                        class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
                         Preguntas
                     </a>
-                    <a href="{{ route('seguimiento-pedido') }}"
+                    <a href="{{ route('seguimiento-pedido') }}" wire:navigate
                        class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
                         Seguimiento de pedido
                     </a>
-                    <a href="{{ route('contacto') }}"
+                    <a href="{{ route('contacto') }}" wire:navigate
                        class="text-[14px] font-medium text-[#386641] border border-[#386641]/50 px-5 py-1.5 rounded-full hover:bg-[#386641] hover:text-[#faf6f0] hover:border-[#386641] transition-all duration-300">
                         Contacto
                     </a>
                     @if (Auth::check())
                         <div class="w-px h-4 bg-[#d4b896] self-center"></div>
-                        <a href="{{ route('admin.dashboard') }}" class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
-                            Dashboard
+                        <a href="{{ route('admin.dashboard') }}" wire:navigate class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
+                            Dashboard Admin
                         </a>
-                        <a href="{{ route('admin.pedidos') }}" class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
-                            Pedidos
-                        </a>
-                        <a href="{{ route('admin.productos') }}" class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
-                            Productos
-                        </a>
-                        <a href="{{ route('admin.categorias') }}" class="nav-link text-[14px] font-medium text-[#2c1a0e]/70 hover:text-[#2c1a0e] transition-colors duration-300">
-                            Categorías
-                        </a>
-                        <div class="w-px h-4 bg-[#d4b896] self-center"></div>
-                            <form method="POST" action="{{ route('logout') }}" class="block">
+                        <form method="POST" action="{{ route('logout') }}" class="block">
                             @csrf
                             <button type="submit" class="text-[14px] font-medium text-red-600 hover:text-red-800 transition-all duration-300">
                                 <i class="fas fa-sign-out-alt"></i>
@@ -204,19 +194,19 @@
              x-transition:leave-end="opacity-0 -translate-y-3"
              x-cloak>
             <nav class="flex flex-col px-6 py-5 gap-5">
-                <a href="{{ url('/') }}"
+                <a href="{{ url('/') }}" wire:navigate
                    class="text-sm font-medium text-[#2c1a0e]/70 hover:text-[#386641] transition-colors"
                    @click="menuAbierto = false">Inicio</a>
-                <a href="{{ url('/catalogo') }}"
+                <a href="{{ url('/catalogo') }}" wire:navigate
                    class="text-sm font-medium text-[#2c1a0e]/70 hover:text-[#386641] transition-colors"
                    @click="menuAbierto = false">Catálogo</a>
-                <a href="{{ url('/nosotros') }}"
+                <a href="{{ url('/nosotros') }}" wire:navigate
                    class="text-sm font-medium text-[#2c1a0e]/70 hover:text-[#386641] transition-colors"
                    @click="menuAbierto = false">Nosotros</a>
-                <a href="{{ url('/preguntas') }}"
+                <a href="{{ url('/preguntas') }}" wire:navigate
                    class="text-sm font-medium text-[#2c1a0e]/70 hover:text-[#386641] transition-colors"
                    @click="menuAbierto = false">Preguntas</a>
-                <a href="{{ url('/contacto') }}"
+                <a href="{{ url('/contacto') }}" wire:navigate
                    class="self-start text-sm font-medium text-[#386641] border border-[#386641]/50 px-5 py-1.5 rounded-full hover:bg-[#386641] hover:text-[#faf6f0] transition-all duration-300"
                    @click="menuAbierto = false">Contacto</a>
             </nav>
@@ -264,12 +254,12 @@
                     <span class="text-xs tracking-[0.2em] uppercase text-[#a7c957]/80 font-medium mb-2">
                         Navegación
                     </span>
-                    <a href="{{ url('/') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Inicio</a>
-                    <a href="{{ url('/catalogo') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Catálogo</a>
-                    <a href="{{ url('/nosotros') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Nosotros</a>
-                    <a href="{{ url('/preguntas') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Preguntas frecuentes</a>
-                    <a href="{{ url('/seguimiento') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Seguimiento de pedido</a>
-                    <a href="{{ url('/contacto') }}" class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Contacto</a>
+                    <a href="{{ url('/') }}" wire:navigate class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Inicio</a>
+                    <a href="{{ url('/catalogo') }}" wire:navigate class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Catálogo</a>
+                    <a href="{{ url('/nosotros') }}" wire:navigate class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Nosotros</a>
+                    <a href="{{ url('/preguntas') }}" wire:navigate class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Preguntas frecuentes</a>
+                    <a href="{{ url('/seguimiento') }}" wire:navigate class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Seguimiento de pedido</a>
+                    <a href="{{ url('/contacto') }}" wire:navigate class="text-sm text-[#d4b896]/70 hover:text-[#a7c957] transition-colors duration-200">Contacto</a>
                 </div>
 
                 <div class="flex flex-col gap-2">
@@ -278,55 +268,80 @@
                     </span>
                     <p class="text-sm text-[#d4b896]/70">Mercedes, Buenos Aires</p>
                     <p class="text-sm text-[#d4b896]/70">Argentina</p>
+                    <div class="flex gap-3 mt-2">
+                        <a href="https://www.instagram.com/tileo.mercedes" target="_blank" rel="noopener noreferrer"
+                           class="text-[#d4b896]/50 hover:text-[#a7c957] transition-colors duration-200"
+                           title="Seguinos en Instagram">
+                            <i class="fa-brands fa-instagram text-xl"></i>
+                        </a>
+                    </div>
                 </div>
 
+            </div>
+
+            {{-- Newsletter --}}
+            <div class="border-t border-[#d4b896]/10 mt-8 pt-8">
+                @livewire('newsletter-suscripcion')
             </div>
         </div>
 
         <div class="border-t border-[#d4b896]/10">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
                 <p class="text-xs text-[#d4b896]/35">&copy; {{ date('Y') }} Tileo. Todos los derechos reservados.</p>
-                <p class="text-xs text-[#d4b896]/35">Hecho con cuidado artesanal</p>
+                <div class="flex items-center gap-4">
+                    <a href="{{ route('terminos') }}" wire:navigate class="text-xs text-[#d4b896]/35 hover:text-[#d4b896]/60 transition-colors">Términos y condiciones</a>
+                    <span class="text-[#d4b896]/20">·</span>
+                    <a href="{{ route('privacidad') }}" wire:navigate class="text-xs text-[#d4b896]/35 hover:text-[#d4b896]/60 transition-colors">Privacidad</a>
+                </div>
             </div>
         </div>
     </footer>
 
     <script>
-        // ── Header: sombra al hacer scroll ──
-        const header = document.querySelector('header');
-        window.addEventListener('scroll', () => {
-            header.classList.toggle('con-sombra', window.scrollY > 15);
-        }, { passive: true });
+        // ── Inicialización por página (carga inicial + wire:navigate) ──
+        function initPagina() {
+            // Scroll animations con IntersectionObserver
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
 
-        // ── Scroll animations con IntersectionObserver ──
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target);
+            document.querySelectorAll('.fade-in, .fade-desde-izq, .fade-desde-der')
+                    .forEach(el => observer.observe(el));
+
+            // Hero parallax suave
+            const heroBg = document.querySelector('.hero-parallax');
+            if (heroBg && !heroBg._parallaxAdded) {
+                heroBg._parallaxAdded = true;
+                window.addEventListener('scroll', () => {
+                    heroBg.style.transform = `translateY(${window.scrollY * 0.22}px)`;
+                }, { passive: true });
+            }
+
+            // Nav link activo según URL actual
+            const ruta = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('activo');
+                const href = new URL(link.href).pathname;
+                if (href === ruta || (href !== '/' && ruta.startsWith(href))) {
+                    link.classList.add('activo');
                 }
             });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.fade-in, .fade-desde-izq, .fade-desde-der')
-                .forEach(el => observer.observe(el));
-
-        // ── Hero parallax suave ──
-        const heroBg = document.querySelector('.hero-parallax');
-        if (heroBg) {
-            window.addEventListener('scroll', () => {
-                heroBg.style.transform = `translateY(${window.scrollY * 0.22}px)`;
-            }, { passive: true });
         }
 
-        // ── Nav link activo según URL actual ──
-        const ruta = window.location.pathname;
-        document.querySelectorAll('.nav-link').forEach(link => {
-            const href = new URL(link.href).pathname;
-            if (href === ruta || (href !== '/' && ruta.startsWith(href))) {
-                link.classList.add('activo');
-            }
-        });
+        // ── Header: sombra al hacer scroll (se registra una sola vez) ──
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (header) header.classList.toggle('con-sombra', window.scrollY > 15);
+        }, { passive: true });
+
+        // ── Ejecutar en carga inicial y en cada navegación wire:navigate ──
+        document.addEventListener('DOMContentLoaded', initPagina);
+        document.addEventListener('livewire:navigated', initPagina);
 
         // ── Bounce del botón carrito al agregar producto ──
         document.addEventListener('livewire:initialized', () => {

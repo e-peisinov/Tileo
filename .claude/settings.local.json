@@ -20,7 +20,21 @@
       "Bash(cat >> \"C:\\\\xampp\\\\htdocs\\\\tileo\\\\.env\" << 'EOF'\n\n# Tileo — configuración del negocio\nTILEO_WHATSAPP=        # Ej: 5492324123456 \\(sin + ni espacios\\)\nADMIN_EMAIL=admin@tileo.com\nEOF)",
       "Bash(cd \"C:\\\\xampp\\\\htdocs\\\\tileo\" && php artisan migrate --force 2>&1)",
       "Bash(cd \"C:\\\\xampp\\\\htdocs\\\\tileo\" && php artisan db:seed --force 2>&1)",
-      "Bash(cd \"C:\\\\xampp\\\\htdocs\\\\tileo\" && php artisan tinker --execute=\"echo config\\('tileo.email_admin'\\);\")"
+      "Bash(cd \"C:\\\\xampp\\\\htdocs\\\\tileo\" && php artisan tinker --execute=\"echo config\\('tileo.email_admin'\\);\")",
+      "Bash(php artisan:*)",
+      "Bash(git -C C:/xampp/htdocs/tileo status)",
+      "Bash(git -C C:/xampp/htdocs/tileo log --oneline -5)",
+      "Bash(cat /c/xampp/htdocs/tileo/.env 2>/dev/null | grep -v \"^#\" | grep -v \"^$\" | cut -d= -f1)",
+      "Bash(find \"/c/xampp/htdocs/tileo/database/migrations\" -name \"*.php\" -type f 2>/dev/null | head -20)",
+      "Bash(grep -n \"fillable\" app/Models/*.php)",
+      "Bash(grep -n \"unprotected\\\\|mass assignment\" -i app/**/*.php 2>/dev/null | head -20)",
+      "Bash(cd \"C:/xampp/htdocs/tileo\" && php -l app/Livewire/Contacto.php && php -l app/Livewire/SeguimientoPedido.php && php -l app/Livewire/Checkout.php && php -l app/Livewire/ConfirmacionPedido.php && php -l app/Livewire/Catalogo.php && php -l app/Livewire/Admin/GestionPedidos.php && php -l app/Livewire/Admin/Dashboard.php && php -l app/Livewire/Admin/GestionProductos.php && php -l app/Livewire/Admin/GestionCategorias.php && php -l app/Livewire/Admin/GestionConfiguracion.php && php -l app/Livewire/Admin/GestionUsuarios.php && php -l app/Models/Configuracion.php && php -l app/Mail/ContactoMail.php 2>&1)",
+      "Bash(php -f \"/c/xampp/htdocs/tileo/artisan\" migrate --force 2>&1 | tail -20)",
+      "Bash(cd \"/c/xampp/htdocs/tileo\" && php artisan db:statement \"ALTER TABLE contenidos ADD COLUMN descripcion TEXT NULL AFTER etiqueta\" 2>&1 || mysql -u root tileo -e \"ALTER TABLE contenidos ADD COLUMN descripcion TEXT NULL AFTER etiqueta;\" 2>&1)",
+      "Bash(cd \"/c/xampp/htdocs/tileo\" && php artisan tinker --execute=\"echo App\\\\Models\\\\Contenido::obtener\\('preguntas_frecuentes', 'vacio'\\);\" 2>&1 | head -5)",
+      "Bash(grep -rn \"redirect.*navigate\" \"C:\\\\xampp\\\\htdocs\\\\tileo\\\\app\\\\Livewire\" 2>/dev/null | head -20)",
+      "Bash(find \"C:\\\\xampp\\\\htdocs\\\\tileo\" -name \"*.json\" -path \"*/node_modules\" -prune -o -type f -name \"vite.config.js\" -o -name \"vite.config.ts\" 2>/dev/null | grep -v node_modules | head -10)",
+      "Bash(find \"C:\\\\xampp\\\\htdocs\\\\tileo\" -name \"*.html\" -o -name \"livewire.json\" 2>/dev/null | grep -v node_modules | head -10)"
     ]
   }
 }

@@ -18,6 +18,15 @@ use App\Livewire\Admin\GestionProductos;
 use App\Livewire\Admin\GestionCategorias;
 use App\Livewire\Admin\GestionUsuarios;
 use App\Livewire\Admin\GestionConfiguracion;
+use App\Livewire\Admin\GestionClientes;
+use App\Livewire\Admin\GestionSuscriptores;
+use App\Livewire\Admin\GestionResenas;
+use App\Livewire\Admin\GestionBanners;
+use App\Livewire\Admin\GestionContenidos;
+use App\Livewire\Admin\GestionCodigos;
+use App\Livewire\Admin\Reportes;
+use App\Livewire\Terminos;
+use App\Livewire\Privacidad;
 
 // Ruta de logout
 Route::post('/logout', function () {
@@ -39,6 +48,8 @@ Route::get('/pedido/{numero}', ConfirmacionPedido::class)->name('confirmacion-pe
 Route::get('/seguimiento', SeguimientoPedido::class)->name('seguimiento-pedido');
 Route::get('/producto/{producto}', DetalleProducto::class)->name('detalle-producto');
 Route::get('/preguntas', Preguntas::class)->name('preguntas');
+Route::get('/terminos', Terminos::class)->name('terminos');
+Route::get('/privacidad', Privacidad::class)->name('privacidad');
 
 // Rutas de perfil (auth)
 Route::view('profile', 'profile')
@@ -54,6 +65,13 @@ Route::middleware(['auth', 'es_admin'])->prefix('admin')->name('admin.')->group(
     Route::get('/categorias', GestionCategorias::class)->name('categorias');
     Route::get('/usuarios', GestionUsuarios::class)->name('usuarios');
     Route::get('/configuracion', GestionConfiguracion::class)->name('configuracion');
+    Route::get('/clientes', GestionClientes::class)->name('clientes');
+    Route::get('/suscriptores', GestionSuscriptores::class)->name('suscriptores');
+    Route::get('/resenas', GestionResenas::class)->name('resenas');
+    Route::get('/banners', GestionBanners::class)->name('banners');
+    Route::get('/contenidos', GestionContenidos::class)->name('contenidos');
+    Route::get('/codigos-descuento', GestionCodigos::class)->name('codigos-descuento');
+    Route::get('/reportes', Reportes::class)->name('reportes');
 });
 
 require __DIR__.'/auth.php';

@@ -55,6 +55,7 @@ database/
 | `pedidos` | Pedidos de clientes. `numero_pedido` = TIL-0001 (auto). `estado` enum. `costo_envio` nullable (lo confirma el admin) |
 | `pedido_items` | Ítems de cada pedido con snapshot de `nombre_producto` y `precio_unitario` |
 | `pedido_historial_estados` | Historial de cambios de estado de cada pedido (`pedido_id`, `estado_anterior`, `estado_nuevo`, `nota`) |
+| `configuraciones` | Configuración del sitio. Pares clave-valor tipados (`clave`, `valor`, `tipo`, `etiqueta`, `descripcion`). Claves: `tiempo_entrega`, `mensaje_vacaciones`, `cbu`, `alias_cbu`, `titular_cuenta` |
 
 ## Modelos existentes
 - `Categoria` — `hasMany Producto`
@@ -63,6 +64,7 @@ database/
 - `PedidoItem` — snapshot de precio y nombre al momento del pedido
 - `PedidoHistorialEstado` — registra cada cambio de estado: `pedido_id`, `estado_anterior`, `estado_nuevo`, `nota`
 - `User` — campo `es_admin` bool
+- `Configuracion` — almacén de configuración del sitio. Métodos estáticos `obtener(clave, porDefecto)` y `establecer(clave, valor)`. Tipo puede ser `texto`, `booleano` o `numero`
 
 ## Componentes y páginas existentes
 
@@ -88,6 +90,8 @@ database/
 | `Admin\DetallePedido` | `/admin/pedidos/{id}` | Detalle + cambiar estado + costo de envío + notas + timeline visual de historial. Al cambiar estado: registra historial y envía email al cliente |
 | `Admin\GestionProductos` | `/admin/productos` | CRUD de productos con subida de imágenes, control de stock y toggle `destacado` (aparece en inicio) |
 | `Admin\GestionCategorias` | `/admin/categorias` | CRUD de categorías |
+| `Admin\GestionUsuarios` | `/admin/usuarios` | CRUD de usuarios: crear, editar, toggle `es_admin`, eliminar (con confirmación). No permite eliminar ni quitarse admin a uno mismo |
+| `Admin\GestionConfiguracion` | `/admin/configuracion` | Edición de las claves de la tabla `configuraciones`: tiempo de entrega, mensaje de vacaciones, datos bancarios (CBU, alias, titular) |
 
 ## Carrito — funcionamiento
 - Almacenado en `session('carrito')` como array indexado por `producto_id`
