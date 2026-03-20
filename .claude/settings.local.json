@@ -34,7 +34,15 @@
       "Bash(cd \"/c/xampp/htdocs/tileo\" && php artisan tinker --execute=\"echo App\\\\Models\\\\Contenido::obtener\\('preguntas_frecuentes', 'vacio'\\);\" 2>&1 | head -5)",
       "Bash(grep -rn \"redirect.*navigate\" \"C:\\\\xampp\\\\htdocs\\\\tileo\\\\app\\\\Livewire\" 2>/dev/null | head -20)",
       "Bash(find \"C:\\\\xampp\\\\htdocs\\\\tileo\" -name \"*.json\" -path \"*/node_modules\" -prune -o -type f -name \"vite.config.js\" -o -name \"vite.config.ts\" 2>/dev/null | grep -v node_modules | head -10)",
-      "Bash(find \"C:\\\\xampp\\\\htdocs\\\\tileo\" -name \"*.html\" -o -name \"livewire.json\" 2>/dev/null | grep -v node_modules | head -10)"
+      "Bash(find \"C:\\\\xampp\\\\htdocs\\\\tileo\" -name \"*.html\" -o -name \"livewire.json\" 2>/dev/null | grep -v node_modules | head -10)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//c/xampp/htdocs/tileo/app/Models/**)",
+      "Bash(done)",
+      "Bash(grep -E \"public function|HasMany|BelongsTo|scopeV|protected \\\\\\\\\\\\$fillable\" /c/xampp/htdocs/tileo/app/Models/Producto.php | head -30 && echo \"---PEDIDO---\" && grep -E \"public function|codigoDescuento|monto_descuento|notas_\" /c/xampp/htdocs/tileo/app/Models/Pedido.php | head -20)",
+      "Bash(ls -la /c/xampp/htdocs/tileo/*.md)",
+      "Bash(ls -la /c/xampp/htdocs/tileo/app/Models/ | grep -E \"\\\\.php$\")",
+      "Bash(grep -l \"class.*extends Component\" /c/xampp/htdocs/tileo/app/Livewire/*.php /c/xampp/htdocs/tileo/app/Livewire/Admin/*.php | wc -l)"
     ]
   }
 }

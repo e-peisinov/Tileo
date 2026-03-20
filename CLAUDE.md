@@ -29,7 +29,7 @@ app/
     Middleware/        # EsAdmin.php
 resources/
   views/
-    layouts/           # app.blade.php (layout principal con @livewire('carrito') y @stack('scripts'))
+    layouts/           # app.blade.php (público), admin.blade.php (panel), guest.blade.php (auth)
     livewire/
       admin/           # Vistas del panel admin
     emails/            # Templates de emails
@@ -52,19 +52,35 @@ database/
 | `users` | Usuarios del sistema. Columna `es_admin` (bool) distingue administradores |
 | `categorias` | Categorías de productos (`nombre`, `descripcion`, `activo`) |
 | `productos` | Productos (`nombre`, `descripcion`, `precio`, `stock`, `unidad`, `imagen`, `activo`, `destacado`, FK `categoria_id`) |
-| `pedidos` | Pedidos de clientes. `numero_pedido` = TIL-0001 (auto). `estado` enum. `costo_envio` nullable (lo confirma el admin) |
+| `pedidos` | Pedidos de clientes. `numero_pedido` = TIL-0001 (auto). `estado` enum. `costo_envio` nullable. `notas_cliente`, `notas_admin`. `codigo_descuento_id` nullable, `monto_descuento` decimal |
 | `pedido_items` | Ítems de cada pedido con snapshot de `nombre_producto` y `precio_unitario` |
 | `pedido_historial_estados` | Historial de cambios de estado de cada pedido (`pedido_id`, `estado_anterior`, `estado_nuevo`, `nota`) |
 | `configuraciones` | Configuración del sitio. Pares clave-valor tipados (`clave`, `valor`, `tipo`, `etiqueta`, `descripcion`). Claves: `tiempo_entrega`, `mensaje_vacaciones`, `cbu`, `alias_cbu`, `titular_cuenta` |
+| `resenas` | Reseñas de productos (`producto_id`, `pedido_id`, `calificacion` 1-5, `comentario`, `aprobada` bool) |
+| `avisos_stock` | Solicitudes de aviso cuando un producto vuelve a tener stock (`producto_id`, `email`) |
+| `imagenes_producto` | Galería de imágenes por producto (`producto_id`, `ruta`, `orden`) |
+| `suscriptores` | Suscriptores al newsletter (`email`, `nombre`, `activo`, `origen`) |
+| `contenidos` | Contenidos editables del sitio (`clave`, `titulo`, `cuerpo`, `tipo`, `etiqueta`) |
+| `banners` | Banners promocionales con visibilidad por fechas (`titulo`, `subtitulo`, `color`, `orden`, `mostrar_desde`, `mostrar_hasta`, `activo`) |
+| `codigos_descuento` | Códigos de descuento (`codigo`, `tipo`, `valor`, `minimo_compra`, `usos_max`, `activo`, `vence_en`) |
+| `uso_codigos_descuento` | Historial de uso de códigos de descuento (`codigo_descuento_id`, `pedido_id`) |
 
 ## Modelos existentes
 - `Categoria` — `hasMany Producto`
-- `Producto` — `belongsTo Categoria`, método `hayStock(int $cantidad)`. Campos booleanos: `activo`, `destacado`
-- `Pedido` — genera `numero_pedido` en `booted()`, métodos `etiquetaEstado()`, `colorEstado()`, `colorParaEstado()` (estático), `etiquetaParaEstado()` (estático), `calcularTotal()`, relación `historial()` → `PedidoHistorialEstado`
+- `Producto` — `belongsTo Categoria`, `imagenesGaleria()` HasMany `ImagenProducto`, `avisos()` HasMany `AvisoStock`, `resenas()` HasMany `Resena`, `resenasAprobadas()` HasMany, `promedioCalificacion(): float`, `hayStock(int $cantidad)`
+- `Pedido` — genera `numero_pedido` en `booted()`, `etiquetaEstado()`, `colorEstado()`, `colorParaEstado()` (estático), `etiquetaParaEstado()` (estático), `calcularTotal()` (resta `monto_descuento`), `historial()` → `PedidoHistorialEstado`, `codigoDescuento()` → `CodigoDescuento`
 - `PedidoItem` — snapshot de precio y nombre al momento del pedido
 - `PedidoHistorialEstado` — registra cada cambio de estado: `pedido_id`, `estado_anterior`, `estado_nuevo`, `nota`
 - `User` — campo `es_admin` bool
 - `Configuracion` — almacén de configuración del sitio. Métodos estáticos `obtener(clave, porDefecto)` y `establecer(clave, valor)`. Tipo puede ser `texto`, `booleano` o `numero`
+- `Contenido` — contenidos editables del sitio. Misma interfaz que `Configuracion`: `obtener(clave, porDefecto)` y `establecer(clave, valor)`
+- `Banner` — banners promocionales. Scope `vigentes()` filtra por fechas activas
+- `Resena` — reseña de producto. `belongsTo Producto`, `belongsTo Pedido`. Scope `aprobadas()`
+- `Suscriptor` — suscriptor al newsletter
+- `AvisoStock` — solicitud de aviso de reposición. `belongsTo Producto`
+- `ImagenProducto` — imagen de galería. `belongsTo Producto`
+- `CodigoDescuento` — código de descuento. `usos()` HasMany `UsoCodigoDescuento`
+- `UsoCodigoDescuento` — uso de un código. `belongsTo CodigoDescuento`, `belongsTo Pedido`
 
 ## Componentes y páginas existentes
 
@@ -77,10 +93,16 @@ database/
 | `Nosotros` | `/nosotros` | Historia del emprendimiento + sección "Cómo usarlos" con 4 recetas de ejemplo |
 | `Contacto` | `/contacto` | Formulario de contacto |
 | `Preguntas` | `/preguntas` | 8 preguntas frecuentes en acordeones con Alpine.js |
+| `Terminos` | `/terminos` | Página de términos y condiciones |
+| `Privacidad` | `/privacidad` | Página de política de privacidad |
 | `Carrito` | (drawer global) | Incluido en el layout. Escucha `producto-agregado` via `#[On]`. Carrito basado en `session('carrito')`. Botón flotante tiene `data-carrito-btn` para la animación bounce |
-| `Checkout` | `/checkout` | Formulario de pedido. Crea `Pedido` + `PedidoItem`, descuenta stock, envía email al admin y confirmación al cliente |
+| `Checkout` | `/checkout` | Formulario de pedido. Admite código de descuento. Crea `Pedido` + `PedidoItem`, descuenta stock, envía email al admin y confirmación al cliente |
 | `ConfirmacionPedido` | `/pedido/{numero}` | Resumen del pedido + botón WhatsApp + panel "¿Qué pasa ahora?" + botón rastrear pedido |
 | `SeguimientoPedido` | `/seguimiento` | El cliente busca su pedido por número y ve estado actual + timeline de historial |
+| `BusquedaGlobal` | (componente embebido) | Buscador global de productos. Métodos: `updatedTermino()`, `cerrar()` |
+| `NewsletterSuscripcion` | (componente embebido) | Formulario de suscripción al newsletter. Método: `suscribir()` |
+| `NotificarStock` | (componente embebido) | Permite al cliente dejar su email para ser avisado cuando un producto vuelva a tener stock. Requiere `$productoId` en `mount()` |
+| `FormularioResena` | (componente embebido) | Formulario para dejar reseña de un producto. Requiere `$productoId` en `mount()`. Verifica pedido previo del cliente antes de permitir reseña |
 
 ### Admin (requieren `auth` + `es_admin`)
 | Componente | Ruta | Descripción |
@@ -92,6 +114,13 @@ database/
 | `Admin\GestionCategorias` | `/admin/categorias` | CRUD de categorías |
 | `Admin\GestionUsuarios` | `/admin/usuarios` | CRUD de usuarios: crear, editar, toggle `es_admin`, eliminar (con confirmación). No permite eliminar ni quitarse admin a uno mismo |
 | `Admin\GestionConfiguracion` | `/admin/configuracion` | Edición de las claves de la tabla `configuraciones`: tiempo de entrega, mensaje de vacaciones, datos bancarios (CBU, alias, titular) |
+| `Admin\GestionClientes` | `/admin/clientes` | Vista de clientes con datos agregados (total pedidos, total gastado, último pedido). Solo lectura, con búsqueda y paginación |
+| `Admin\GestionSuscriptores` | `/admin/suscriptores` | Gestión de suscriptores al newsletter |
+| `Admin\GestionResenas` | `/admin/resenas` | Moderación de reseñas de productos (aprobar / rechazar) |
+| `Admin\GestionBanners` | `/admin/banners` | CRUD de banners promocionales con control de fechas de vigencia |
+| `Admin\GestionContenidos` | `/admin/contenidos` | Edición de contenidos editables de la tabla `contenidos` |
+| `Admin\GestionCodigos` | `/admin/codigos-descuento` | CRUD de códigos de descuento con toggle `activo` |
+| `Admin\Reportes` | `/admin/reportes` | Reportes con filtro por rango de fechas y exportación CSV |
 
 ## Carrito — funcionamiento
 - Almacenado en `session('carrito')` como array indexado por `producto_id`
@@ -103,6 +132,7 @@ database/
 
 ## Sistema de pedidos
 - Al confirmar el checkout: se crea el pedido, se descuenta stock, se envía email al admin (`NuevoPedidoMail`) y confirmación al cliente (`ConfirmacionClienteMail`)
+- El checkout admite códigos de descuento: si se aplica uno válido, se guarda `codigo_descuento_id` y `monto_descuento` en el pedido
 - El admin gestiona el pedido desde `/admin/pedidos` (cambiar estado, confirmar costo de envío)
 - Si el admin pasa un pedido a `rechazado` o `cancelado`, el stock se repone automáticamente
 - Cada cambio de estado queda registrado en `pedido_historial_estados` y dispara un email al cliente (`CambioEstadoMail`)
@@ -116,14 +146,22 @@ database/
 | `ConfirmacionClienteMail` | Al confirmar el checkout | Cliente (email del pedido) |
 | `CambioEstadoMail` | Cuando el admin cambia el estado del pedido | Cliente (email del pedido) |
 | `ContactoMail` | Al enviar el formulario de contacto | Admin (`ADMIN_EMAIL`) |
+| `ConfirmacionContactoMail` | Al enviar el formulario de contacto | Cliente (confirmación de recepción) |
+| `AvisoStockMail` | Cuando un producto vuelve a tener stock | Cliente que registró aviso |
+| `StockAgotadoMail` | Cuando un producto se queda sin stock | Admin (`ADMIN_EMAIL`) |
 
-Templates en `resources/views/emails/`: `nuevo-pedido.blade.php`, `confirmacion-cliente.blade.php`, `cambio-estado.blade.php`, `contacto.blade.php`
+Templates en `resources/views/emails/`: `nuevo-pedido.blade.php`, `confirmacion-cliente.blade.php`, `cambio-estado.blade.php`, `contacto.blade.php`, `confirmacion-contacto.blade.php`, `aviso-stock.blade.php`, `stock-agotado-admin.blade.php`
 
 ## Middleware
 - `es_admin` — alias registrado en `bootstrap/app.php`. Verifica `Auth::user()->es_admin === true`
 - Rutas admin protegidas con `middleware(['auth', 'es_admin'])`
 
-## Layout — características globales (`layouts/app.blade.php`)
+## Layouts
+- `layouts/app.blade.php` — layout principal del sitio público. Incluye `@livewire('carrito')` y `@stack('scripts')`
+- `layouts/admin.blade.php` — layout del panel de administración con barra lateral
+- `layouts/guest.blade.php` — layout para las páginas de autenticación (login, registro, etc.)
+
+## Layout público — características globales (`layouts/app.blade.php`)
 - Header sticky con sombra al hacer scroll, nav link activo con subrayado animado
 - Menú mobile con hamburguesa animada (Alpine.js)
 - Scroll animations: clases `fade-in`, `fade-desde-izq`, `fade-desde-der` con IntersectionObserver (**no usar en componentes Livewire**)
