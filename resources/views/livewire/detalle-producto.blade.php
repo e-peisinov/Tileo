@@ -152,7 +152,7 @@
                             <div class="bg-white rounded-2xl border border-[#d4b896]/30 p-5">
                                 <div class="flex items-start justify-between gap-4 mb-2">
                                     <div>
-                                        <p class="text-sm font-semibold text-[#2c1a0e]">{{ $resena->nombre_autor }}</p>
+                                        <p class="text-sm font-semibold text-[#2c1a0e]">{{ $resena->nombre_cliente }}</p>
                                         <p class="text-xs text-[#8b5e3c]/60">{{ $resena->created_at->format('d/m/Y') }}</p>
                                     </div>
                                     <div class="flex items-center gap-0.5 flex-shrink-0">

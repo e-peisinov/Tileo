@@ -32,6 +32,14 @@ class GestionConfiguracion extends Component
             'valores.titular_cuenta'     => 'nullable|max:100',
         ]);
 
+        // Normalizar el booleano para guardarlo consistentemente como string
+        if (array_key_exists('modo_vacaciones', $this->valores)) {
+            $this->valores['modo_vacaciones'] = filter_var(
+                $this->valores['modo_vacaciones'] ?? false,
+                FILTER_VALIDATE_BOOLEAN
+            ) ? 'true' : 'false';
+        }
+
         foreach ($this->valores as $clave => $valor) {
             Configuracion::updateOrCreate(
                 ['clave' => $clave],
