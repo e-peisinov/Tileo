@@ -4,9 +4,11 @@ namespace App\Livewire\Admin;
 
 use App\Models\CodigoDescuento;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class GestionCodigos extends Component
 {
+    use WithPagination;
     public bool $mostrarModal = false;
     public ?int $editandoId = null;
 
@@ -96,7 +98,7 @@ class GestionCodigos extends Component
 
     public function render()
     {
-        $codigos = CodigoDescuento::withCount('usos')->latest()->get();
+        $codigos = CodigoDescuento::withCount('usos')->latest()->paginate(20);
 
         return view('livewire.admin.gestion-codigos', compact('codigos'))
             ->layout('layouts.admin', ['titulo' => 'Códigos de descuento — Admin Tileo']);

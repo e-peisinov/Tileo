@@ -106,6 +106,13 @@
         @endif
     </div>
 
+    {{-- Paginación --}}
+    @if($codigos->hasPages())
+        <div class="mt-4">
+            {{ $codigos->links() }}
+        </div>
+    @endif
+
     {{-- Modal crear/editar --}}
     @if($mostrarModal)
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
