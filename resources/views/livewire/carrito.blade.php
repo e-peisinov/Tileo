@@ -98,10 +98,10 @@
                     <div class="flex flex-col items-center justify-center h-full py-20 gap-4 text-center">
                         <i class="fa-solid fa-basket-shopping text-4xl text-[#d4b896]"></i>
                         <p class="text-[#8b5e3c]/70 text-sm">Tu carrito está vacío</p>
-                        <button wire:click="cerrarCarrito"
+                        <a href="{{ route('catalogo') }}" wire:navigate wire:click="cerrarCarrito"
                                 class="text-[12px] text-[#386641] border border-[#386641]/40 px-5 py-2 hover:bg-[#386641] hover:text-white transition-all duration-300">
                             Ver catálogo
-                        </button>
+                        </a>
                     </div>
                 @endforelse
             </div>
