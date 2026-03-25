@@ -108,6 +108,13 @@ class RutasPublicasTest extends TestCase
         }
     }
 
+    // ── Registro deshabilitado ───────────────────────────────────────────────
+
+    public function test_registro_publico_redirige_al_login(): void
+    {
+        $this->get('/register')->assertRedirect('/login');
+    }
+
     // ── SEO ─────────────────────────────────────────────────────────────────
 
     public function test_inicio_tiene_meta_descripcion(): void

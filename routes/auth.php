@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::middleware('guest')->group(function () {
-    Volt::route('register', 'pages.auth.register')
+    // El registro público está deshabilitado: solo el admin crea usuarios desde el panel.
+    Route::get('register', fn () => redirect()->route('login'))
         ->name('register');
 
     Volt::route('login', 'pages.auth.login')
