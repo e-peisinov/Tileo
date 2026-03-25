@@ -42,7 +42,8 @@
       "Bash(grep -E \"public function|HasMany|BelongsTo|scopeV|protected \\\\\\\\\\\\$fillable\" /c/xampp/htdocs/tileo/app/Models/Producto.php | head -30 && echo \"---PEDIDO---\" && grep -E \"public function|codigoDescuento|monto_descuento|notas_\" /c/xampp/htdocs/tileo/app/Models/Pedido.php | head -20)",
       "Bash(ls -la /c/xampp/htdocs/tileo/*.md)",
       "Bash(ls -la /c/xampp/htdocs/tileo/app/Models/ | grep -E \"\\\\.php$\")",
-      "Bash(grep -l \"class.*extends Component\" /c/xampp/htdocs/tileo/app/Livewire/*.php /c/xampp/htdocs/tileo/app/Livewire/Admin/*.php | wc -l)"
+      "Bash(grep -l \"class.*extends Component\" /c/xampp/htdocs/tileo/app/Livewire/*.php /c/xampp/htdocs/tileo/app/Livewire/Admin/*.php | wc -l)",
+      "Bash(ls -la \"C:\\\\xampp\\\\htdocs\\\\tileo\\\\resources\\\\views\\\\livewire\" | grep -E \"\\\\.blade\\\\.php$\" | grep -v \"admin\\\\|pages\\\\|profile\\\\|layout\")"
     ]
   }
 }
