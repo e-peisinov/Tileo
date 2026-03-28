@@ -13,11 +13,13 @@ class PedidoItem extends Model
         'pedido_id', 'producto_id',
         'nombre_producto', 'precio_unitario',
         'cantidad', 'subtotal',
+        'tipo', 'madera_id', 'condimentos',
     ];
 
     protected $casts = [
         'precio_unitario' => 'decimal:2',
         'subtotal'        => 'decimal:2',
+        'condimentos'     => 'array',
     ];
 
     public function pedido(): BelongsTo
