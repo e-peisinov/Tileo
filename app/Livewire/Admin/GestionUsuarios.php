@@ -96,6 +96,13 @@ class GestionUsuarios extends Component
     public function confirmarEliminar(): void
     {
         if ($this->idParaEliminar) {
+            if ($this->idParaEliminar === auth()->id()) {
+                $this->errorEliminar = 'No podés eliminar tu propio usuario.';
+                $this->mostrarConfirmarEliminar = false;
+                $this->idParaEliminar = null;
+                $this->nombreParaEliminar = '';
+                return;
+            }
             User::findOrFail($this->idParaEliminar)->delete();
         }
         $this->mostrarConfirmarEliminar = false;

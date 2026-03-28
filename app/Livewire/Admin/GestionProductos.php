@@ -196,11 +196,6 @@ class GestionProductos extends Component
         $this->nombreParaEliminar = '';
     }
 
-    public function eliminar(int $id): void
-    {
-        Producto::findOrFail($id)->delete();
-    }
-
     public function toggleActivo(int $id): void
     {
         $producto = Producto::findOrFail($id);

@@ -97,19 +97,6 @@ class GestionCategorias extends Component
         $this->nombreParaEliminar = '';
     }
 
-    public function eliminar(int $id): void
-    {
-        $cat = Categoria::withCount('productos')->findOrFail($id);
-
-        if ($cat->productos_count > 0) {
-            $this->errorEliminar = "No se puede eliminar \"{$cat->nombre}\": tiene {$cat->productos_count} producto(s) asociado(s).";
-            return;
-        }
-
-        $cat->delete();
-        $this->errorEliminar = '';
-    }
-
     private function resetCampos(): void
     {
         $this->nombre = $this->descripcion = '';
