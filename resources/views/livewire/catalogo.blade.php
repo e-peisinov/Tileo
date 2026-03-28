@@ -163,7 +163,7 @@
                                         {{ $producto->categoria->nombre }}
                                     </span>
                                 </div>
-                                @if($producto->stock > 0 && $producto->stock <= 5)
+                                @if($producto->stock > 0 && $producto->stock <= config('tileo.stock_bajo_umbral'))
                                     <div class="absolute top-3 right-3">
                                         <span class="bg-red-600 text-[#faf6f0] text-[10px] tracking-[0.12em] uppercase font-medium px-2.5 py-1">
                                             Últimas {{ $producto->stock }}

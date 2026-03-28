@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             ProductoSeeder::class,
             ConfiguracionSeeder::class,
+            ContenidosSeeder::class,
         ]);
     }
 }

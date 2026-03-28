@@ -9,10 +9,9 @@ class ContenidosSeeder extends Seeder
     {
         // Nosotros - historia
         Contenido::updateOrCreate(['clave' => 'nosotros_historia'], [
-            'etiqueta'    => 'Historia de Tileo',
-            'tipo'        => 'html',
-            'descripcion' => 'Texto de la sección "Nuestra historia" en la página Nosotros',
-            'cuerpo'      => '<p>Somos un emprendimiento familiar de Mercedes, Buenos Aires, apasionados por las hierbas, especias y condimentos artesanales.</p>',
+            'etiqueta' => 'Historia de Tileo',
+            'tipo'     => 'html',
+            'cuerpo'   => '<p>Somos un emprendimiento familiar de Mercedes, Buenos Aires, apasionados por las hierbas, especias y condimentos artesanales.</p>',
         ]);
 
         // FAQs
@@ -27,10 +26,9 @@ class ContenidosSeeder extends Seeder
             ['pregunta' => '¿Tienen productos orgánicos?', 'respuesta' => 'Trabajamos con productores locales y procuramos ingredientes de origen conocido. Consultanos por opciones específicas.'],
         ];
         Contenido::updateOrCreate(['clave' => 'preguntas_frecuentes'], [
-            'etiqueta'    => 'Preguntas frecuentes',
-            'tipo'        => 'json_faq',
-            'descripcion' => 'Lista de preguntas y respuestas frecuentes',
-            'cuerpo'      => json_encode($faqs, JSON_UNESCAPED_UNICODE),
+            'etiqueta' => 'Preguntas frecuentes',
+            'tipo'     => 'json_faq',
+            'cuerpo'   => json_encode($faqs, JSON_UNESCAPED_UNICODE),
         ]);
     }
 }

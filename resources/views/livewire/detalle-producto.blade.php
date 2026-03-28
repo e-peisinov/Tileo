@@ -88,7 +88,7 @@
                     </div>
 
                     {{-- Badge de stock bajo --}}
-                    @if($producto->stock > 0 && $producto->stock <= 5)
+                    @if($producto->stock > 0 && $producto->stock <= config('tileo.stock_bajo_umbral'))
                         <div class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
                              style="background-color: rgba(139,94,60,0.12); color: #8b5e3c;">
                             <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>

@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Models\Categoria;
 use App\Models\ImagenProducto;
 use App\Models\Producto;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -84,7 +85,7 @@ class GestionProductos extends Component
             'stock'          => 'required|integer|min:0',
             'unidad'         => 'required|max:30',
             'imagen'         => 'nullable|max:255',
-            'categoria_id'   => 'required|exists:categorias,id',
+            'categoria_id'   => ['required', Rule::exists('categorias', 'id')->where('activo', true)],
             'imagenArchivo'  => 'nullable|image|max:2048',
             'galeriaArchivo0' => 'nullable|image|max:2048',
             'galeriaArchivo1' => 'nullable|image|max:2048',
@@ -94,7 +95,12 @@ class GestionProductos extends Component
         ]);
 
         if ($this->imagenArchivo) {
-            $extension     = $this->imagenArchivo->getClientOriginalExtension();
+            $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            $extension = strtolower($this->imagenArchivo->getClientOriginalExtension());
+            if (! in_array($extension, $extensionesPermitidas)) {
+                $this->addError('imagenArchivo', 'Solo se permiten imágenes JPG, PNG, GIF o WEBP.');
+                return;
+            }
             $nombreArchivo = \Str::slug($this->nombre) . '-' . uniqid() . '.' . $extension;
             $destino       = public_path('imagenes') . '/' . $nombreArchivo;
 
@@ -131,7 +137,8 @@ class GestionProductos extends Component
 
         foreach ($galeriaSlots as $slot) {
             if ($this->$slot) {
-                $ext      = $this->$slot->getClientOriginalExtension();
+                $ext = strtolower($this->$slot->getClientOriginalExtension());
+                if (! in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) continue;
                 $archivo  = \Str::slug($producto->nombre) . '-galeria-' . uniqid() . '.' . $ext;
                 $destino  = public_path('imagenes') . '/' . $archivo;
 

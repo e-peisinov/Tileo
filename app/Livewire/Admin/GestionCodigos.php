@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\CodigoDescuento;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -49,8 +50,10 @@ class GestionCodigos extends Component
 
     public function guardar(): void
     {
+        $this->codigo = strtoupper(trim($this->codigo));
+
         $this->validate([
-            'codigo'       => 'required|max:50',
+            'codigo'       => ['required', 'max:50', Rule::unique('codigos_descuento', 'codigo')->ignore($this->editandoId)],
             'tipo'         => 'required|in:porcentaje,monto_fijo',
             'valor'        => 'required|numeric|min:0',
             'minimoCompra' => 'nullable|numeric|min:0',
@@ -58,17 +61,8 @@ class GestionCodigos extends Component
             'usosMaximos'  => 'nullable|integer|min:1',
         ]);
 
-        $query = CodigoDescuento::where('codigo', strtoupper($this->codigo));
-        if ($this->editandoId) {
-            $query->where('id', '!=', $this->editandoId);
-        }
-        if ($query->exists()) {
-            $this->addError('codigo', 'Este código ya existe.');
-            return;
-        }
-
         $datos = [
-            'codigo'                => strtoupper($this->codigo),
+            'codigo'                => $this->codigo,
             'tipo'                  => $this->tipo,
             'valor'                 => $this->valor,
             'minimo_compra'         => $this->minimoCompra ?: null,

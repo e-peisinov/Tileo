@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 
@@ -52,20 +53,25 @@ class GestionUsuarios extends Component
         ]);
 
         $datos = [
-            'name'     => $this->nombre,
-            'email'    => $this->email,
-            'es_admin' => $this->es_admin,
+            'name'  => $this->nombre,
+            'email' => $this->email,
         ];
 
         if ($this->password) {
             $datos['password'] = Hash::make($this->password);
+            $this->password = ''; // Limpiar del estado del componente inmediatamente
         }
 
-        if ($this->editandoId) {
-            User::findOrFail($this->editandoId)->update($datos);
-        } else {
-            User::create($datos);
-        }
+        DB::transaction(function () use ($datos) {
+            if ($this->editandoId) {
+                $usuario = User::findOrFail($this->editandoId);
+                $usuario->update($datos);
+            } else {
+                $usuario = User::create($datos);
+            }
+            $usuario->es_admin = $this->es_admin;
+            $usuario->save();
+        });
 
         $this->mostrarModal = false;
         $this->guardado = true;
@@ -78,7 +84,8 @@ class GestionUsuarios extends Component
             return; // No puede quitarse el admin a sí mismo
         }
         $usuario = User::findOrFail($id);
-        $usuario->update(['es_admin' => ! $usuario->es_admin]);
+        $usuario->es_admin = ! $usuario->es_admin;
+        $usuario->save();
     }
 
     public function pedirEliminar(int $id): void

@@ -41,10 +41,7 @@ class GestionConfiguracion extends Component
         }
 
         foreach ($this->valores as $clave => $valor) {
-            Configuracion::updateOrCreate(
-                ['clave' => $clave],
-                ['valor' => $valor]
-            );
+            Configuracion::establecer($clave, $valor);
         }
 
         $this->guardado = true;

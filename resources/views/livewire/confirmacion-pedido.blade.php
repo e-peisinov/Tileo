@@ -46,9 +46,19 @@
                     <span>Subtotal</span>
                     <span>${{ number_format($pedido->subtotal, 2, ',', '.') }}</span>
                 </div>
+                @if($pedido->monto_descuento > 0)
+                <div class="flex justify-between text-sm text-[#386641]">
+                    <span>Descuento</span>
+                    <span>− ${{ number_format($pedido->monto_descuento, 2, ',', '.') }}</span>
+                </div>
+                @endif
                 <div class="flex justify-between text-sm text-[#2c1a0e]/70">
                     <span>Envío</span>
                     <span>{{ $pedido->metodo_entrega === 'retiro' ? 'Sin costo' : 'A confirmar' }}</span>
+                </div>
+                <div class="flex justify-between text-sm font-semibold text-[#2c1a0e]">
+                    <span>Total</span>
+                    <span>${{ number_format($pedido->total, 2, ',', '.') }}</span>
                 </div>
             </div>
         </div>

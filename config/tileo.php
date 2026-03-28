@@ -16,4 +16,13 @@ return [
     |--------------------------------------------------------------------------
     */
     'email_admin' => env('ADMIN_EMAIL', 'admin@tileo.com'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Umbral de stock bajo
+    |--------------------------------------------------------------------------
+    | Cantidad a partir de la cual se muestra la alerta de "stock bajo" en
+    | el catálogo y en el panel de administración.
+    */
+    'stock_bajo_umbral' => 5,
 ];

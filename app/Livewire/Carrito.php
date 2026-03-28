@@ -35,6 +35,12 @@ class Carrito extends Component
         if (isset($carrito[$productoId])) {
             $nuevaCantidad = $carrito[$productoId]['cantidad'] + $cantidad;
             $nuevaCantidad = min($nuevaCantidad, $producto->stock);
+            if ($nuevaCantidad <= 0) {
+                unset($carrito[$productoId]);
+                session(['carrito' => $carrito]);
+                $this->abierto = true;
+                return;
+            }
             $carrito[$productoId]['cantidad'] = $nuevaCantidad;
             $carrito[$productoId]['subtotal'] = $producto->precio * $nuevaCantidad;
         } else {

@@ -72,6 +72,24 @@ class Reportes extends Component
             ->orderByDesc('total_ingresos')
             ->get();
 
+        // Incluir maderas (tienen producto_id = null, no pertenecen a categoría)
+        $maderasRow = PedidoItem::where('tipo', 'madera')
+            ->selectRaw('SUM(cantidad) as total_unidades, SUM(subtotal) as total_ingresos')
+            ->whereHas('pedido', fn ($q) => $q
+                ->whereNotIn('estado', ['rechazado', 'cancelado'])
+                ->when($this->fechaDesde, fn ($s) => $s->whereDate('created_at', '>=', $this->fechaDesde))
+                ->when($this->fechaHasta, fn ($s) => $s->whereDate('created_at', '<=', $this->fechaHasta)))
+            ->first();
+
+        if ($maderasRow && $maderasRow->total_ingresos > 0) {
+            $porCategoria->push((object) [
+                'categoria'      => 'Maderas',
+                'total_unidades' => $maderasRow->total_unidades,
+                'total_ingresos' => $maderasRow->total_ingresos,
+            ]);
+            $porCategoria = $porCategoria->sortByDesc('total_ingresos')->values();
+        }
+
         $topProductos = PedidoItem::selectRaw('nombre_producto, SUM(cantidad) as total_vendido, SUM(subtotal) as total_ingresos')
             ->whereHas('pedido', fn ($q) => $q
                 ->whereNotIn('estado', ['rechazado', 'cancelado'])

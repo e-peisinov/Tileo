@@ -59,7 +59,7 @@ class GestionBanners extends Component
     public function guardar(): void
     {
         $this->validate([
-            'titulo'        => 'nullable|max:200',
+            'titulo'        => 'required|min:1|max:200',
             'subtitulo'     => 'nullable|max:300',
             'imagen'        => 'nullable|max:500',
             'imagenArchivo' => 'nullable|image|max:4096',
@@ -85,7 +85,7 @@ class GestionBanners extends Component
         }
 
         $datos = [
-            'titulo'        => $this->titulo ?: null,
+            'titulo'        => $this->titulo,
             'subtitulo'     => $this->subtitulo ?: null,
             'imagen'        => $this->imagen ?: null,
             'url_destino'   => $this->urlDestino ?: null,

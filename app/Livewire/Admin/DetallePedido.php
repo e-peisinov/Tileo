@@ -6,6 +6,7 @@ use App\Mail\CambioEstadoMail;
 use App\Models\Pedido;
 use App\Models\PedidoHistorialEstado;
 use App\Models\Producto;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
@@ -34,23 +35,11 @@ class DetallePedido extends Component
             'costo_envio' => 'nullable|numeric|min:0',
         ]);
 
-        $estadoAnterior   = $this->pedido->estado;
-        $cancelados       = ['rechazado', 'cancelado'];
+        $estadoAnterior    = $this->pedido->estado;
+        $cancelados        = ['rechazado', 'cancelado'];
         $entrandoCancelado = in_array($this->estado, $cancelados) && ! in_array($estadoAnterior, $cancelados);
         $saliendoCancelado = ! in_array($this->estado, $cancelados) && in_array($estadoAnterior, $cancelados);
-
-        // Reponer stock al cancelar/rechazar; descontar si se reactiva desde cancelado
-        if ($entrandoCancelado || $saliendoCancelado) {
-            foreach ($this->pedido->items as $item) {
-                if ($item->producto_id) {
-                    if ($entrandoCancelado) {
-                        Producto::where('id', $item->producto_id)->increment('stock', $item->cantidad);
-                    } else {
-                        Producto::where('id', $item->producto_id)->decrement('stock', $item->cantidad);
-                    }
-                }
-            }
-        }
+        $cambioDeEstado    = $estadoAnterior !== $this->estado;
 
         $datos = [
             'estado'      => $this->estado,
@@ -63,17 +52,48 @@ class DetallePedido extends Component
             $datos['total'] = $this->pedido->subtotal - $this->pedido->monto_descuento + ($costoEnvio ?? 0);
         }
 
-        $this->pedido->update($datos);
+        DB::transaction(function () use ($datos, $entrandoCancelado, $saliendoCancelado, $estadoAnterior, $cambioDeEstado) {
+            // Ajustar stock con lock para evitar race conditions
+            if ($entrandoCancelado || $saliendoCancelado) {
+                foreach ($this->pedido->items as $item) {
+                    if ($item->tipo === 'madera' && $item->condimentos) {
+                        foreach ($item->condimentos as $condimento) {
+                            if (empty($condimento['producto_id'])) continue;
+                            $producto = Producto::lockForUpdate()->find($condimento['producto_id']);
+                            if (! $producto) continue;
+                            if ($entrandoCancelado) {
+                                $producto->increment('stock', $condimento['cantidad']);
+                            } elseif ($producto->stock >= $condimento['cantidad']) {
+                                $producto->decrement('stock', $condimento['cantidad']);
+                            }
+                        }
+                    } elseif ($item->producto_id) {
+                        $producto = Producto::lockForUpdate()->find($item->producto_id);
+                        if (! $producto) continue;
+                        if ($entrandoCancelado) {
+                            $producto->increment('stock', $item->cantidad);
+                        } elseif ($producto->stock >= $item->cantidad) {
+                            $producto->decrement('stock', $item->cantidad);
+                        }
+                    }
+                }
+            }
+
+            $this->pedido->update($datos);
+
+            if ($cambioDeEstado) {
+                PedidoHistorialEstado::create([
+                    'pedido_id'       => $this->pedido->id,
+                    'estado_anterior' => $estadoAnterior,
+                    'estado_nuevo'    => $this->estado,
+                    'notas'           => $this->notas_admin ?: null,
+                ]);
+            }
+        });
+
         $this->pedido->refresh();
 
-        if ($estadoAnterior !== $this->estado) {
-            PedidoHistorialEstado::create([
-                'pedido_id'       => $this->pedido->id,
-                'estado_anterior' => $estadoAnterior,
-                'estado_nuevo'    => $this->estado,
-                'notas'           => $this->notas_admin ?: null,
-            ]);
-
+        if ($cambioDeEstado) {
             if ($this->pedido->email_cliente) {
                 try {
                     Mail::to($this->pedido->email_cliente)
@@ -82,7 +102,6 @@ class DetallePedido extends Component
                     \Log::error('Error al encolar email cambio estado: ' . $e->getMessage());
                 }
             }
-
             $this->pedido->load('historial');
         }
 

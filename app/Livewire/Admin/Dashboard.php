@@ -27,14 +27,14 @@ class Dashboard extends Component
             'total_pedidos' => (clone $base)->count(),
             'pendientes'    => (clone $base)->where('estado', 'pendiente')->count(),
             'hoy'           => Pedido::whereDate('created_at', today())->count(),
-            'stock_bajo'    => Producto::where('activo', true)->where('stock', '<=', 3)->count(),
+            'stock_bajo'    => Producto::where('activo', true)->where('stock', '<=', config('tileo.stock_bajo_umbral'))->count(),
             'ingresos_mes'  => (clone $base)->whereNotIn('estado', ['rechazado', 'cancelado'])->sum('total'),
         ];
 
         $ultimosPedidos = (clone $base)->latest()->limit(8)->get();
 
         $productosBajoStock = Producto::where('activo', true)
-            ->where('stock', '<=', 3)
+            ->where('stock', '<=', config('tileo.stock_bajo_umbral'))
             ->orderBy('stock')
             ->limit(10)
             ->get();

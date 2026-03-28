@@ -60,6 +60,9 @@
 
     <table>
         <tr><td>Subtotal</td><td style="text-align:right">${{ number_format($pedido->subtotal, 2, ',', '.') }}</td></tr>
+        @if($pedido->monto_descuento > 0)
+        <tr><td>Descuento</td><td style="text-align:right; color:#386641;">− ${{ number_format($pedido->monto_descuento, 2, ',', '.') }}</td></tr>
+        @endif
         <tr>
             <td>Envío</td>
             <td style="text-align:right">

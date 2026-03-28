@@ -23,7 +23,7 @@ class DetalleProducto extends Component
             ->limit(3)
             ->get();
 
-        $imagenesGaleria = $this->producto->imagenesGaleria()->orderBy('orden')->get();
+        $imagenesGaleria = $this->producto->imagenesGaleria()->get();
         $resenas         = $this->producto->resenasAprobadas()->latest()->limit(10)->get();
         $promedio        = $this->producto->promedioCalificacion();
 

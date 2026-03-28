@@ -18,25 +18,25 @@ use Livewire\Component;
 
 class Checkout extends Component
 {
-    #[Validate('required|min:2|max:100')]
+    #[Validate('required|min:2|max:100', message: 'El nombre es requerido y debe tener al menos 2 caracteres.')]
     public string $nombre = '';
 
-    #[Validate('required|email|max:150')]
+    #[Validate('required|email|max:150', message: 'Ingresá un email válido.')]
     public string $email = '';
 
-    #[Validate('required|min:8|max:30')]
+    #[Validate('required|min:8|max:30', message: 'El teléfono es requerido (mínimo 8 caracteres).')]
     public string $telefono = '';
 
-    #[Validate('required|in:envio,retiro')]
+    #[Validate('required|in:envio,retiro', message: 'Seleccioná un método de entrega válido.')]
     public string $metodo_entrega = 'retiro';
 
-    #[Validate('required|in:transferencia,efectivo')]
+    #[Validate('required|in:transferencia,efectivo', message: 'Seleccioná un método de pago válido.')]
     public string $metodo_pago = 'efectivo';
 
-    #[Validate('nullable|min:5|max:255')]
+    #[Validate('nullable|min:5|max:255', message: 'La dirección debe tener al menos 5 caracteres.')]
     public string $direccion = '';
 
-    #[Validate('nullable|max:500')]
+    #[Validate('nullable|max:500', message: 'Las notas no pueden superar los 500 caracteres.')]
     public string $notas = '';
 
     // Código de descuento
@@ -87,8 +87,19 @@ class Checkout extends Component
 
         $codigoObj = CodigoDescuento::where('codigo', $codigo)->first();
 
-        if (! $codigoObj || ! $codigoObj->estaVigente()) {
+        if (! $codigoObj) {
             $this->mensajeDescuento = 'El código no es válido o ya expiró.';
+            return;
+        }
+
+        if (! $codigoObj->estaVigente()) {
+            if ($codigoObj->usos_maximos !== null && $codigoObj->usos_actuales >= $codigoObj->usos_maximos) {
+                $this->mensajeDescuento = 'Este código ya alcanzó el límite de usos permitidos.';
+            } elseif ($codigoObj->expira_en && $codigoObj->expira_en->isPast()) {
+                $this->mensajeDescuento = 'Este código ya expiró.';
+            } else {
+                $this->mensajeDescuento = 'El código no es válido o ya expiró.';
+            }
             return;
         }
 
@@ -99,7 +110,8 @@ class Checkout extends Component
             return;
         }
 
-        if ($codigoObj->solo_un_uso_por_email && ! empty($this->email) && $codigoObj->yaUsadoPorEmail($this->email)) {
+        $emailValido = ! empty($this->email) && filter_var($this->email, FILTER_VALIDATE_EMAIL);
+        if ($codigoObj->solo_un_uso_por_email && $emailValido && $codigoObj->yaUsadoPorEmail(strtolower(trim($this->email)))) {
             $this->mensajeDescuento = 'Ya usaste este código anteriormente.';
             return;
         }
@@ -173,6 +185,15 @@ class Checkout extends Component
             return;
         }
 
+        // Validar integridad de cada madera: total de condimentos debe coincidir con capacidad
+        foreach ($maderas as $madera) {
+            $totalCondimentos = array_sum(array_column($madera['condimentos'], 'cantidad'));
+            if ($totalCondimentos !== (int) $madera['capacidad']) {
+                $this->addError('carrito', 'La configuración de "' . $madera['nombre'] . '" no es válida. Quitala del carrito y volvé a configurarla.');
+                return;
+            }
+        }
+
         // Calcular demanda total de stock por producto (productos individuales + condimentos de maderas)
         $demanda = [];
 
@@ -194,23 +215,6 @@ class Checkout extends Component
         $total            = $this->obtenerTotal();
         $emailNormalizado = strtolower(trim($this->email));
 
-        // Re-validar el código de descuento con el email real del cliente
-        if ($this->descuentoAplicado) {
-            $codigoObj = CodigoDescuento::find($this->descuentoAplicado->id);
-            if (! $codigoObj || ! $codigoObj->estaVigente()) {
-                $this->addError('codigoDescuentoInput', 'El código de descuento ya no es válido.');
-                $this->quitarDescuento();
-                $this->procesando = false;
-                return;
-            }
-            if ($codigoObj->solo_un_uso_por_email && $codigoObj->yaUsadoPorEmail($emailNormalizado)) {
-                $this->addError('codigoDescuentoInput', 'Ya usaste este código con este email.');
-                $this->quitarDescuento();
-                $this->procesando = false;
-                return;
-            }
-        }
-
         $descuentoAplicadoId = $this->descuentoAplicado?->id;
         $montoDescuento      = $this->montoDescuento;
 
@@ -228,6 +232,17 @@ class Checkout extends Component
                         throw new \Exception("No hay stock suficiente para {$nombre}.");
                     }
                     $productosLocked[$productoId] = $producto;
+                }
+
+                // Re-validar el código de descuento con lock para evitar race conditions
+                if ($descuentoAplicadoId) {
+                    $codigoLocked = CodigoDescuento::lockForUpdate()->find($descuentoAplicadoId);
+                    if (! $codigoLocked || ! $codigoLocked->estaVigente()) {
+                        throw new \Exception('El código de descuento ya no es válido.');
+                    }
+                    if ($codigoLocked->solo_un_uso_por_email && $codigoLocked->yaUsadoPorEmail($emailNormalizado)) {
+                        throw new \Exception('Ya usaste este código con este email.');
+                    }
                 }
 
                 $pedido = Pedido::create([

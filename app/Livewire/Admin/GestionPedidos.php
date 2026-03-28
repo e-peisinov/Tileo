@@ -5,6 +5,8 @@ namespace App\Livewire\Admin;
 use App\Mail\CambioEstadoMail;
 use App\Models\Pedido;
 use App\Models\PedidoHistorialEstado;
+use App\Models\Producto;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -38,6 +40,7 @@ class GestionPedidos extends Component
         }
 
         $cancelados = ['rechazado', 'cancelado'];
+        $accionNueva = $this->accionMasiva;
 
         foreach ($this->seleccionados as $id) {
             $pedido = Pedido::find($id);
@@ -45,35 +48,50 @@ class GestionPedidos extends Component
 
             $estadoAnterior    = $pedido->estado;
 
-            if ($estadoAnterior === $this->accionMasiva) continue;
+            if ($estadoAnterior === $accionNueva) continue;
 
-            $entrandoCancelado = in_array($this->accionMasiva, $cancelados) && ! in_array($estadoAnterior, $cancelados);
-            $saliendoCancelado = ! in_array($this->accionMasiva, $cancelados) && in_array($estadoAnterior, $cancelados);
+            $entrandoCancelado = in_array($accionNueva, $cancelados) && ! in_array($estadoAnterior, $cancelados);
+            $saliendoCancelado = ! in_array($accionNueva, $cancelados) && in_array($estadoAnterior, $cancelados);
 
-            if ($entrandoCancelado || $saliendoCancelado) {
-                foreach ($pedido->items as $item) {
-                    if ($item->producto_id) {
-                        if ($entrandoCancelado) {
-                            \App\Models\Producto::where('id', $item->producto_id)->increment('stock', $item->cantidad);
-                        } else {
-                            \App\Models\Producto::where('id', $item->producto_id)->decrement('stock', $item->cantidad);
+            DB::transaction(function () use ($pedido, $accionNueva, $estadoAnterior, $entrandoCancelado, $saliendoCancelado) {
+                if ($entrandoCancelado || $saliendoCancelado) {
+                    foreach ($pedido->items as $item) {
+                        if ($item->tipo === 'madera' && $item->condimentos) {
+                            foreach ($item->condimentos as $condimento) {
+                                if (empty($condimento['producto_id'])) continue;
+                                $producto = Producto::lockForUpdate()->find($condimento['producto_id']);
+                                if (! $producto) continue;
+                                if ($entrandoCancelado) {
+                                    $producto->increment('stock', $condimento['cantidad']);
+                                } elseif ($producto->stock >= $condimento['cantidad']) {
+                                    $producto->decrement('stock', $condimento['cantidad']);
+                                }
+                            }
+                        } elseif ($item->producto_id) {
+                            $producto = Producto::lockForUpdate()->find($item->producto_id);
+                            if (! $producto) continue;
+                            if ($entrandoCancelado) {
+                                $producto->increment('stock', $item->cantidad);
+                            } elseif ($producto->stock >= $item->cantidad) {
+                                $producto->decrement('stock', $item->cantidad);
+                            }
                         }
                     }
                 }
-            }
 
-            $pedido->update(['estado' => $this->accionMasiva]);
+                $pedido->update(['estado' => $accionNueva]);
 
-            PedidoHistorialEstado::create([
-                'pedido_id'       => $pedido->id,
-                'estado_anterior' => $estadoAnterior,
-                'estado_nuevo'    => $this->accionMasiva,
-                'notas'           => null,
-            ]);
+                PedidoHistorialEstado::create([
+                    'pedido_id'       => $pedido->id,
+                    'estado_anterior' => $estadoAnterior,
+                    'estado_nuevo'    => $accionNueva,
+                    'notas'           => null,
+                ]);
+            });
 
             if ($pedido->email_cliente) {
                 try {
-                    Mail::to($pedido->email_cliente)->send(new CambioEstadoMail($pedido, $estadoAnterior));
+                    Mail::to($pedido->email_cliente)->queue(new CambioEstadoMail($pedido, $estadoAnterior));
                 } catch (\Exception $e) {
                     \Log::error('Error al enviar email cambio estado pedido ' . $pedido->numero_pedido . ': ' . $e->getMessage());
                 }

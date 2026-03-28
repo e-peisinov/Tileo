@@ -10,11 +10,17 @@ class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name'     => 'Administrador Tileo',
-            'email'    => 'admin@tileo.com',
-            'password' => Hash::make('tileo2024'),
-            'es_admin' => true,
-        ]);
+        $usuario = User::firstOrCreate(
+            ['email' => 'admin@tileo.com'],
+            [
+                'name'     => 'Administrador Tileo',
+                'password' => Hash::make('tileo2024'),
+            ]
+        );
+
+        if (! $usuario->es_admin) {
+            $usuario->es_admin = true;
+            $usuario->save();
+        }
     }
 }
