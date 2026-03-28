@@ -38,6 +38,8 @@ class Catalogo extends Component
     {
         $categorias = Categoria::where('activo', true)->orderBy('nombre')->get();
 
+        $maderas = \App\Models\Madera::where('activo', true)->orderBy('capacidad')->get();
+
         $productos = Producto::with('categoria')
             ->where('activo', true)
             ->when($this->categoriaActiva !== 'todos', function ($q) {
@@ -56,7 +58,7 @@ class Catalogo extends Component
             ->when($this->ordenar === 'recientes', fn($q) => $q->orderByDesc('created_at'))
             ->paginate(12);
 
-        return view('livewire.catalogo', compact('productos', 'categorias'))
+        return view('livewire.catalogo', compact('productos', 'categorias', 'maderas'))
             ->layout('layouts.app', [
                 'titulo'      => 'Catálogo — Tileo',
                 'descripcion' => 'Explorá nuestro catálogo de hierbas, especias y condimentos artesanales. Filtrá por categoría, precio y stock. Envíos a todo el país.',

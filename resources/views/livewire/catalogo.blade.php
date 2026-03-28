@@ -15,6 +15,60 @@
         </div>
     </section>
 
+    {{-- SECCIÓN MADERAS --}}
+    @if(isset($maderas) && $maderas->count() > 0)
+    <section class="bg-white border-b border-[#d4b896]/30 py-14 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <p class="text-[#8b5e3c]/70 tracking-[0.3em] uppercase text-[11px] font-medium mb-3">Regalos y colecciones</p>
+                <h2 class="text-3xl sm:text-4xl text-[#2c1a0e]" style="font-family: 'DM Serif Display', serif;">
+                    Armá tu madera
+                </h2>
+                <p class="mt-3 text-sm text-[#2c1a0e]/50 max-w-md mx-auto leading-relaxed">
+                    Elegí una madera y personalizala con los condimentos que más te gusten. El precio incluye todos los frascos.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                @foreach($maderas as $madera)
+                    <div class="bg-[#faf6f0] border border-[#d4b896]/30 hover:border-[#d4b896]/60 hover:shadow-lg transition-all duration-300 flex flex-col">
+                        <div class="h-48 overflow-hidden bg-[#f0e9de]">
+                            @if($madera->imagen)
+                                <img src="{{ asset('imagenes/' . rawurlencode($madera->imagen)) }}"
+                                     alt="{{ $madera->nombre }}"
+                                     class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center">
+                                    <i class="fa-solid fa-box text-5xl text-[#8b5e3c]/20"></i>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="p-6 flex flex-col gap-3 flex-1">
+                            <div>
+                                <h3 class="text-2xl text-[#2c1a0e]" style="font-family: 'DM Serif Display', serif;">
+                                    {{ $madera->nombre }}
+                                </h3>
+                                <p class="text-[11px] text-[#8b5e3c]/60 mt-0.5">{{ $madera->capacidad }} frascos a elegir</p>
+                            </div>
+                            @if($madera->descripcion)
+                                <p class="text-sm text-[#2c1a0e]/55 leading-relaxed flex-1">{{ $madera->descripcion }}</p>
+                            @endif
+                            <div class="flex items-center justify-between mt-auto pt-2">
+                                <span class="text-xl font-semibold text-[#386641]">${{ number_format($madera->precio, 2, ',', '.') }}</span>
+                                <a href="{{ route('configurar-madera', $madera->id) }}" wire:navigate
+                                   class="inline-flex items-center gap-2 bg-[#386641] text-white px-5 py-2.5 text-[12px] font-semibold tracking-wide hover:bg-[#2d5534] transition-colors duration-300">
+                                    <i class="fa-solid fa-sliders text-[11px]"></i>
+                                    Configurar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
     {{-- CATÁLOGO CON FILTROS --}}
     <section class="bg-[#faf6f0] py-16 px-4">
         <div class="max-w-6xl mx-auto">
@@ -133,44 +187,6 @@
                                     <p class="text-sm text-[#2c1a0e]/55 leading-relaxed flex-1">
                                         {{ $producto->descripcion }}
                                     </p>
-                                @endif
-
-                                <div class="flex items-center justify-between mt-auto pt-3 border-t border-[#d4b896]/20">
-                                    @if($producto->precio > 0)
-                                        <span class="text-lg font-semibold text-[#2c1a0e]">
-                                            ${{ number_format($producto->precio, 2, ',', '.') }}
-                                        </span>
-                                    @else
-                                        <span class="text-sm text-[#8b5e3c]/60 italic">Precio a confirmar</span>
-                                    @endif
-
-                                    @if($producto->stock > 0)
-                                        <div class="flex items-center gap-2">
-                                            <p class="text-sm text-[#2c1a0e]/55 leading-relaxed flex-1">Cantidad: </p>
-                                            <input type="number"
-                                                   wire:model="cantidades.{{ $producto->id }}"
-                                                   min="1"
-                                                   max="{{ $producto->stock }}"
-                                                   value="1"
-                                                   class="w-14 border border-[#d4b896]/50 bg-[#faf6f0] text-center text-sm text-[#2c1a0e] py-1.5
-                                                          focus:outline-none focus:border-[#386641] transition-colors">
-                                            <button wire:click="agregarAlCarrito({{ $producto->id }})"
-                                                    wire:loading.attr="disabled"
-                                                    wire:target="agregarAlCarrito({{ $producto->id }})"
-                                                    class="flex items-center gap-1.5 bg-[#386641] text-[#faf6f0] px-3 py-2 text-[12px] tracking-wider font-medium
-                                                           hover:bg-[#2d5534] transition-colors duration-300 disabled:opacity-60">
-                                                <span wire:loading.remove wire:target="agregarAlCarrito({{ $producto->id }})">
-                                                    <i class="fa-solid fa-basket-shopping text-xs"></i>
-                                                </span>
-                                                <span wire:loading wire:target="agregarAlCarrito({{ $producto->id }})">...</span>
-                                            </button>
-                                        </div>
-                                    @else
-                                        <span class="text-[12px] text-[#c0392b]/80 font-medium">Sin stock</span>
-                                    @endif
-                                </div>
-                                @if($producto->precio == 0)
-                                    <p class="text-[10px] text-[#8b5e3c]/50 italic mt-1">* El precio se confirma con el pedido</p>
                                 @endif
                             </div>
 
