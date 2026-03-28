@@ -18,7 +18,7 @@
                     Ver catálogo
                 </a>
             </div>
-        @elseif(empty($items))
+        @elseif(empty($items) && empty($maderas))
             <div class="text-center py-20">
                 <i class="fa-solid fa-basket-shopping text-5xl text-[#d4b896] mb-4"></i>
                 <p class="text-[#8b5e3c] text-lg mb-6">Tu carrito está vacío</p>
@@ -165,6 +165,27 @@
                                 </p>
                             </div>
                         @endforeach
+                        {{-- Maderas --}}
+                        @foreach($maderas as $madera)
+                            <div class="border-t border-[#d4b896]/20 pt-3 mt-3 first:border-0 first:pt-0 first:mt-0">
+                                <div class="flex justify-between items-start gap-2">
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm text-[#2c1a0e]">{{ $madera['nombre'] }}</p>
+                                        <p class="text-[11px] text-[#8b5e3c]/70">{{ $madera['capacidad'] }} frascos personalizados</p>
+                                    </div>
+                                    <p class="text-sm font-medium text-[#2c1a0e] flex-shrink-0">
+                                        ${{ number_format($madera['subtotal'], 2, ',', '.') }}
+                                    </p>
+                                </div>
+                                <div class="mt-1.5 flex flex-wrap gap-1">
+                                    @foreach($madera['condimentos'] as $condimento)
+                                        <span class="text-[10px] bg-[#f0e9de] text-[#8b5e3c] px-1.5 py-0.5 rounded-full">
+                                            {{ $condimento['nombre'] }}@if($condimento['cantidad'] > 1) ×{{ $condimento['cantidad'] }}@endif
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
 
                     {{-- Código de descuento --}}
@@ -284,6 +305,26 @@
                                     <span class="font-medium text-[#2c1a0e]">
                                         {{ $item['precio'] > 0 ? '$' . number_format($item['subtotal'], 2, ',', '.') : 'A confirmar' }}
                                     </span>
+                                </div>
+                            @endforeach
+                            {{-- Maderas --}}
+                            @foreach($maderas as $madera)
+                                <div class="mt-2 pt-2 border-t border-[#d4b896]/20 first:border-0 first:mt-0 first:pt-0">
+                                    <div class="flex justify-between text-sm">
+                                        <div class="flex-1">
+                                            <span class="text-[#2c1a0e]">{{ $madera['nombre'] }}</span>
+                                            <div class="mt-0.5 flex flex-wrap gap-1">
+                                                @foreach($madera['condimentos'] as $condimento)
+                                                    <span class="text-[10px] bg-[#f0e9de] text-[#8b5e3c] px-1.5 py-0.5 rounded-full">
+                                                        {{ $condimento['nombre'] }}@if($condimento['cantidad'] > 1) ×{{ $condimento['cantidad'] }}@endif
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <span class="font-medium text-[#2c1a0e] flex-shrink-0 ml-2">
+                                            ${{ number_format($madera['subtotal'], 2, ',', '.') }}
+                                        </span>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>

@@ -6,6 +6,7 @@ use App\Mail\ConfirmacionClienteMail;
 use App\Mail\NuevoPedidoMail;
 use App\Models\Configuracion;
 use App\Models\CodigoDescuento;
+use App\Models\Madera;
 use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Producto;
@@ -52,9 +53,16 @@ class Checkout extends Component
         return session('carrito', []);
     }
 
+    public function obtenerMaderas(): array
+    {
+        return session('carrito_maderas', []);
+    }
+
     public function obtenerSubtotal(): float
     {
-        return collect($this->obtenerItems())->sum('subtotal');
+        $totalProductos = collect($this->obtenerItems())->sum('subtotal');
+        $totalMaderas   = collect($this->obtenerMaderas())->sum('subtotal');
+        return $totalProductos + $totalMaderas;
     }
 
     public function obtenerTotal(): float
@@ -119,8 +127,10 @@ class Checkout extends Component
     {
         $this->validate();
 
-        $items = $this->obtenerItems();
-        if (empty($items)) {
+        $items   = $this->obtenerItems();
+        $maderas = $this->obtenerMaderas();
+
+        if (empty($items) && empty($maderas)) {
             $this->addError('carrito', 'Tu carrito está vacío.');
             return;
         }
@@ -144,18 +154,35 @@ class Checkout extends Component
 
         $this->validate();
 
-        $items = $this->obtenerItems();
+        $items   = $this->obtenerItems();
+        $maderas = $this->obtenerMaderas();
 
-        if (empty($items)) {
+        if (empty($items) && empty($maderas)) {
             $this->addError('carrito', 'Tu carrito está vacío.');
             return;
         }
 
-        // Validar stock disponible
+        // Calcular demanda total de stock por producto (productos individuales + condimentos de maderas)
+        $demanda = [];
+
         foreach ($items as $item) {
-            $producto = Producto::find($item['id']);
-            if (! $producto || $producto->stock < $item['cantidad']) {
-                $this->addError('carrito', "No hay stock suficiente para {$item['nombre']}.");
+            $id = $item['id'];
+            $demanda[$id] = ($demanda[$id] ?? 0) + $item['cantidad'];
+        }
+
+        foreach ($maderas as $madera) {
+            foreach ($madera['condimentos'] as $condimento) {
+                $id = $condimento['producto_id'];
+                $demanda[$id] = ($demanda[$id] ?? 0) + $condimento['cantidad'];
+            }
+        }
+
+        // Validar stock combinado
+        foreach ($demanda as $productoId => $cantidadNecesaria) {
+            $producto = Producto::find($productoId);
+            if (! $producto || $producto->stock < $cantidadNecesaria) {
+                $nombre = $producto?->nombre ?? "Producto #$productoId";
+                $this->addError('carrito', "No hay stock suficiente para {$nombre}.");
                 return;
             }
         }
@@ -182,7 +209,7 @@ class Checkout extends Component
             'codigo_descuento_id' => $this->descuentoAplicado?->id,
         ]);
 
-        // Crear los items y descontar stock (usando save() para disparar el Observer)
+        // Crear items de productos individuales
         foreach ($items as $item) {
             PedidoItem::create([
                 'pedido_id'       => $pedido->id,
@@ -191,12 +218,30 @@ class Checkout extends Component
                 'precio_unitario' => $item['precio'],
                 'cantidad'        => $item['cantidad'],
                 'subtotal'        => $item['subtotal'],
+                'tipo'            => 'producto',
             ]);
+        }
 
-            // Usamos save() en lugar de decrement() para que el ProductoObserver se dispare
-            $producto = Producto::find($item['id']);
+        // Crear items de maderas
+        foreach ($maderas as $madera) {
+            PedidoItem::create([
+                'pedido_id'       => $pedido->id,
+                'producto_id'     => null,
+                'nombre_producto' => $madera['nombre'],
+                'precio_unitario' => $madera['precio'],
+                'cantidad'        => 1,
+                'subtotal'        => $madera['subtotal'],
+                'tipo'            => 'madera',
+                'madera_id'       => $madera['madera_id'],
+                'condimentos'     => $madera['condimentos'],
+            ]);
+        }
+
+        // Descontar stock (usando save() para disparar el Observer)
+        foreach ($demanda as $productoId => $cantidadNecesaria) {
+            $producto = Producto::find($productoId);
             if ($producto) {
-                $producto->stock = max(0, $producto->stock - $item['cantidad']);
+                $producto->stock = max(0, $producto->stock - $cantidadNecesaria);
                 $producto->save();
             }
         }
@@ -232,6 +277,7 @@ class Checkout extends Component
 
         // Limpiar carrito
         session()->forget('carrito');
+        session()->forget('carrito_maderas');
 
         $this->redirect(route('confirmacion-pedido', $pedido->numero_pedido), navigate: true);
     }
@@ -240,6 +286,7 @@ class Checkout extends Component
     {
         return view('livewire.checkout', [
             'items'          => $this->obtenerItems(),
+            'maderas'        => $this->obtenerMaderas(),
             'subtotal'       => $this->obtenerSubtotal(),
             'total'          => $this->obtenerTotal(),
             'modoVacaciones' => Configuracion::obtener('modo_vacaciones', false),
@@ -250,7 +297,7 @@ class Checkout extends Component
             'titularCuenta'  => Configuracion::obtener('titular_cuenta', ''),
         ])->layout('layouts.app', [
             'titulo'      => 'Checkout — Tileo',
-            'descripcion' => 'Completá tu pedido de especias artesanales Tileo. Pago por transferencia o efectivo, envío o retiro en local.',
+            'descripcion' => 'Completá tu pedido de especias artesanales Tileo.',
         ]);
     }
 }

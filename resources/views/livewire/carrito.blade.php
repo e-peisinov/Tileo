@@ -38,7 +38,7 @@
                         Tu carrito
                     </h2>
                     @if($cantidadTotal > 0)
-                        <p class="text-[11px] text-[#8b5e3c]/70 tracking-wider">{{ $cantidadTotal }} {{ $cantidadTotal === 1 ? 'producto' : 'productos' }}</p>
+                        <p class="text-[11px] text-[#8b5e3c]/70 tracking-wider">{{ $cantidadTotal }} {{ $cantidadTotal === 1 ? 'artículo' : 'artículos' }}</p>
                     @endif
                 </div>
                 <button wire:click="cerrarCarrito" class="text-[#8b5e3c] hover:text-[#2c1a0e] transition-colors">
@@ -48,66 +48,121 @@
 
             {{-- Items --}}
             <div class="flex-1 overflow-y-auto px-5 py-4">
-                @forelse($items as $item)
-                    <div class="flex gap-3 py-4 border-b border-[#d4b896]/25 last:border-0">
-                        {{-- Imagen --}}
-                        <div class="w-16 h-16 flex-shrink-0 overflow-hidden bg-[#f0e9de]">
-                            @if($item['imagen'])
-                                <img src="{{ asset('imagenes/' . rawurlencode($item['imagen'])) }}"
-                                     alt="{{ $item['nombre'] }}"
-                                     class="w-full h-full object-cover">
-                            @else
-                                <div class="w-full h-full flex items-center justify-center">
-                                    <i class="fa-solid fa-leaf text-[#386641]/40 text-xl"></i>
-                                </div>
-                            @endif
-                        </div>
 
-                        {{-- Info --}}
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-[#2c1a0e] truncate">{{ $item['nombre'] }}</p>
-                            <p class="text-xs text-[#8b5e3c]">{{ $item['unidad'] }} · ${{ number_format($item['precio'], 2, ',', '.') }}</p>
-
-                            {{-- Controles cantidad --}}
-                            <div class="flex items-center gap-2 mt-2">
-                                <button wire:click="actualizarCantidad({{ $item['id'] }}, {{ $item['cantidad'] - 1 }})"
-                                        class="w-6 h-6 flex items-center justify-center border border-[#d4b896] text-[#8b5e3c] hover:border-[#386641] hover:text-[#386641] transition-colors text-sm">
-                                    <i class="fa-solid fa-minus text-[10px]"></i>
-                                </button>
-                                <span class="text-sm font-medium text-[#2c1a0e] w-5 text-center">{{ $item['cantidad'] }}</span>
-                                <button wire:click="actualizarCantidad({{ $item['id'] }}, {{ $item['cantidad'] + 1 }})"
-                                        @disabled($item['cantidad'] >= $item['stock'])
-                                        class="w-6 h-6 flex items-center justify-center border border-[#d4b896] text-[#8b5e3c] hover:border-[#386641] hover:text-[#386641] transition-colors text-sm disabled:opacity-40">
-                                    <i class="fa-solid fa-plus text-[10px]"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        {{-- Subtotal + eliminar --}}
-                        <div class="flex flex-col items-end justify-between">
-                            <button wire:click="removerItem({{ $item['id'] }})"
-                                    class="text-[#d4b896] hover:text-[#c0392b] transition-colors">
-                                <i class="fa-solid fa-trash text-xs"></i>
-                            </button>
-                            <p class="text-sm font-semibold text-[#2c1a0e]">
-                                ${{ number_format($item['subtotal'], 2, ',', '.') }}
-                            </p>
-                        </div>
-                    </div>
-                @empty
+                @if(count($items) === 0 && count($maderas) === 0)
                     <div class="flex flex-col items-center justify-center h-full py-20 gap-4 text-center">
                         <i class="fa-solid fa-basket-shopping text-4xl text-[#d4b896]"></i>
                         <p class="text-[#8b5e3c]/70 text-sm">Tu carrito está vacío</p>
-                        <a href="{{ route('catalogo') }}" wire:navigate wire:click="cerrarCarrito"
+                        <a href="{{ route('catalogo') }}" wire:navigate
                                 class="text-[12px] text-[#386641] border border-[#386641]/40 px-5 py-2 hover:bg-[#386641] hover:text-white transition-all duration-300">
                             Ver catálogo
                         </a>
                     </div>
-                @endforelse
+                @else
+
+                    {{-- Productos individuales --}}
+                    @foreach($items as $item)
+                        <div class="flex gap-3 py-4 border-b border-[#d4b896]/25 last:border-0">
+                            {{-- Imagen --}}
+                            <div class="w-16 h-16 flex-shrink-0 overflow-hidden bg-[#f0e9de]">
+                                @if($item['imagen'])
+                                    <img src="{{ asset('imagenes/' . rawurlencode($item['imagen'])) }}"
+                                         alt="{{ $item['nombre'] }}"
+                                         class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full flex items-center justify-center">
+                                        <i class="fa-solid fa-leaf text-[#386641]/40 text-xl"></i>
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Info --}}
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-[#2c1a0e] truncate">{{ $item['nombre'] }}</p>
+                                <p class="text-xs text-[#8b5e3c]">{{ $item['unidad'] }} · ${{ number_format($item['precio'], 2, ',', '.') }}</p>
+
+                                {{-- Controles cantidad --}}
+                                <div class="flex items-center gap-2 mt-2">
+                                    <button wire:click="actualizarCantidad({{ $item['id'] }}, {{ $item['cantidad'] - 1 }})"
+                                            class="w-6 h-6 flex items-center justify-center border border-[#d4b896] text-[#8b5e3c] hover:border-[#386641] hover:text-[#386641] transition-colors text-sm">
+                                        <i class="fa-solid fa-minus text-[10px]"></i>
+                                    </button>
+                                    <span class="text-sm font-medium text-[#2c1a0e] w-5 text-center">{{ $item['cantidad'] }}</span>
+                                    <button wire:click="actualizarCantidad({{ $item['id'] }}, {{ $item['cantidad'] + 1 }})"
+                                            @disabled($item['cantidad'] >= $item['stock'])
+                                            class="w-6 h-6 flex items-center justify-center border border-[#d4b896] text-[#8b5e3c] hover:border-[#386641] hover:text-[#386641] transition-colors text-sm disabled:opacity-40">
+                                        <i class="fa-solid fa-plus text-[10px]"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- Subtotal + eliminar --}}
+                            <div class="flex flex-col items-end justify-between">
+                                <button wire:click="removerItem({{ $item['id'] }})"
+                                        class="text-[#d4b896] hover:text-[#c0392b] transition-colors">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                                <p class="text-sm font-semibold text-[#2c1a0e]">
+                                    ${{ number_format($item['subtotal'], 2, ',', '.') }}
+                                </p>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    {{-- Maderas --}}
+                    @foreach($maderas as $madera)
+                        <div class="py-4 border-b border-[#d4b896]/25 last:border-0">
+                            <div class="flex gap-3">
+                                {{-- Imagen --}}
+                                <div class="w-16 h-16 flex-shrink-0 overflow-hidden bg-[#f0e9de]">
+                                    @if($madera['imagen'])
+                                        <img src="{{ asset('imagenes/' . rawurlencode($madera['imagen'])) }}"
+                                             alt="{{ $madera['nombre'] }}"
+                                             class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center">
+                                            <i class="fa-solid fa-box text-[#8b5e3c]/40 text-xl"></i>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {{-- Info --}}
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-[#2c1a0e]">{{ $madera['nombre'] }}</p>
+                                    <p class="text-[10px] text-[#8b5e3c]/60">{{ $madera['capacidad'] }} frascos personalizados</p>
+                                </div>
+
+                                {{-- Precio + eliminar --}}
+                                <div class="flex flex-col items-end justify-between">
+                                    <button wire:click="removerMadera('{{ $madera['clave'] }}')"
+                                            class="text-[#d4b896] hover:text-[#c0392b] transition-colors">
+                                        <i class="fa-solid fa-trash text-xs"></i>
+                                    </button>
+                                    <p class="text-sm font-semibold text-[#2c1a0e]">
+                                        ${{ number_format($madera['subtotal'], 2, ',', '.') }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {{-- Condimentos elegidos --}}
+                            <div class="mt-2 ml-[76px]">
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($madera['condimentos'] as $condimento)
+                                        <span class="text-[10px] bg-[#f0e9de] text-[#8b5e3c] px-2 py-0.5 rounded-full">
+                                            {{ $condimento['nombre'] }}
+                                            @if($condimento['cantidad'] > 1) ×{{ $condimento['cantidad'] }} @endif
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
+                @endif
             </div>
 
             {{-- Pie del carrito --}}
-            @if(count($items) > 0)
+            @if(count($items) > 0 || count($maderas) > 0)
                 <div class="px-5 py-4 border-t border-[#d4b896]/40 bg-[#f0e9de] space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-[#2c1a0e]/70">Subtotal</span>

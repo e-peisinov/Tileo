@@ -16,9 +16,27 @@
 
             <div class="space-y-2 mb-5">
                 @foreach($pedido->items as $item)
-                    <div class="flex justify-between text-sm">
-                        <span class="text-[#2c1a0e]">{{ $item->nombre_producto }} <span class="text-[#8b5e3c]/70">×{{ $item->cantidad }}</span></span>
-                        <span class="font-medium text-[#2c1a0e]">${{ number_format($item->subtotal, 2, ',', '.') }}</span>
+                    <div class="text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-[#2c1a0e]">
+                                {{ $item->nombre_producto }}
+                                @if($item->tipo === 'producto')
+                                    <span class="text-[#8b5e3c]/70">×{{ $item->cantidad }}</span>
+                                @else
+                                    <span class="text-[11px] text-[#8b5e3c]/60 font-normal"> · {{ $item->condimentos ? count($item->condimentos) . ' frascos' : '' }}</span>
+                                @endif
+                            </span>
+                            <span class="font-medium text-[#2c1a0e]">${{ number_format($item->subtotal, 2, ',', '.') }}</span>
+                        </div>
+                        @if($item->tipo === 'madera' && $item->condimentos)
+                            <div class="mt-1 flex flex-wrap gap-1">
+                                @foreach($item->condimentos as $condimento)
+                                    <span class="text-[10px] bg-[#f0e9de] text-[#8b5e3c] px-2 py-0.5 rounded-full">
+                                        {{ $condimento['nombre'] }}@if($condimento['cantidad'] > 1) ×{{ $condimento['cantidad'] }}@endif
+                                    </span>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 @endforeach
             </div>
