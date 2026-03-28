@@ -116,9 +116,6 @@
                 <a href="{{ route('admin.codigos-descuento') }}" wire:navigate class="nav-admin-link {{ request()->routeIs('admin.codigos-descuento') ? 'activo' : '' }}">
                     <i class="fa-solid fa-ticket"></i> Descuentos
                 </a>
-                <a href="{{ route('admin.suscriptores') }}" wire:navigate class="nav-admin-link {{ request()->routeIs('admin.suscriptores') ? 'activo' : '' }}">
-                    <i class="fa-solid fa-envelope"></i> Suscriptores
-                </a>
                 <a href="{{ route('admin.resenas') }}" wire:navigate class="nav-admin-link {{ request()->routeIs('admin.resenas') ? 'activo' : '' }}">
                     <i class="fa-solid fa-star"></i> Reseñas
                 </a>

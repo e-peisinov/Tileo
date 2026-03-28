@@ -63,7 +63,10 @@ class GestionPedidos extends Component
                                 if (! $producto) continue;
                                 if ($entrandoCancelado) {
                                     $producto->increment('stock', $condimento['cantidad']);
-                                } elseif ($producto->stock >= $condimento['cantidad']) {
+                                } else {
+                                    if ($producto->stock < $condimento['cantidad']) {
+                                        \Log::warning("Stock insuficiente al reactivar pedido {$pedido->numero_pedido}: producto #{$producto->id} tiene {$producto->stock}, se necesitan {$condimento['cantidad']}.");
+                                    }
                                     $producto->decrement('stock', $condimento['cantidad']);
                                 }
                             }
@@ -72,7 +75,10 @@ class GestionPedidos extends Component
                             if (! $producto) continue;
                             if ($entrandoCancelado) {
                                 $producto->increment('stock', $item->cantidad);
-                            } elseif ($producto->stock >= $item->cantidad) {
+                            } else {
+                                if ($producto->stock < $item->cantidad) {
+                                    \Log::warning("Stock insuficiente al reactivar pedido {$pedido->numero_pedido}: producto #{$producto->id} tiene {$producto->stock}, se necesitan {$item->cantidad}.");
+                                }
                                 $producto->decrement('stock', $item->cantidad);
                             }
                         }

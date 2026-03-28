@@ -11,6 +11,14 @@
         </button>
     </div>
 
+    {{-- Alerta de fechas invertidas --}}
+    @if($fechaDesde && $fechaHasta && $fechaDesde > $fechaHasta)
+        <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+            <i class="fa-solid fa-triangle-exclamation mr-1"></i>
+            La fecha "Desde" no puede ser mayor que "Hasta".
+        </div>
+    @endif
+
     {{-- Filtro de fechas --}}
     <div class="bg-white rounded-2xl border border-[#d4b896]/30 shadow-sm p-5 mb-6">
         <div class="flex flex-wrap items-center gap-4">

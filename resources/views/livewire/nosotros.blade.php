@@ -33,7 +33,7 @@
                 </h2>
                 @if($historia)
                     <div class="text-sm text-[#2c1a0e]/60 leading-relaxed space-y-4 [&_p]:leading-relaxed">
-                        {{ $historia }}
+                        Somos un emprendimiento familiar de Mercedes, Buenos Aires, apasionados por las hierbas, especias y condimentos artesanales.
                     </div>
                 @else
                     <p class="text-sm text-[#2c1a0e]/60 leading-relaxed">

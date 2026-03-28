@@ -19,6 +19,10 @@ class Reportes extends Component
 
     private function pedidosBase()
     {
+        if ($this->fechaDesde && $this->fechaHasta && $this->fechaDesde > $this->fechaHasta) {
+            return Pedido::whereRaw('1 = 0');
+        }
+
         return Pedido::whereNotIn('estado', ['rechazado', 'cancelado'])
             ->when($this->fechaDesde, fn ($q) => $q->whereDate('created_at', '>=', $this->fechaDesde))
             ->when($this->fechaHasta, fn ($q) => $q->whereDate('created_at', '<=', $this->fechaHasta));

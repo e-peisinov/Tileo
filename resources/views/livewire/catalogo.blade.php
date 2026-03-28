@@ -1,15 +1,20 @@
 <div>
     {{-- ENCABEZADO --}}
-    <section class="bg-[#f0e9de] border-b border-[#d4b896]/30 py-16 px-4 text-center">
-        <div class="max-w-2xl mx-auto">
-            <p class="text-[#8b5e3c]/70 tracking-[0.3em] uppercase text-[11px] font-medium mb-3">
+    <section class="relative h-[50vh] overflow-hidden flex items-end">
+        <img src="{{ asset('imagenes/' . rawurlencode('WhatsApp Image 2026-03-17 at 13.24.12.jpeg')) }}"
+             alt="Catálogo Tileo"
+             class="absolute inset-0 w-full h-full object-cover object-center">
+        <div class="absolute inset-0 bg-gradient-to-t from-[#1a0f05]/80 via-[#1a0f05]/30 to-transparent"></div>
+
+        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 w-full">
+            <p class="text-[#d4b896]/70 tracking-[0.3em] uppercase text-[11px] font-medium mb-3">
                 Lo que ofrecemos
             </p>
-            <h1 class="text-5xl sm:text-6xl text-[#2c1a0e]"
+            <h1 class="text-5xl sm:text-6xl text-[#faf6f0]"
                 style="font-family: 'DM Serif Display', serif;">
                 Catálogo
             </h1>
-            <p class="mt-4 text-sm text-[#2c1a0e]/50 leading-relaxed max-w-md mx-auto">
+            <p class="mt-3 text-sm text-[#faf6f0]/60 leading-relaxed max-w-md">
                 Todas nuestras especias y condimentos, elaborados artesanalmente y presentados en tubos de vidrio con corcho.
             </p>
         </div>
@@ -29,35 +34,35 @@
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 @foreach($maderas as $madera)
                     <div class="bg-[#faf6f0] border border-[#d4b896]/30 hover:border-[#d4b896]/60 hover:shadow-lg transition-all duration-300 flex flex-col">
-                        <div class="h-48 overflow-hidden bg-[#f0e9de]">
+                        <div class="h-32 overflow-hidden bg-[#f0e9de]">
                             @if($madera->imagen)
                                 <img src="{{ asset('imagenes/' . rawurlencode($madera->imagen)) }}"
                                      alt="{{ $madera->nombre }}"
                                      class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center">
-                                    <i class="fa-solid fa-box text-5xl text-[#8b5e3c]/20"></i>
+                                    <i class="fa-solid fa-box text-3xl text-[#8b5e3c]/20"></i>
                                 </div>
                             @endif
                         </div>
-                        <div class="p-6 flex flex-col gap-3 flex-1">
+                        <div class="p-4 flex flex-col gap-2 flex-1">
                             <div>
-                                <h3 class="text-2xl text-[#2c1a0e]" style="font-family: 'DM Serif Display', serif;">
+                                <h3 class="text-lg text-[#2c1a0e] leading-tight" style="font-family: 'DM Serif Display', serif;">
                                     {{ $madera->nombre }}
                                 </h3>
-                                <p class="text-[11px] text-[#8b5e3c]/60 mt-0.5">{{ $madera->capacidad }} frascos a elegir</p>
+                                <p class="text-[10px] text-[#8b5e3c]/60 mt-0.5">{{ $madera->capacidad }} frascos a elegir</p>
                             </div>
                             @if($madera->descripcion)
-                                <p class="text-sm text-[#2c1a0e]/55 leading-relaxed flex-1">{{ $madera->descripcion }}</p>
+                                <p class="text-xs text-[#2c1a0e]/55 leading-relaxed flex-1 line-clamp-2">{{ $madera->descripcion }}</p>
                             @endif
-                            <div class="flex items-center justify-between mt-auto pt-2">
-                                <span class="text-xl font-semibold text-[#386641]">${{ number_format($madera->precio, 2, ',', '.') }}</span>
+                            <div class="flex items-center justify-between mt-auto pt-1">
+                                <span class="text-base font-semibold text-[#386641]">${{ number_format($madera->precio, 2, ',', '.') }}</span>
                                 <a href="{{ route('configurar-madera', $madera->id) }}" wire:navigate
-                                   class="inline-flex items-center gap-2 bg-[#386641] text-white px-5 py-2.5 text-[12px] font-semibold tracking-wide hover:bg-[#2d5534] transition-colors duration-300">
-                                    <i class="fa-solid fa-sliders text-[11px]"></i>
+                                   class="inline-flex items-center gap-1.5 bg-[#386641] text-white px-3 py-1.5 text-[11px] font-semibold tracking-wide hover:bg-[#2d5534] transition-colors duration-300">
+                                    <i class="fa-solid fa-sliders text-[10px]"></i>
                                     Configurar
                                 </a>
                             </div>

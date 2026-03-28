@@ -23,7 +23,7 @@ class GestionClientes extends Component
         $clientes = Pedido::select('email_cliente')
             ->selectRaw('MAX(nombre_cliente) as nombre_cliente')
             ->selectRaw('COUNT(*) as total_pedidos')
-            ->selectRaw('SUM(total) as total_gastado')
+            ->selectRaw("SUM(CASE WHEN estado NOT IN ('rechazado', 'cancelado') THEN total ELSE 0 END) as total_gastado")
             ->selectRaw('MAX(created_at) as ultimo_pedido')
             ->when($this->busqueda, function ($q) {
                 $q->where(function ($sub) {

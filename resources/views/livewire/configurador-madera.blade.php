@@ -4,7 +4,7 @@
     <section class="bg-[#f0e9de] border-b border-[#d4b896]/30 py-14 px-4 text-center">
         <div class="max-w-2xl mx-auto">
             <a href="{{ route('catalogo') }}" wire:navigate
-               class="inline-flex items-center gap-1.5 text-[#8b5e3c]/60 hover:text-[#8b5e3c] text-xs tracking-wider uppercase font-medium mb-5 transition-colors">
+               class="inline-flex items-center gap-1.5 bg-[#386641] text-white mb-4 px-3 py-1.5 text-[11px] font-semibold tracking-wide hover:bg-[#2d5534] transition-colors duration-300">
                 <i class="fa-solid fa-arrow-left text-[10px]"></i> Volver al catálogo
             </a>
             <p class="text-[#8b5e3c]/70 tracking-[0.3em] uppercase text-[11px] font-medium mb-3">Armá tu madera</p>

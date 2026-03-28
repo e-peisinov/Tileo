@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Cache;
 
 class Resena extends Model
 {
@@ -18,6 +19,13 @@ class Resena extends Model
         'calificacion' => 'integer',
         'aprobada'     => 'boolean',
     ];
+
+    protected static function booted(): void
+    {
+        $invalidar = fn (self $resena) => Cache::forget("promedio_calificacion_{$resena->producto_id}");
+        static::saved($invalidar);
+        static::deleted($invalidar);
+    }
 
     public function producto(): BelongsTo
     {

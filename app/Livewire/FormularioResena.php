@@ -25,10 +25,11 @@ class FormularioResena extends Component
     {
         $this->errorPedido = '';
         $pedido = Pedido::where('numero_pedido', strtoupper(trim($this->numeroPedido)))
+            ->where('estado', 'entregado')
             ->whereHas('items', fn($q) => $q->where('producto_id', $this->productoId))
             ->first();
         if (!$pedido) {
-            $this->errorPedido = 'No encontramos un pedido con ese número que incluya este producto.';
+            $this->errorPedido = 'No encontramos un pedido entregado con ese número que incluya este producto.';
             return;
         }
         // Verificar si ya dejó una reseña

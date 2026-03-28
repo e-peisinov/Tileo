@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class Producto extends Model
 {
@@ -53,7 +54,9 @@ class Producto extends Model
 
     public function promedioCalificacion(): float
     {
-        return $this->resenasAprobadas()->avg('calificacion') ?? 0;
+        return Cache::remember("promedio_calificacion_{$this->id}", 300, function () {
+            return $this->resenasAprobadas()->avg('calificacion') ?? 0;
+        });
     }
 
     public function hayStock(int $cantidad = 1): bool
