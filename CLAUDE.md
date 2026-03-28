@@ -54,32 +54,32 @@ database/
 | `productos` | Productos (`nombre`, `descripcion`, `precio`, `stock`, `unidad`, `imagen`, `activo`, `destacado`, FK `categoria_id`) |
 | `pedidos` | Pedidos de clientes. `numero_pedido` = TIL-0001 (auto). `estado` enum. `costo_envio` nullable. `notas_cliente`, `notas_admin`. `codigo_descuento_id` nullable, `monto_descuento` decimal |
 | `pedido_items` | Ítems de cada pedido con snapshot de `nombre_producto` y `precio_unitario` |
-| `pedido_historial_estados` | Historial de cambios de estado de cada pedido (`pedido_id`, `estado_anterior`, `estado_nuevo`, `nota`) |
+| `pedido_historial_estados` | Historial de cambios de estado de cada pedido (`pedido_id`, `estado_anterior`, `estado_nuevo`, `notas`) |
 | `configuraciones` | Configuración del sitio. Pares clave-valor tipados (`clave`, `valor`, `tipo`, `etiqueta`, `descripcion`). Claves: `tiempo_entrega`, `mensaje_vacaciones`, `cbu`, `alias_cbu`, `titular_cuenta` |
 | `resenas` | Reseñas de productos (`producto_id`, `pedido_id`, `calificacion` 1-5, `comentario`, `aprobada` bool) |
 | `avisos_stock` | Solicitudes de aviso cuando un producto vuelve a tener stock (`producto_id`, `email`) |
-| `imagenes_producto` | Galería de imágenes por producto (`producto_id`, `ruta`, `orden`) |
+| `imagenes_producto` | Galería de imágenes por producto (`producto_id`, `archivo`, `orden`) |
 | `suscriptores` | Suscriptores al newsletter (`email`, `nombre`, `activo`, `origen`) |
 | `contenidos` | Contenidos editables del sitio (`clave`, `titulo`, `cuerpo`, `tipo`, `etiqueta`) |
-| `banners` | Banners promocionales con visibilidad por fechas (`titulo`, `subtitulo`, `color`, `orden`, `mostrar_desde`, `mostrar_hasta`, `activo`) |
-| `codigos_descuento` | Códigos de descuento (`codigo`, `tipo`, `valor`, `minimo_compra`, `usos_max`, `activo`, `vence_en`) |
-| `uso_codigos_descuento` | Historial de uso de códigos de descuento (`codigo_descuento_id`, `pedido_id`) |
+| `banners` | Banners promocionales con visibilidad por fechas (`titulo`, `subtitulo`, `imagen`, `url_destino`, `texto_boton`, `color_fondo`, `orden`, `mostrar_desde`, `mostrar_hasta`, `activo`) |
+| `codigos_descuento` | Códigos de descuento (`codigo`, `tipo`, `valor`, `minimo_compra`, `usos_maximos`, `usos_actuales`, `solo_un_uso_por_email`, `activo`, `expira_en`) |
+| `uso_codigos_descuento` | Historial de uso de códigos de descuento (`codigo_descuento_id`, `pedido_id`, `email_cliente`, `monto_descontado`) |
 
 ## Modelos existentes
 - `Categoria` — `hasMany Producto`
 - `Producto` — `belongsTo Categoria`, `imagenesGaleria()` HasMany `ImagenProducto`, `avisos()` HasMany `AvisoStock`, `resenas()` HasMany `Resena`, `resenasAprobadas()` HasMany, `promedioCalificacion(): float`, `hayStock(int $cantidad)`
-- `Pedido` — genera `numero_pedido` en `booted()`, `etiquetaEstado()`, `colorEstado()`, `colorParaEstado()` (estático), `etiquetaParaEstado()` (estático), `calcularTotal()` (resta `monto_descuento`), `historial()` → `PedidoHistorialEstado`, `codigoDescuento()` → `CodigoDescuento`
+- `Pedido` — genera `numero_pedido` en `booted()`, `etiquetaEstado()`, `colorEstado()`, `colorParaEstado()` (estático), `etiquetaParaEstado()` (estático), `historial()` → `PedidoHistorialEstado`, `codigoDescuento()` → `CodigoDescuento`
 - `PedidoItem` — snapshot de precio y nombre al momento del pedido
-- `PedidoHistorialEstado` — registra cada cambio de estado: `pedido_id`, `estado_anterior`, `estado_nuevo`, `nota`
-- `User` — campo `es_admin` bool
-- `Configuracion` — almacén de configuración del sitio. Métodos estáticos `obtener(clave, porDefecto)` y `establecer(clave, valor)`. Tipo puede ser `texto`, `booleano` o `numero`
+- `PedidoHistorialEstado` — registra cada cambio de estado: `pedido_id`, `estado_anterior`, `estado_nuevo`, `notas`
+- `User` — campo `es_admin` bool. **No está en `$fillable`** — asignar solo explícitamente con `update(['es_admin' => true])`
+- `Configuracion` — almacén de configuración del sitio. Métodos estáticos `obtener(clave, porDefecto)` y `establecer(clave, valor)`. Tipo puede ser `texto`, `booleano` o `numero`. Los valores se cachean 5 minutos; `establecer()` invalida el caché automáticamente
 - `Contenido` — contenidos editables del sitio. Misma interfaz que `Configuracion`: `obtener(clave, porDefecto)` y `establecer(clave, valor)`
 - `Banner` — banners promocionales. Scope `vigentes()` filtra por fechas activas
 - `Resena` — reseña de producto. `belongsTo Producto`, `belongsTo Pedido`. Scope `aprobadas()`
 - `Suscriptor` — suscriptor al newsletter
 - `AvisoStock` — solicitud de aviso de reposición. `belongsTo Producto`
 - `ImagenProducto` — imagen de galería. `belongsTo Producto`
-- `CodigoDescuento` — código de descuento. `usos()` HasMany `UsoCodigoDescuento`
+- `CodigoDescuento` — código de descuento. `usos()` HasMany `UsoCodigoDescuento`. `estaVigente(): bool`, `calcularDescuento(float): float`, `yaUsadoPorEmail(string): bool`
 - `UsoCodigoDescuento` — uso de un código. `belongsTo CodigoDescuento`, `belongsTo Pedido`
 
 ## Componentes y páginas existentes
@@ -131,11 +131,11 @@ database/
 - **Importante:** no usar clases `fade-in` / `fade-desde-izq` / `fade-desde-der` en elementos renderizados por Livewire — el IntersectionObserver del layout no los re-observa tras un re-render, dejándolos invisibles
 
 ## Sistema de pedidos
-- Al confirmar el checkout: se crea el pedido, se descuenta stock, se envía email al admin (`NuevoPedidoMail`) y confirmación al cliente (`ConfirmacionClienteMail`)
+- Al confirmar el checkout: se crea el pedido dentro de un `DB::transaction()` con `lockForUpdate()` en los productos. Luego se encolan los emails al admin (`NuevoPedidoMail`) y al cliente (`ConfirmacionClienteMail`). El email del cliente se guarda en minúsculas
 - El checkout admite códigos de descuento: si se aplica uno válido, se guarda `codigo_descuento_id` y `monto_descuento` en el pedido
 - El admin gestiona el pedido desde `/admin/pedidos` (cambiar estado, confirmar costo de envío)
 - Si el admin pasa un pedido a `rechazado` o `cancelado`, el stock se repone automáticamente
-- Cada cambio de estado queda registrado en `pedido_historial_estados` y dispara un email al cliente (`CambioEstadoMail`)
+- Cada cambio de estado queda registrado en `pedido_historial_estados` y encola un email al cliente (`CambioEstadoMail`). Esto aplica tanto al cambio individual desde `DetallePedido` como a las acciones masivas desde `GestionPedidos`
 - El cliente puede ver el estado de su pedido en `/seguimiento` ingresando el número (ej. TIL-0001)
 - El cliente puede enviar el resumen del pedido por WhatsApp desde la página de confirmación
 
