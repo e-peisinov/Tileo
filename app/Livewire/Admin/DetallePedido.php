@@ -60,7 +60,7 @@ class DetallePedido extends Component
         if ($this->pedido->metodo_entrega === 'envio') {
             $costoEnvio = $this->costo_envio !== '' ? (float) $this->costo_envio : null;
             $datos['costo_envio'] = $costoEnvio;
-            $datos['total'] = $this->pedido->subtotal + ($costoEnvio ?? 0);
+            $datos['total'] = $this->pedido->subtotal - $this->pedido->monto_descuento + ($costoEnvio ?? 0);
         }
 
         $this->pedido->update($datos);
@@ -75,8 +75,12 @@ class DetallePedido extends Component
             ]);
 
             if ($this->pedido->email_cliente) {
-                Mail::to($this->pedido->email_cliente)
-                    ->send(new CambioEstadoMail($this->pedido, $estadoAnterior));
+                try {
+                    Mail::to($this->pedido->email_cliente)
+                        ->queue(new CambioEstadoMail($this->pedido, $estadoAnterior));
+                } catch (\Exception $e) {
+                    \Log::error('Error al encolar email cambio estado: ' . $e->getMessage());
+                }
             }
 
             $this->pedido->load('historial');

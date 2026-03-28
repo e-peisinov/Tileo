@@ -11,6 +11,7 @@ use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Producto;
 use App\Models\UsoCodigoDescuento;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -127,6 +128,11 @@ class Checkout extends Component
     {
         $this->validate();
 
+        if ($this->metodo_entrega === 'envio' && empty(trim($this->direccion))) {
+            $this->addError('direccion', 'La dirección de envío es requerida.');
+            return;
+        }
+
         $items   = $this->obtenerItems();
         $maderas = $this->obtenerMaderas();
 
@@ -154,6 +160,11 @@ class Checkout extends Component
 
         $this->validate();
 
+        if ($this->metodo_entrega === 'envio' && empty(trim($this->direccion))) {
+            $this->addError('direccion', 'La dirección de envío es requerida.');
+            return;
+        }
+
         $items   = $this->obtenerItems();
         $maderas = $this->obtenerMaderas();
 
@@ -177,102 +188,135 @@ class Checkout extends Component
             }
         }
 
-        // Validar stock combinado
-        foreach ($demanda as $productoId => $cantidadNecesaria) {
-            $producto = Producto::find($productoId);
-            if (! $producto || $producto->stock < $cantidadNecesaria) {
-                $nombre = $producto?->nombre ?? "Producto #$productoId";
-                $this->addError('carrito', "No hay stock suficiente para {$nombre}.");
+        $this->procesando = true;
+
+        $subtotal         = $this->obtenerSubtotal();
+        $total            = $this->obtenerTotal();
+        $emailNormalizado = strtolower(trim($this->email));
+
+        // Re-validar el código de descuento con el email real del cliente
+        if ($this->descuentoAplicado) {
+            $codigoObj = CodigoDescuento::find($this->descuentoAplicado->id);
+            if (! $codigoObj || ! $codigoObj->estaVigente()) {
+                $this->addError('codigoDescuentoInput', 'El código de descuento ya no es válido.');
+                $this->quitarDescuento();
+                $this->procesando = false;
+                return;
+            }
+            if ($codigoObj->solo_un_uso_por_email && $codigoObj->yaUsadoPorEmail($emailNormalizado)) {
+                $this->addError('codigoDescuentoInput', 'Ya usaste este código con este email.');
+                $this->quitarDescuento();
+                $this->procesando = false;
                 return;
             }
         }
 
-        $this->procesando = true;
+        $descuentoAplicadoId = $this->descuentoAplicado?->id;
+        $montoDescuento      = $this->montoDescuento;
 
-        $subtotal = $this->obtenerSubtotal();
-        $total    = $this->obtenerTotal();
+        try {
+            $pedido = DB::transaction(function () use (
+                $items, $maderas, $subtotal, $total, $demanda,
+                $emailNormalizado, $descuentoAplicadoId, $montoDescuento
+            ) {
+                // Verificar y bloquear stock dentro de la transacción para evitar race conditions
+                $productosLocked = [];
+                foreach ($demanda as $productoId => $cantidadNecesaria) {
+                    $producto = Producto::lockForUpdate()->find($productoId);
+                    if (! $producto || $producto->stock < $cantidadNecesaria) {
+                        $nombre = $producto?->nombre ?? "Producto #$productoId";
+                        throw new \Exception("No hay stock suficiente para {$nombre}.");
+                    }
+                    $productosLocked[$productoId] = $producto;
+                }
 
-        // Crear el pedido
-        $pedido = Pedido::create([
-            'nombre_cliente'      => $this->nombre,
-            'email_cliente'       => $this->email,
-            'telefono_cliente'    => $this->telefono,
-            'metodo_entrega'      => $this->metodo_entrega,
-            'metodo_pago'         => $this->metodo_pago,
-            'direccion_envio'     => $this->metodo_entrega === 'envio' ? $this->direccion : null,
-            'costo_envio'         => $this->metodo_entrega === 'envio' ? null : 0,
-            'subtotal'            => $subtotal,
-            'monto_descuento'     => $this->montoDescuento,
-            'total'               => $total,
-            'estado'              => 'pendiente',
-            'notas_cliente'       => $this->notas ?: null,
-            'codigo_descuento_id' => $this->descuentoAplicado?->id,
-        ]);
+                $pedido = Pedido::create([
+                    'nombre_cliente'      => $this->nombre,
+                    'email_cliente'       => $emailNormalizado,
+                    'telefono_cliente'    => $this->telefono,
+                    'metodo_entrega'      => $this->metodo_entrega,
+                    'metodo_pago'         => $this->metodo_pago,
+                    'direccion_envio'     => $this->metodo_entrega === 'envio' ? $this->direccion : null,
+                    'costo_envio'         => $this->metodo_entrega === 'envio' ? null : 0,
+                    'subtotal'            => $subtotal,
+                    'monto_descuento'     => $montoDescuento,
+                    'total'               => $total,
+                    'estado'              => 'pendiente',
+                    'notas_cliente'       => $this->notas ?: null,
+                    'codigo_descuento_id' => $descuentoAplicadoId,
+                ]);
 
-        // Crear items de productos individuales
-        foreach ($items as $item) {
-            PedidoItem::create([
-                'pedido_id'       => $pedido->id,
-                'producto_id'     => $item['id'],
-                'nombre_producto' => $item['nombre'],
-                'precio_unitario' => $item['precio'],
-                'cantidad'        => $item['cantidad'],
-                'subtotal'        => $item['subtotal'],
-                'tipo'            => 'producto',
-            ]);
+                // Crear items de productos individuales
+                foreach ($items as $item) {
+                    PedidoItem::create([
+                        'pedido_id'       => $pedido->id,
+                        'producto_id'     => $item['id'],
+                        'nombre_producto' => $item['nombre'],
+                        'precio_unitario' => $item['precio'],
+                        'cantidad'        => $item['cantidad'],
+                        'subtotal'        => $item['subtotal'],
+                        'tipo'            => 'producto',
+                    ]);
+                }
+
+                // Crear items de maderas
+                foreach ($maderas as $madera) {
+                    PedidoItem::create([
+                        'pedido_id'       => $pedido->id,
+                        'producto_id'     => null,
+                        'nombre_producto' => $madera['nombre'],
+                        'precio_unitario' => $madera['precio'],
+                        'cantidad'        => 1,
+                        'subtotal'        => $madera['subtotal'],
+                        'tipo'            => 'madera',
+                        'madera_id'       => $madera['madera_id'],
+                        'condimentos'     => $madera['condimentos'],
+                    ]);
+                }
+
+                // Descontar stock usando los productos ya bloqueados (dispara el Observer)
+                foreach ($demanda as $productoId => $cantidadNecesaria) {
+                    $producto = $productosLocked[$productoId];
+                    $producto->stock = max(0, $producto->stock - $cantidadNecesaria);
+                    $producto->save();
+                }
+
+                // Registrar uso del código de descuento
+                if ($descuentoAplicadoId) {
+                    UsoCodigoDescuento::create([
+                        'codigo_descuento_id' => $descuentoAplicadoId,
+                        'pedido_id'           => $pedido->id,
+                        'email_cliente'       => $emailNormalizado,
+                        'monto_descontado'    => $montoDescuento,
+                    ]);
+                    CodigoDescuento::where('id', $descuentoAplicadoId)->increment('usos_actuales');
+                }
+
+                return $pedido;
+            });
+        } catch (\Exception $e) {
+            $this->addError('carrito', $e->getMessage());
+            $this->procesando = false;
+            return;
         }
 
-        // Crear items de maderas
-        foreach ($maderas as $madera) {
-            PedidoItem::create([
-                'pedido_id'       => $pedido->id,
-                'producto_id'     => null,
-                'nombre_producto' => $madera['nombre'],
-                'precio_unitario' => $madera['precio'],
-                'cantidad'        => 1,
-                'subtotal'        => $madera['subtotal'],
-                'tipo'            => 'madera',
-                'madera_id'       => $madera['madera_id'],
-                'condimentos'     => $madera['condimentos'],
-            ]);
-        }
-
-        // Descontar stock (usando save() para disparar el Observer)
-        foreach ($demanda as $productoId => $cantidadNecesaria) {
-            $producto = Producto::find($productoId);
-            if ($producto) {
-                $producto->stock = max(0, $producto->stock - $cantidadNecesaria);
-                $producto->save();
-            }
-        }
-
-        // Registrar uso del código de descuento
-        if ($this->descuentoAplicado) {
-            UsoCodigoDescuento::create([
-                'codigo_descuento_id' => $this->descuentoAplicado->id,
-                'pedido_id'           => $pedido->id,
-                'email_cliente'       => $this->email,
-                'monto_descontado'    => $this->montoDescuento,
-            ]);
-
-            $this->descuentoAplicado->increment('usos_actuales');
-        }
+        // Refrescar para asegurar que numero_pedido (generado en el evento created) esté disponible
+        $pedido->refresh();
 
         $pedidoConItems = $pedido->load('items');
 
-        // Enviar email al admin
+        // Enviar emails (queue: con driver sync se envía igual; con database/redis se vuelve asíncrono)
         $emailAdmin = config('tileo.email_admin');
         try {
-            Mail::to($emailAdmin)->send(new NuevoPedidoMail($pedidoConItems));
+            Mail::to($emailAdmin)->queue(new NuevoPedidoMail($pedidoConItems));
         } catch (\Exception $e) {
-            \Log::error('Error al enviar email al admin: ' . $e->getMessage());
+            \Log::error('Error al encolar email al admin: ' . $e->getMessage());
         }
 
-        // Enviar confirmación al cliente
         try {
-            Mail::to($pedido->email_cliente)->send(new ConfirmacionClienteMail($pedidoConItems));
+            Mail::to($pedido->email_cliente)->queue(new ConfirmacionClienteMail($pedidoConItems));
         } catch (\Exception $e) {
-            \Log::error('Error al enviar email al cliente: ' . $e->getMessage());
+            \Log::error('Error al encolar email al cliente: ' . $e->getMessage());
         }
 
         // Limpiar carrito

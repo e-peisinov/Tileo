@@ -2,7 +2,10 @@
 
 namespace App\Livewire\Admin;
 
+use App\Mail\CambioEstadoMail;
 use App\Models\Pedido;
+use App\Models\PedidoHistorialEstado;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -28,7 +31,9 @@ class GestionPedidos extends Component
 
     public function aplicarAccionMasiva(): void
     {
-        if (empty($this->seleccionados) || empty($this->accionMasiva)) {
+        $estadosPermitidos = ['pendiente', 'confirmado', 'preparando', 'enviado', 'listo_retiro', 'entregado', 'rechazado', 'cancelado'];
+
+        if (empty($this->seleccionados) || empty($this->accionMasiva) || ! in_array($this->accionMasiva, $estadosPermitidos)) {
             return;
         }
 
@@ -39,6 +44,9 @@ class GestionPedidos extends Component
             if (! $pedido) continue;
 
             $estadoAnterior    = $pedido->estado;
+
+            if ($estadoAnterior === $this->accionMasiva) continue;
+
             $entrandoCancelado = in_array($this->accionMasiva, $cancelados) && ! in_array($estadoAnterior, $cancelados);
             $saliendoCancelado = ! in_array($this->accionMasiva, $cancelados) && in_array($estadoAnterior, $cancelados);
 
@@ -55,6 +63,21 @@ class GestionPedidos extends Component
             }
 
             $pedido->update(['estado' => $this->accionMasiva]);
+
+            PedidoHistorialEstado::create([
+                'pedido_id'       => $pedido->id,
+                'estado_anterior' => $estadoAnterior,
+                'estado_nuevo'    => $this->accionMasiva,
+                'notas'           => null,
+            ]);
+
+            if ($pedido->email_cliente) {
+                try {
+                    Mail::to($pedido->email_cliente)->send(new CambioEstadoMail($pedido, $estadoAnterior));
+                } catch (\Exception $e) {
+                    \Log::error('Error al enviar email cambio estado pedido ' . $pedido->numero_pedido . ': ' . $e->getMessage());
+                }
+            }
         }
 
         $this->seleccionados = [];

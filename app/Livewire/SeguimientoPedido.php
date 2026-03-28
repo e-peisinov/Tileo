@@ -45,7 +45,7 @@ class SeguimientoPedido extends Component
             ]);
 
             $this->pedidos = Pedido::with(['items', 'historial'])
-                ->where('email_cliente', strtolower(trim($this->emailPedido)))
+                ->whereRaw('LOWER(email_cliente) = ?', [strtolower(trim($this->emailPedido))])
                 ->latest()
                 ->get();
 
