@@ -103,6 +103,9 @@
                 <a href="{{ route('admin.categorias') }}" wire:navigate class="nav-admin-link {{ request()->routeIs('admin.categorias') ? 'activo' : '' }}">
                     <i class="fa-solid fa-tags"></i> Categorías
                 </a>
+                <a href="{{ route('admin.maderas') }}" wire:navigate class="nav-admin-link {{ request()->routeIs('admin.maderas') ? 'activo' : '' }}">
+                    <i class="fa-solid fa-box-open"></i> Maderas
+                </a>
             </div>
 
             <div>

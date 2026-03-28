@@ -14,6 +14,11 @@
               {{ request()->routeIs('admin.productos') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
         <i class="fa-solid fa-seedling text-[10px]"></i> Productos
     </a>
+    <a href="{{ route('admin.maderas') }}" wire:navigate
+       class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
+              {{ request()->routeIs('admin.maderas') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">
+        <i class="fa-solid fa-box text-[10px]"></i> Maderas
+    </a>
     <a href="{{ route('admin.categorias') }}" wire:navigate
        class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200
               {{ request()->routeIs('admin.categorias') ? 'bg-[#386641] text-white shadow-sm' : 'text-[#8b5e3c] hover:bg-[#f0e9de] hover:text-[#2c1a0e]' }}">

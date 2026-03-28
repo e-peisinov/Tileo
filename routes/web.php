@@ -27,6 +27,8 @@ use App\Livewire\Admin\GestionCodigos;
 use App\Livewire\Admin\Reportes;
 use App\Livewire\Terminos;
 use App\Livewire\Privacidad;
+use App\Livewire\ConfiguradorMadera;
+use App\Livewire\Admin\GestionMaderas;
 
 // Ruta de logout
 Route::post('/logout', function () {
@@ -50,6 +52,7 @@ Route::get('/producto/{producto}', DetalleProducto::class)->name('detalle-produc
 Route::get('/preguntas', Preguntas::class)->name('preguntas');
 Route::get('/terminos', Terminos::class)->name('terminos');
 Route::get('/privacidad', Privacidad::class)->name('privacidad');
+Route::get('/configurar-madera/{madera}', ConfiguradorMadera::class)->name('configurar-madera');
 
 // Rutas de perfil (auth)
 Route::view('profile', 'profile')
@@ -72,6 +75,7 @@ Route::middleware(['auth', 'es_admin'])->prefix('admin')->name('admin.')->group(
     Route::get('/contenidos', GestionContenidos::class)->name('contenidos');
     Route::get('/codigos-descuento', GestionCodigos::class)->name('codigos-descuento');
     Route::get('/reportes', Reportes::class)->name('reportes');
+    Route::get('/maderas', GestionMaderas::class)->name('maderas');
 });
 
 require __DIR__.'/auth.php';
