@@ -20,7 +20,8 @@ class GestionClientes extends Component
 
     public function render()
     {
-        $clientes = Pedido::select('email_cliente', 'nombre_cliente')
+        $clientes = Pedido::select('email_cliente')
+            ->selectRaw('MAX(nombre_cliente) as nombre_cliente')
             ->selectRaw('COUNT(*) as total_pedidos')
             ->selectRaw('SUM(total) as total_gastado')
             ->selectRaw('MAX(created_at) as ultimo_pedido')
@@ -30,7 +31,7 @@ class GestionClientes extends Component
                         ->orWhere('email_cliente', 'like', "%{$this->busqueda}%");
                 });
             })
-            ->groupBy('email_cliente', 'nombre_cliente')
+            ->groupBy('email_cliente')
             ->orderByDesc('ultimo_pedido')
             ->paginate(20);
 

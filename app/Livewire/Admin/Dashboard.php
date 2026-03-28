@@ -12,9 +12,6 @@ class Dashboard extends Component
     public string $fechaDesde = '';
     public string $fechaHasta = '';
 
-    public function updatingFechaDesde(): void {}
-    public function updatingFechaHasta(): void {}
-
     private function pedidosConFiltro()
     {
         return Pedido::query()
@@ -53,39 +50,43 @@ class Dashboard extends Component
             ->limit(8)
             ->get();
 
-        // Gráfico: si hay filtro de fechas, muestra ese rango; si no, últimos 7 días
+        // Gráfico: si hay filtro de fechas, muestra ese rango (máx. 30 puntos); si no, últimos 7 días
         if ($this->fechaDesde && $this->fechaHasta) {
-            $inicio = \Carbon\Carbon::parse($this->fechaDesde);
-            $fin    = \Carbon\Carbon::parse($this->fechaHasta);
+            $inicio = \Carbon\Carbon::parse($this->fechaDesde)->startOfDay();
+            $fin    = \Carbon\Carbon::parse($this->fechaHasta)->endOfDay();
             $dias   = collect();
             for ($d = $inicio->copy(); $d->lte($fin); $d->addDay()) {
-                $dias->push($d->copy());
+                $dias->push($d->copy()->startOfDay());
             }
-            // Si el rango es muy grande, tomamos máximo 30 puntos
             if ($dias->count() > 30) {
                 $dias = collect(range(0, 29))->map(fn($i) => $inicio->copy()->addDays((int) round($i * ($dias->count() - 1) / 29)));
             }
-            $datosGrafico = $dias->map(function ($fecha) {
-                return [
-                    'fecha'    => $fecha->format('d/m'),
-                    'pedidos'  => Pedido::whereDate('created_at', $fecha)->count(),
-                    'ingresos' => Pedido::whereDate('created_at', $fecha)
-                                    ->whereNotIn('estado', ['rechazado', 'cancelado'])
-                                    ->sum('total'),
-                ];
-            });
         } else {
-            $datosGrafico = collect(range(6, 0))->map(function ($diasAtras) {
-                $fecha = now()->subDays($diasAtras);
-                return [
-                    'fecha'    => $fecha->format('d/m'),
-                    'pedidos'  => Pedido::whereDate('created_at', $fecha)->count(),
-                    'ingresos' => Pedido::whereDate('created_at', $fecha)
-                                    ->whereNotIn('estado', ['rechazado', 'cancelado'])
-                                    ->sum('total'),
-                ];
-            });
+            $dias = collect(range(6, 0))->map(fn($diasAtras) => now()->subDays($diasAtras)->startOfDay());
         }
+
+        // Una sola query agrupada por fecha reemplaza las N queries del loop
+        $rangoInicio = $dias->first()->toDateString();
+        $rangoFin    = $dias->last()->toDateString();
+
+        $pedidosPorDia = Pedido::selectRaw('DATE(created_at) as dia, COUNT(*) as total_pedidos')
+            ->whereDate('created_at', '>=', $rangoInicio)
+            ->whereDate('created_at', '<=', $rangoFin)
+            ->groupBy('dia')
+            ->pluck('total_pedidos', 'dia');
+
+        $ingresosPorDia = Pedido::selectRaw('DATE(created_at) as dia, SUM(total) as total_ingresos')
+            ->whereDate('created_at', '>=', $rangoInicio)
+            ->whereDate('created_at', '<=', $rangoFin)
+            ->whereNotIn('estado', ['rechazado', 'cancelado'])
+            ->groupBy('dia')
+            ->pluck('total_ingresos', 'dia');
+
+        $datosGrafico = $dias->map(fn($fecha) => [
+            'fecha'    => $fecha->format('d/m'),
+            'pedidos'  => $pedidosPorDia[$fecha->toDateString()] ?? 0,
+            'ingresos' => $ingresosPorDia[$fecha->toDateString()] ?? 0,
+        ]);
 
         return view('livewire.admin.dashboard', compact('estadisticas', 'ultimosPedidos', 'productosBajoStock', 'datosGrafico', 'productosVendidos'))
             ->layout('layouts.admin', ['titulo' => 'Dashboard — Admin Tileo']);

@@ -11,7 +11,7 @@ class Catalogo extends Component
 {
     use WithPagination;
 
-    public string $categoriaActiva = 'todos';
+    public string $categoriaActiva = '0'; // '0' = todos; número = categoria_id
     public string $busqueda = '';
     public string $ordenar = 'nombre_asc';
     public string $precioMin = '';
@@ -42,11 +42,9 @@ class Catalogo extends Component
 
         $productos = Producto::with('categoria')
             ->where('activo', true)
-            ->when($this->categoriaActiva !== 'todos', function ($q) {
-                $q->whereHas('categoria', fn($sub) =>
-                    $sub->where('nombre', $this->categoriaActiva)
-                );
-            })
+            ->when((int) $this->categoriaActiva > 0, fn($q) =>
+                $q->where('categoria_id', (int) $this->categoriaActiva)
+            )
             ->when($this->busqueda, fn($q) => $q->where('nombre', 'like', "%{$this->busqueda}%"))
             ->when($this->precioMin !== '', fn($q) => $q->where('precio', '>=', $this->precioMin))
             ->when($this->precioMax !== '', fn($q) => $q->where('precio', '<=', $this->precioMax))

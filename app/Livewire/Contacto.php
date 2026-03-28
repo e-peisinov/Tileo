@@ -19,6 +19,7 @@ class Contacto extends Component
     #[Validate('required|min:6|max:30')]
     public string $telefono = '';
 
+    #[Validate('nullable|max:150')]
     public string $asunto = '';
 
     #[Validate('required|min:10')]
@@ -41,9 +42,11 @@ class Contacto extends Component
             ));
         } catch (\Exception $e) {
             \Log::error('Error al enviar mensaje de contacto: ' . $e->getMessage());
+            $this->addError('mensaje', 'No se pudo enviar tu mensaje. Intentá de nuevo en unos minutos.');
+            return;
         }
 
-        // Confirmación al cliente
+        // Confirmación al cliente (fallo no crítico)
         try {
             Mail::to($this->email)->send(new ConfirmacionContactoMail(
                 $this->nombre,

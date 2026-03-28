@@ -88,17 +88,17 @@
 
             {{-- Filtros por categoría --}}
             <div class="flex flex-wrap justify-center gap-2 mb-14">
-                <button wire:click="$set('categoriaActiva', 'todos')"
+                <button wire:click="$set('categoriaActiva', '0')"
                         class="border px-6 py-2 text-[12px] tracking-wider font-medium rounded-full transition-all duration-300
-                               {{ $categoriaActiva === 'todos'
+                               {{ $categoriaActiva === '0'
                                    ? 'bg-[#386641] text-[#faf6f0] border-[#386641]'
                                    : 'text-[#2c1a0e]/60 border-[#2c1a0e]/15 hover:border-[#386641]/40 hover:text-[#386641]' }}">
                     Todos
                 </button>
                 @foreach($categorias as $cat)
-                    <button wire:click="$set('categoriaActiva', '{{ $cat->nombre }}')"
+                    <button wire:click="$set('categoriaActiva', '{{ $cat->id }}')"
                             class="border px-6 py-2 text-[12px] tracking-wider font-medium rounded-full transition-all duration-300
-                                   {{ $categoriaActiva === $cat->nombre
+                                   {{ $categoriaActiva === (string) $cat->id
                                        ? 'bg-[#386641] text-[#faf6f0] border-[#386641]'
                                        : 'text-[#2c1a0e]/60 border-[#2c1a0e]/15 hover:border-[#386641]/40 hover:text-[#386641]' }}">
                         {{ $cat->nombre }}

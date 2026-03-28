@@ -20,7 +20,7 @@ class ProductoObserver
         $stockNuevo    = $producto->stock;
 
         // Stock se agotó → avisar al admin
-        if ($stockNuevo === 0 && $stockAnterior > 0) {
+        if ((int) $stockNuevo === 0 && (int) $stockAnterior > 0) {
             try {
                 Mail::to(config('tileo.email_admin'))
                     ->send(new StockAgotadoMail($producto));
@@ -29,13 +29,13 @@ class ProductoObserver
             }
         }
 
-        // Stock se repuso → avisar a los suscriptores
-        if ($stockNuevo > 0 && $stockAnterior === 0) {
+        // Stock se repuso → avisar a los suscriptores (queue para no bloquear el request)
+        if ((int) $stockNuevo > 0 && (int) $stockAnterior === 0) {
             AvisoStock::where('producto_id', $producto->id)
                 ->where('enviado', false)
                 ->each(function (AvisoStock $aviso) use ($producto) {
                     try {
-                        Mail::to($aviso->email)->send(new AvisoStockMail($producto, $aviso));
+                        Mail::to($aviso->email)->queue(new AvisoStockMail($producto, $aviso));
                         $aviso->update(['enviado' => true, 'enviado_en' => now()]);
                     } catch (\Exception $e) {
                         \Log::error('Error al enviar aviso de stock: ' . $e->getMessage());

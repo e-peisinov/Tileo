@@ -88,10 +88,4 @@ class Pedido extends Model
             default        => '#2c1a0e',
         };
     }
-
-    public function calcularTotal(): void
-    {
-        $this->total = $this->subtotal + ($this->costo_envio ?? 0) - ($this->monto_descuento ?? 0);
-        $this->save();
-    }
 }

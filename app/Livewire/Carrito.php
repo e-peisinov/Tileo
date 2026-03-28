@@ -63,6 +63,14 @@ class Carrito extends Component
             return;
         }
 
+        // Validar stock actual de cada condimento antes de agregar
+        foreach ($condimentos as $condimento) {
+            $producto = Producto::find($condimento['producto_id'] ?? null);
+            if (! $producto || $producto->stock < ($condimento['cantidad'] ?? 1)) {
+                return;
+            }
+        }
+
         $clave   = 'madera_' . time() . '_' . uniqid();
         $maderas = session('carrito_maderas', []);
 
@@ -108,8 +116,11 @@ class Carrito extends Component
             return;
         }
 
-        $stock = $carrito[$productoId]['stock'];
-        $cantidad = min($cantidad, $stock);
+        // Consultar stock actual en DB para no usar el valor guardado al agregar
+        $stockActual = Producto::where('id', $productoId)->value('stock') ?? 0;
+        $cantidad    = min($cantidad, $stockActual);
+
+        $carrito[$productoId]['stock']    = $stockActual;
         $carrito[$productoId]['cantidad'] = $cantidad;
         $carrito[$productoId]['subtotal'] = $carrito[$productoId]['precio'] * $cantidad;
 

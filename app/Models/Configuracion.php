@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Configuracion extends Model
 {
@@ -12,7 +13,9 @@ class Configuracion extends Model
 
     public static function obtener(string $clave, mixed $porDefecto = null): mixed
     {
-        $config = static::where('clave', $clave)->first();
+        $config = Cache::remember("configuracion_{$clave}", 300, function () use ($clave) {
+            return static::where('clave', $clave)->first();
+        });
 
         if (! $config) {
             return $porDefecto;
@@ -28,5 +31,6 @@ class Configuracion extends Model
     public static function establecer(string $clave, mixed $valor): void
     {
         static::where('clave', $clave)->update(['valor' => $valor]);
+        Cache::forget("configuracion_{$clave}");
     }
 }
