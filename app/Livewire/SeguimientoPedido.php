@@ -18,6 +18,12 @@ class SeguimientoPedido extends Component
     public function mount(): void
     {
         $this->pedidos = collect();
+
+        $numero = request()->query('numero');
+        if ($numero) {
+            $this->numeroPedido = strtoupper(trim($numero));
+            $this->buscar();
+        }
     }
 
     public function buscar(): void

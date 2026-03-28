@@ -47,8 +47,8 @@ class ConfirmacionPedido extends Component
 
         if ($pedido->monto_descuento > 0) {
             $lineas[] = '🏷️ *Descuento:* − $' . number_format($pedido->monto_descuento, 2, ',', '.');
-            $lineas[] = '✅ *Total:* $' . number_format($pedido->total, 2, ',', '.');
         }
+        $lineas[] = '✅ *Total:* $' . number_format($pedido->total, 2, ',', '.');
 
         if ($pedido->notas_cliente) {
             $lineas[] = '';

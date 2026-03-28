@@ -19,6 +19,10 @@ class DetallePedido extends Component
     public string $costo_envio = '';
     public bool $guardado = false;
 
+    public function updatedEstado(): void { $this->guardado = false; }
+    public function updatedNotasAdmin(): void { $this->guardado = false; }
+    public function updatedCostoEnvio(): void { $this->guardado = false; }
+
     public function mount(Pedido $pedido): void
     {
         $this->pedido     = $pedido->load('items.producto', 'historial');
