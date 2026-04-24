@@ -1,0 +1,7 @@
+# Bloquear ejecución de PHP y otros scripts en este directorio
+<FilesMatch "\.(php\d*|phtml|phar|pl|py|cgi|sh|bash|exe|com|bat|cmd|jsp|asp|aspx)$">
+    Require all denied
+</FilesMatch>
+
+# Forzar tipo de contenido solo para imágenes
+Options -ExecCGI -Indexes

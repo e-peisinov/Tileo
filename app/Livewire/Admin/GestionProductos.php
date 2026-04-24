@@ -95,12 +95,18 @@ class GestionProductos extends Component
         ]);
 
         if ($this->imagenArchivo) {
-            $extensionesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-            $extension = strtolower($this->imagenArchivo->getClientOriginalExtension());
-            if (! in_array($extension, $extensionesPermitidas)) {
+            $mimePermitidos = [
+                'image/jpeg' => 'jpg',
+                'image/png'  => 'png',
+                'image/gif'  => 'gif',
+                'image/webp' => 'webp',
+            ];
+            $mime = $this->imagenArchivo->getMimeType();
+            if (! isset($mimePermitidos[$mime])) {
                 $this->addError('imagenArchivo', 'Solo se permiten imágenes JPG, PNG, GIF o WEBP.');
                 return;
             }
+            $extension = $mimePermitidos[$mime];
             $nombreArchivo = \Str::slug($this->nombre) . '-' . uniqid() . '.' . $extension;
             $destino       = public_path('imagenes') . '/' . $nombreArchivo;
 
@@ -135,10 +141,18 @@ class GestionProductos extends Component
         $galeriaSlots = ['galeriaArchivo0', 'galeriaArchivo1', 'galeriaArchivo2', 'galeriaArchivo3'];
         $ordenActual  = $producto->imagenesGaleria()->max('orden') ?? 0;
 
+        $mimePermitidosGaleria = [
+            'image/jpeg' => 'jpg',
+            'image/png'  => 'png',
+            'image/gif'  => 'gif',
+            'image/webp' => 'webp',
+        ];
+
         foreach ($galeriaSlots as $slot) {
             if ($this->$slot) {
-                $ext = strtolower($this->$slot->getClientOriginalExtension());
-                if (! in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) continue;
+                $mime = $this->$slot->getMimeType();
+                if (! isset($mimePermitidosGaleria[$mime])) continue;
+                $ext     = $mimePermitidosGaleria[$mime];
                 $archivo  = \Str::slug($producto->nombre) . '-galeria-' . uniqid() . '.' . $ext;
                 $destino  = public_path('imagenes') . '/' . $archivo;
 

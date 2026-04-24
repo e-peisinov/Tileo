@@ -72,7 +72,18 @@ class GestionBanners extends Component
         ]);
 
         if ($this->imagenArchivo) {
-            $extension     = $this->imagenArchivo->getClientOriginalExtension();
+            $mimePermitidos = [
+                'image/jpeg' => 'jpg',
+                'image/png'  => 'png',
+                'image/gif'  => 'gif',
+                'image/webp' => 'webp',
+            ];
+            $mime = $this->imagenArchivo->getMimeType();
+            if (! isset($mimePermitidos[$mime])) {
+                $this->addError('imagenArchivo', 'Solo se permiten imágenes JPG, PNG, GIF o WEBP.');
+                return;
+            }
+            $extension     = $mimePermitidos[$mime];
             $nombreArchivo = 'banner-' . uniqid() . '.' . $extension;
             $destino       = public_path('imagenes/banners') . '/' . $nombreArchivo;
 
