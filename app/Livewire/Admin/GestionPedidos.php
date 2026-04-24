@@ -2,12 +2,10 @@
 
 namespace App\Livewire\Admin;
 
-use App\Mail\CambioEstadoMail;
 use App\Models\Pedido;
 use App\Models\PedidoHistorialEstado;
 use App\Models\Producto;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -95,13 +93,6 @@ class GestionPedidos extends Component
                 ]);
             });
 
-            if ($pedido->email_cliente) {
-                try {
-                    Mail::to($pedido->email_cliente)->queue(new CambioEstadoMail($pedido, $estadoAnterior));
-                } catch (\Exception $e) {
-                    \Log::error('Error al enviar email cambio estado pedido ' . $pedido->numero_pedido . ': ' . $e->getMessage());
-                }
-            }
         }
 
         $this->seleccionados = [];

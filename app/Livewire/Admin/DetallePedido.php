@@ -2,12 +2,10 @@
 
 namespace App\Livewire\Admin;
 
-use App\Mail\CambioEstadoMail;
 use App\Models\Pedido;
 use App\Models\PedidoHistorialEstado;
 use App\Models\Producto;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
 class DetallePedido extends Component
@@ -104,14 +102,6 @@ class DetallePedido extends Component
         $this->pedido->refresh();
 
         if ($cambioDeEstado) {
-            if ($this->pedido->email_cliente) {
-                try {
-                    Mail::to($this->pedido->email_cliente)
-                        ->queue(new CambioEstadoMail($this->pedido, $estadoAnterior));
-                } catch (\Exception $e) {
-                    \Log::error('Error al encolar email cambio estado: ' . $e->getMessage());
-                }
-            }
             $this->pedido->load('historial');
         }
 
