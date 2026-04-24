@@ -18,59 +18,6 @@
 
     <form wire:submit="guardar" class="space-y-5">
 
-        {{-- Datos bancarios --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
-            <div class="px-6 py-4 border-b border-[#d4b896]/20" style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
-                <h2 class="text-base text-[#2c1a0e] flex items-center gap-2" style="font-family:'DM Serif Display',serif;">
-                    <i class="fa-solid fa-building-columns text-sm text-[#8b5e3c]/50"></i>
-                    Datos bancarios para transferencias
-                </h2>
-                <p class="text-[11px] text-[#8b5e3c]/60 mt-0.5">Se muestran al cliente cuando elige pagar por transferencia.</p>
-            </div>
-            <div class="p-6 space-y-4">
-                @foreach(['titular_cuenta', 'cbu', 'alias_cbu'] as $clave)
-                    @php $config = $configuraciones->firstWhere('clave', $clave); @endphp
-                    @if($config)
-                        <div>
-                            <label class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-1.5 font-semibold">
-                                {{ $config->etiqueta }}
-                            </label>
-                            <input wire:model="valores.{{ $clave }}" type="text"
-                                   class="w-full border border-[#d4b896]/50 bg-[#faf6f0] rounded-lg px-3 py-2.5 text-sm text-[#2c1a0e]
-                                          focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200"
-                                   placeholder="{{ $config->descripcion }}">
-                            @error("valores.{$clave}") <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-                    @endif
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Entrega --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
-            <div class="px-6 py-4 border-b border-[#d4b896]/20" style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
-                <h2 class="text-base text-[#2c1a0e] flex items-center gap-2" style="font-family:'DM Serif Display',serif;">
-                    <i class="fa-solid fa-truck text-sm text-[#8b5e3c]/50"></i>
-                    Entrega
-                </h2>
-            </div>
-            <div class="p-6">
-                @php $config = $configuraciones->firstWhere('clave', 'tiempo_entrega'); @endphp
-                @if($config)
-                    <div>
-                        <label class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-1.5 font-semibold">
-                            {{ $config->etiqueta }}
-                        </label>
-                        <input wire:model="valores.tiempo_entrega" type="text"
-                               class="w-full border border-[#d4b896]/50 bg-[#faf6f0] rounded-lg px-3 py-2.5 text-sm text-[#2c1a0e]
-                                      focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200"
-                               placeholder="Ejemplo: 2 a 5 días hábiles">
-                        @error('valores.tiempo_entrega') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
-                @endif
-            </div>
-        </div>
-
         {{-- Modo vacaciones --}}
         <div class="bg-white rounded-2xl shadow-sm border border-[#d4b896]/20 overflow-hidden">
             <div class="px-6 py-4 border-b border-[#d4b896]/20" style="background: linear-gradient(to right, #f0e9de, #faf6f0);">
