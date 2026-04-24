@@ -58,8 +58,7 @@
                             @if($madera->descripcion)
                                 <p class="text-xs text-[#2c1a0e]/55 leading-relaxed flex-1 line-clamp-2">{{ $madera->descripcion }}</p>
                             @endif
-                            <div class="flex items-center justify-between mt-auto pt-1">
-                                <span class="text-base font-semibold text-[#386641]">${{ number_format($madera->precio, 2, ',', '.') }}</span>
+                            <div class="flex items-center justify-end mt-auto pt-1">
                                 <a href="{{ route('configurar-madera', $madera->id) }}" wire:navigate
                                    class="inline-flex items-center gap-1.5 bg-[#386641] text-white px-3 py-1.5 text-[11px] font-semibold tracking-wide hover:bg-[#2d5534] transition-colors duration-300">
                                     <i class="fa-solid fa-sliders text-[10px]"></i>
@@ -113,16 +112,6 @@
 
             {{-- Filtros avanzados --}}
             <div class="flex flex-wrap items-center gap-3 mb-8 justify-center">
-                {{-- Precio mínimo --}}
-                <div class="flex items-center gap-1.5">
-                    <span class="text-xs text-[#8b5e3c]">Precio:</span>
-                    <input wire:model.live.debounce.500ms="precioMin" type="number" min="0" placeholder="Min"
-                           class="w-20 border border-[#d4b896]/50 bg-white rounded-lg px-2.5 py-1.5 text-xs text-[#2c1a0e] focus:outline-none focus:border-[#386641] transition-colors">
-                    <span class="text-xs text-[#8b5e3c]/60">—</span>
-                    <input wire:model.live.debounce.500ms="precioMax" type="number" min="0" placeholder="Máx"
-                           class="w-20 border border-[#d4b896]/50 bg-white rounded-lg px-2.5 py-1.5 text-xs text-[#2c1a0e] focus:outline-none focus:border-[#386641] transition-colors">
-                </div>
-
                 {{-- Solo con stock --}}
                 <label class="flex items-center gap-1.5 cursor-pointer select-none">
                     <input wire:model.live="soloConStock" type="checkbox"
@@ -135,8 +124,6 @@
                         class="border border-[#d4b896]/50 bg-white rounded-lg px-3 py-1.5 text-xs text-[#2c1a0e] focus:outline-none focus:border-[#386641] transition-colors">
                     <option value="nombre_asc">Nombre A–Z</option>
                     <option value="nombre_desc">Nombre Z–A</option>
-                    <option value="precio_asc">Precio: menor a mayor</option>
-                    <option value="precio_desc">Precio: mayor a menor</option>
                     <option value="recientes">Más recientes</option>
                 </select>
             </div>
@@ -206,22 +193,4 @@
         </div>
     </section>
 
-    {{-- BANNER INFERIOR --}}
-    <section class="relative overflow-hidden h-64">
-        <img src="{{ asset('imagenes/' . rawurlencode('WhatsApp Image 2026-03-17 at 13.24.12 (2).jpeg')) }}"
-             alt="Colección Tileo"
-             class="w-full h-full object-cover object-center">
-        <div class="absolute inset-0 bg-[#1a0f05]/60 flex items-center justify-center">
-            <div class="text-center fade-in">
-                <p class="text-[#d4b896]/80 tracking-[0.28em] uppercase text-[11px] font-medium mb-4">
-                    ¿Querés llevarlos a tu cocina?
-                </p>
-                <a href="{{ route('checkout') }}" wire:navigate
-                   class="inline-block border border-[#d4b896]/50 text-[#d4b896] px-8 py-3 text-[13px] tracking-wider font-medium
-                          hover:bg-[#d4b896] hover:text-[#2c1a0e] transition-all duration-300 hover:-translate-y-0.5">
-                    Ver mi carrito
-                </a>
-            </div>
-        </div>
-    </section>
 </div>

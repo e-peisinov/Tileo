@@ -9,11 +9,6 @@ class DetalleProducto extends Component
 {
     public Producto $producto;
 
-    public function agregarAlCarrito(): void
-    {
-        $this->dispatch('producto-agregado', productoId: $this->producto->id);
-    }
-
     public function render()
     {
         $relacionados = Producto::with('categoria')
@@ -24,10 +19,8 @@ class DetalleProducto extends Component
             ->get();
 
         $imagenesGaleria = $this->producto->imagenesGaleria()->get();
-        $resenas         = $this->producto->resenasAprobadas()->latest()->limit(10)->get();
-        $promedio        = $this->producto->promedioCalificacion();
 
-        return view('livewire.detalle-producto', compact('relacionados', 'imagenesGaleria', 'resenas', 'promedio'))
+        return view('livewire.detalle-producto', compact('relacionados', 'imagenesGaleria'))
             ->layout('layouts.app', [
                 'titulo'      => $this->producto->nombre . ' — Tileo',
                 'descripcion' => $this->producto->descripcion

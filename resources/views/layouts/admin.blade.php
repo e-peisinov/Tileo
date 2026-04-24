@@ -166,9 +166,15 @@
             <button class="lg:hidden text-[#8b5e3c] p-1" @click="sidebarAbierto = !sidebarAbierto">
                 <i class="fa-solid fa-bars text-lg"></i>
             </button>
-            <a href="{{ route('admin.dashboard') }}" wire:navigate class="hidden lg:flex items-center gap-2 text-[13px] text-[#2c1a0e]/50 hover:text-[#386641] transition-colors">
-                <i class="fa-solid fa-house text-xs"></i> Dashboard
-            </a>
+            <div class="flex items-center gap-4">
+                <a href="{{ route('admin.dashboard') }}" wire:navigate class="hidden lg:flex items-center gap-2 text-[13px] text-[#2c1a0e]/50 hover:text-[#386641] transition-colors">
+                    <i class="fa-solid fa-house text-xs"></i> Dashboard
+                </a>
+                <p>|</p>
+                <a href="{{ route('dashboard') }}" wire:navigate class="hidden lg:flex items-center gap-2 text-[13px] text-[#2c1a0e]/50 hover:text-[#386641] transition-colors">
+                    <i class="fa fa-backward" aria-hidden="true"></i> Volver al sitio
+                </a>
+            </div>
             <div class="flex items-center gap-3">
                 <span class="text-xs text-[#8b5e3c]/70">
                     <i class="fa-solid fa-user-circle mr-1"></i>

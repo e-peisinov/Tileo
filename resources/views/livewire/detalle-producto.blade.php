@@ -76,17 +76,6 @@
                         </p>
                     @endif
 
-                    {{-- Precio --}}
-                    <div>
-                        @if($producto->precio > 0)
-                            <p class="text-3xl font-bold" style="color: #386641;">
-                                ${{ number_format($producto->precio, 2, ',', '.') }}
-                            </p>
-                        @else
-                            <p class="text-xl text-[#8b5e3c] italic">Precio a consultar</p>
-                        @endif
-                    </div>
-
                     {{-- Badge de stock bajo --}}
                     @if($producto->stock > 0 && $producto->stock <= config('tileo.stock_bajo_umbral'))
                         <div class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
@@ -96,84 +85,26 @@
                         </div>
                     @endif
 
-                    {{-- Botón carrito --}}
+                    {{-- Botón WhatsApp --}}
                     <div class="pt-2">
                         @if($producto->hayStock())
-                            <button
-                                wire:click="agregarAlCarrito"
-                                wire:loading.attr="disabled"
-                                class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold shadow-sm
-                                       hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200
-                                       disabled:opacity-60 disabled:cursor-not-allowed"
-                                style="background: linear-gradient(135deg, #386641 0%, #2d5534 100%);"
-                            >
-                                <span wire:loading.remove wire:target="agregarAlCarrito">
-                                    <i class="fa-solid fa-cart-plus mr-1"></i> Agregar al carrito
-                                </span>
-                                <span wire:loading wire:target="agregarAlCarrito" class="flex items-center gap-2">
-                                    <i class="fa-solid fa-spinner fa-spin text-xs"></i> Agregando...
-                                </span>
-                            </button>
+                            <a href="https://wa.me/{{ preg_replace('/\D/', '', config('tileo.whatsapp', '')) }}?text={{ urlencode('Hola! Me interesa el producto: ' . $producto->nombre) }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold shadow-sm
+                                      hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
+                               style="background-color: #25D366;">
+                                <i class="fa-brands fa-whatsapp text-lg"></i>
+                                Consultar por WhatsApp
+                            </a>
                         @else
                             <span class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-sm font-semibold cursor-not-allowed"
                                   style="background-color: rgba(139,94,60,0.12); color: #8b5e3c;">
                                 <i class="fa-solid fa-ban text-xs"></i> Sin stock
                             </span>
                         @endif
-
-                        {{-- Notificar cuando haya stock --}}
-                        @if(!$producto->hayStock())
-                            <div class="mt-4">
-                                @livewire('notificar-stock', ['productoId' => $producto->id], key('notificar-' . $producto->id))
-                            </div>
-                        @endif
                     </div>
 
-                </div>
-            </div>
-
-            {{-- Reseñas --}}
-            <div class="mt-16">
-                <div class="flex items-center gap-4 mb-6">
-                    <h2 class="text-2xl text-[#2c1a0e]" style="font-family: 'DM Serif Display', serif;">Reseñas</h2>
-                    @if($promedio > 0)
-                        <div class="flex items-center gap-1.5">
-                            @for($i = 1; $i <= 5; $i++)
-                                <i class="fa-solid fa-star text-sm {{ $i <= round($promedio) ? 'text-amber-400' : 'text-[#d4b896]' }}"></i>
-                            @endfor
-                            <span class="text-sm text-[#8b5e3c] ml-1">{{ number_format($promedio, 1) }} ({{ $resenas->count() }})</span>
-                        </div>
-                    @endif
-                </div>
-
-                @if($resenas->count() > 0)
-                    <div class="space-y-4 mb-10">
-                        @foreach($resenas as $resena)
-                            <div class="bg-white rounded-2xl border border-[#d4b896]/30 p-5">
-                                <div class="flex items-start justify-between gap-4 mb-2">
-                                    <div>
-                                        <p class="text-sm font-semibold text-[#2c1a0e]">{{ $resena->nombre_cliente }}</p>
-                                        <p class="text-xs text-[#8b5e3c]/60">{{ $resena->created_at->format('d/m/Y') }}</p>
-                                    </div>
-                                    <div class="flex items-center gap-0.5 flex-shrink-0">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <i class="fa-solid fa-star text-xs {{ $i <= $resena->calificacion ? 'text-amber-400' : 'text-[#d4b896]' }}"></i>
-                                        @endfor
-                                    </div>
-                                </div>
-                                @if($resena->comentario)
-                                    <p class="text-sm text-[#2c1a0e]/75 leading-relaxed">{{ $resena->comentario }}</p>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <p class="text-sm text-[#8b5e3c]/60 mb-8">Todavía no hay reseñas para este producto. ¡Sé el primero!</p>
-                @endif
-
-                <div class="bg-white rounded-2xl border border-[#d4b896]/30 p-6">
-                    <h3 class="text-lg text-[#2c1a0e] mb-5" style="font-family: 'DM Serif Display', serif;">Dejá tu reseña</h3>
-                    @livewire('formulario-resena', ['productoId' => $producto->id], key('resena-' . $producto->id))
                 </div>
             </div>
 
@@ -202,13 +133,6 @@
                                     <h3 class="text-[#2c1a0e] font-semibold text-sm group-hover:text-[#386641] transition-colors">
                                         {{ $relacionado->nombre }}
                                     </h3>
-                                    <p class="text-sm font-bold mt-1" style="color: #386641;">
-                                        @if($relacionado->precio > 0)
-                                            ${{ number_format($relacionado->precio, 2, ',', '.') }}
-                                        @else
-                                            <span class="italic font-normal text-[#8b5e3c]/70">A consultar</span>
-                                        @endif
-                                    </p>
                                 </div>
                             </a>
                         @endforeach
