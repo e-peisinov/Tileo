@@ -9,16 +9,15 @@
         <div class="space-y-8 text-[#2c1a0e]/80 leading-relaxed text-sm">
             <section>
                 <h2 class="text-2xl text-[#2c1a0e] mb-3" style="font-family: 'DM Serif Display', serif;">1. Información que recopilamos</h2>
-                <p>Al realizar un pedido o contactarnos, recopilamos: nombre completo, dirección de email, teléfono, y dirección de envío (cuando corresponde). Esta información es proporcionada voluntariamente por vos.</p>
+                <p>Cuando nos contactás o coordinás un pedido, podemos recopilar: nombre completo, dirección de email, teléfono, y dirección de envío (cuando corresponde). Esta información es proporcionada voluntariamente por vos.</p>
             </section>
             <section>
                 <h2 class="text-2xl text-[#2c1a0e] mb-3" style="font-family: 'DM Serif Display', serif;">2. Cómo usamos tu información</h2>
                 <p>Utilizamos tus datos exclusivamente para:</p>
                 <ul class="list-disc ml-6 mt-2 space-y-1">
-                    <li>Procesar y gestionar tus pedidos</li>
-                    <li>Comunicarnos con vos sobre el estado de tu pedido</li>
+                    <li>Coordinar y gestionar tus pedidos</li>
+                    <li>Comunicarnos con vos sobre el estado de tu pedido (vía WhatsApp o email)</li>
                     <li>Responder consultas y mensajes de contacto</li>
-                    <li>Enviarte actualizaciones del estado de tu pedido por email</li>
                 </ul>
             </section>
             <section>

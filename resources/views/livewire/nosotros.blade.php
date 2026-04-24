@@ -98,7 +98,7 @@
     <section class="bg-[#faf6f0] p-6 overflow-hidden">
         <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2">
     
-            <div class="fade-desde-der bg-[#2c1a0e] flex flex-col justify-center px-10 lg:px-14 py-16 gap-6 order-2 md:order-1">
+            <div class="fade-desde-der bg-[#2c1a0e] flex flex-col justify-center px-6 md:px-10 lg:px-14 py-12 md:py-16 gap-6 order-2 md:order-1">
                 <p class="text-[#d4b896]/60 tracking-[0.28em] uppercase text-[11px] font-medium">
                     La presentación
                 </p>
@@ -216,12 +216,12 @@
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
                 <a href="{{ route('contacto') }}" wire:navigate
-                   class="bg-[#faf6f0] text-[#386641] px-8 py-3 text-[13px] tracking-wider font-medium
+                   class="bg-[#faf6f0] text-[#386641] px-8 py-3 text-[13px] tracking-wider font-medium rounded-lg
                           hover:bg-[#f0e9de] transition-all duration-300 hover:-translate-y-0.5">
                     Contactanos
                 </a>
                 <a href="{{ route('catalogo') }}" wire:navigate
-                   class="border border-[#faf6f0]/40 text-[#faf6f0] px-8 py-3 text-[13px] tracking-wider font-medium
+                   class="border border-[#faf6f0]/40 text-[#faf6f0] px-8 py-3 text-[13px] tracking-wider font-medium rounded-lg
                           hover:border-[#faf6f0] transition-all duration-300 hover:-translate-y-0.5">
                     Ver catálogo
                 </a>

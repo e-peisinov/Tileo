@@ -1,15 +1,22 @@
 <div>
-    <div class="min-h-screen py-10 px-4" style="background-color: #faf6f0;">
-        <div class="max-w-5xl mx-auto">
 
-            {{-- Volver al catálogo --}}
-            <div class="mb-7">
-                <a href="{{ route('catalogo') }}" wire:navigate
-                   class="inline-flex items-center gap-1.5 text-sm font-medium transition-colors"
-                   style="color: #386641;">
-                    <i class="fa-solid fa-arrow-left text-xs"></i> Volver al catálogo
-                </a>
-            </div>
+    {{-- ENCABEZADO / BREADCRUMB --}}
+    <section class="bg-[#f0e9de] border-b border-[#d4b896]/30 py-4 px-4">
+        <div class="max-w-5xl mx-auto flex items-center gap-2 text-xs text-[#8b5e3c]/60 flex-wrap">
+            <a href="{{ url('/') }}" wire:navigate class="hover:text-[#386641] transition-colors">Inicio</a>
+            <i class="fa-solid fa-chevron-right text-[9px] text-[#d4b896]"></i>
+            <a href="{{ route('catalogo') }}" wire:navigate class="hover:text-[#386641] transition-colors">Catálogo</a>
+            @if($producto->categoria)
+                <i class="fa-solid fa-chevron-right text-[9px] text-[#d4b896]"></i>
+                <span>{{ $producto->categoria->nombre }}</span>
+            @endif
+            <i class="fa-solid fa-chevron-right text-[9px] text-[#d4b896]"></i>
+            <span class="text-[#2c1a0e]/70 font-medium truncate max-w-[160px] sm:max-w-none">{{ $producto->nombre }}</span>
+        </div>
+    </section>
+
+    <div class="py-10 px-4" style="background-color: #faf6f0;">
+        <div class="max-w-5xl mx-auto">
 
             {{-- Layout de 2 columnas --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">

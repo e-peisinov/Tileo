@@ -13,15 +13,15 @@
             </section>
             <section>
                 <h2 class="text-2xl text-[#2c1a0e] mb-3" style="font-family: 'DM Serif Display', serif;">2. Descripción del servicio</h2>
-                <p>Tileo es un emprendimiento dedicado a la venta de hierbas, especias y condimentos artesanales ubicado en Mercedes, Buenos Aires, Argentina. A través de nuestro sitio web, los clientes pueden explorar nuestro catálogo y realizar pedidos online.</p>
+                <p>Tileo es un emprendimiento dedicado a la comercialización de hierbas, especias y condimentos artesanales ubicado en Mercedes, Buenos Aires, Argentina. A través de nuestro sitio web, los clientes pueden explorar el catálogo y contactarnos para coordinar sus pedidos vía WhatsApp o formulario de contacto.</p>
             </section>
             <section>
                 <h2 class="text-2xl text-[#2c1a0e] mb-3" style="font-family: 'DM Serif Display', serif;">3. Pedidos y pagos</h2>
-                <p>Al realizar un pedido, te comprometés a proporcionar información veraz y completa. Los pedidos están sujetos a disponibilidad de stock. Aceptamos pagos en efectivo y transferencia bancaria. El costo de envío, cuando aplica, será confirmado por nuestro equipo.</p>
+                <p>Los pedidos se coordinan directamente con el equipo de Tileo a través de WhatsApp o el formulario de contacto. Los pedidos están sujetos a disponibilidad de stock. Aceptamos pagos en efectivo y transferencia bancaria. El costo de envío, cuando aplica, será confirmado al momento de coordinar el pedido.</p>
             </section>
             <section>
                 <h2 class="text-2xl text-[#2c1a0e] mb-3" style="font-family: 'DM Serif Display', serif;">4. Entrega</h2>
-                <p>Ofrecemos retiro en local y envío a domicilio. Los tiempos de entrega son estimativos y pueden variar. Nos comprometemos a informarte sobre el estado de tu pedido en todo momento.</p>
+                <p>Ofrecemos retiro en local y envío a domicilio. Los tiempos de entrega son estimativos y pueden variar. Nos comprometemos a mantenerte informado sobre el estado de tu pedido en todo momento.</p>
             </section>
             <section>
                 <h2 class="text-2xl text-[#2c1a0e] mb-3" style="font-family: 'DM Serif Display', serif;">5. Privacidad de datos</h2>
@@ -29,7 +29,7 @@
             </section>
             <section>
                 <h2 class="text-2xl text-[#2c1a0e] mb-3" style="font-family: 'DM Serif Display', serif;">6. Cambios y cancelaciones</h2>
-                <p>Podés cancelar tu pedido antes de que pase al estado "Preparando". Una vez en preparación, no es posible modificarlo. Ante cualquier inconveniente, contactanos por <a href="{{ route('contacto') }}" wire:navigate class="text-[#386641] hover:underline">contacto</a>.</p>
+                <p>Si necesitás modificar o cancelar un pedido ya coordinado, contactanos a la brevedad por WhatsApp o a través del <a href="{{ route('contacto') }}" wire:navigate class="text-[#386641] hover:underline">formulario de contacto</a>. Haremos lo posible por ayudarte según el estado de preparación del pedido.</p>
             </section>
             <section>
                 <h2 class="text-2xl text-[#2c1a0e] mb-3" style="font-family: 'DM Serif Display', serif;">7. Contacto</h2>

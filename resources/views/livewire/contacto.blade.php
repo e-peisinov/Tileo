@@ -1,7 +1,21 @@
 <div>
     {{-- ENCABEZADO --}}
-    <section class="bg-[#f0e9de] border-b border-[#d4b896]/30 py-16 px-4 text-center">
-        <div class="max-w-xl mx-auto">
+    <section class="relative bg-[#f0e9de] border-b border-[#d4b896]/30 py-20 px-4 text-center overflow-hidden">
+        {{-- Decoración de fondo --}}
+        <div class="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+            <div class="absolute -top-10 -left-10 w-56 h-56 rounded-full border border-[#386641]/8"></div>
+            <div class="absolute -top-4 -left-4 w-32 h-32 rounded-full border border-[#386641]/6"></div>
+            <div class="absolute -bottom-10 -right-10 w-56 h-56 rounded-full border border-[#8b5e3c]/8"></div>
+            <div class="absolute -bottom-4 -right-4 w-32 h-32 rounded-full border border-[#8b5e3c]/6"></div>
+        </div>
+        <div class="relative max-w-xl mx-auto">
+            <div class="flex items-center justify-center gap-3 mb-5">
+                <div class="h-px w-10 bg-[#386641]/30"></div>
+                <div class="w-9 h-9 rounded-full bg-[#386641]/10 flex items-center justify-center">
+                    <i class="fa-solid fa-envelope text-[#386641] text-sm"></i>
+                </div>
+                <div class="h-px w-10 bg-[#386641]/30"></div>
+            </div>
             <p class="text-[#8b5e3c]/70 tracking-[0.3em] uppercase text-[11px] font-medium mb-3">
                 Estamos para ayudarte
             </p>
@@ -122,7 +136,7 @@
     
                         {{-- Submit --}}
                         <button type="submit"
-                                class="self-start flex items-center gap-3 bg-[#386641] text-[#faf6f0] px-8 py-3 text-[13px] tracking-wider font-medium
+                                class="self-start flex items-center gap-3 bg-[#386641] text-[#faf6f0] px-8 py-3 text-[13px] tracking-wider font-medium rounded-lg
                                        hover:bg-[#2d5235] transition-all duration-300 hover:-translate-y-0.5">
                             <span wire:loading.remove wire:target="enviar">Enviar mensaje</span>
                             <span wire:loading wire:target="enviar" class="flex items-center gap-2">

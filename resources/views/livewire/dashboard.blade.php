@@ -15,27 +15,27 @@
 
         {{-- Contenido --}}
         <div class="relative z-10 text-center px-4 max-w-3xl mx-auto">
-            <p class="text-[#d4b896] tracking-[0.3em] uppercase text-xs font-semibold mb-4">
+            <p class="hero-enter hero-delay-1 text-[#d4b896] tracking-[0.3em] uppercase text-xs font-semibold mb-4">
                 Mercedes · Buenos Aires
             </p>
-            <h1 class="text-7xl sm:text-8xl font-bold text-[#faf6f0] mb-4 leading-none"
+            <h1 class="hero-enter hero-delay-2 text-7xl sm:text-8xl font-bold text-[#faf6f0] mb-4 leading-none"
                 style="font-family: 'DM Serif Display', serif; letter-spacing: -0.01em;">
                 Tileo
             </h1>
-            <p class="text-xl sm:text-2xl text-[#d4b896] mb-3"
+            <p class="hero-enter hero-delay-3 text-xl sm:text-2xl text-[#d4b896] mb-3"
                style="font-family: 'DM Serif Display', serif;">
                 Hierbas, especias y condimentos artesanales
             </p>
-            <p class="text-sm text-[#d4b896]/70 mb-10 tracking-wide">
+            <p class="hero-enter hero-delay-4 text-sm text-[#d4b896]/70 mb-10 tracking-wide">
                 Elaborados con dedicación · Presentados en tubos de vidrio con corcho
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <div class="hero-enter hero-delay-4 flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="#productos"
-                   class="bg-[#386641] text-[#faf6f0] px-8 py-3 text-sm uppercase tracking-widest font-semibold hover:bg-[#2d5235] transition-colors duration-300">
+                   class="bg-[#386641] text-[#faf6f0] px-8 py-3 text-sm uppercase tracking-widest font-semibold rounded-lg hover:bg-[#2d5235] transition-colors duration-300">
                     Ver productos
                 </a>
                 <a href="{{ url('/contacto') }}"
-                   class="border border-[#d4b896]/60 text-[#d4b896] px-8 py-3 text-sm uppercase tracking-widest font-semibold hover:border-[#d4b896] hover:text-[#faf6f0] transition-colors duration-300">
+                   class="border border-[#d4b896]/60 text-[#d4b896] px-8 py-3 text-sm uppercase tracking-widest font-semibold rounded-lg hover:border-[#d4b896] hover:text-[#faf6f0] transition-colors duration-300">
                     Contactanos
                 </a>
             </div>
@@ -137,7 +137,7 @@
             @if($productosDestacados->isNotEmpty())
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
                     @foreach($productosDestacados as $producto)
-                        <div class="group bg-[#faf6f0] overflow-hidden border border-[#d4b896]/25 hover:border-[#d4b896]/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-400">
+                        <div class="group bg-[#faf6f0] overflow-hidden rounded-xl border border-[#d4b896]/25 hover:border-[#d4b896]/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-400">
                             {{-- Imagen --}}
                             <div class="relative h-72 overflow-hidden">
                                 @if($producto->imagen)
@@ -189,7 +189,7 @@
 
             <div class="text-center">
                 <a href="{{ route('catalogo') }}" wire:navigate
-                   class="inline-block border border-[#2c1a0e]/20 text-[#2c1a0e]/70 px-8 py-3 text-xs uppercase tracking-widest font-semibold hover:border-[#386641] hover:text-[#386641] transition-all duration-300">
+                   class="inline-block border border-[#2c1a0e]/20 text-[#2c1a0e]/70 px-8 py-3 text-xs uppercase tracking-widest font-semibold rounded-lg hover:border-[#386641] hover:text-[#386641] transition-all duration-300">
                     Ver catálogo completo
                 </a>
             </div>
@@ -230,7 +230,7 @@
                     estética que los distingue en cada feria y evento.
                 </p>
                 <a href="{{ url('/catalogo') }}"
-                   class="self-start border border-[#a7c957] text-[#a7c957] px-6 py-2.5 text-xs uppercase tracking-widest font-semibold hover:bg-[#a7c957] hover:text-[#2c1a0e] transition-all duration-300 mt-2">
+                   class="self-start border border-[#a7c957] text-[#a7c957] px-6 py-2.5 text-xs uppercase tracking-widest font-semibold rounded-lg hover:bg-[#a7c957] hover:text-[#2c1a0e] transition-all duration-300 mt-2">
                     Ver catálogo completo
                 </a>
             </div>
@@ -274,7 +274,7 @@
                 Escribinos para consultas, pedidos o para encontrarnos en la próxima feria.
             </p>
             <a href="{{ url('/contacto') }}"
-               class="bg-[#386641] text-[#faf6f0] px-10 py-3 text-sm uppercase tracking-widest font-semibold hover:bg-[#2d5235] transition-colors duration-300 mt-2">
+               class="bg-[#386641] text-[#faf6f0] px-10 py-3 text-sm uppercase tracking-widest font-semibold rounded-lg hover:bg-[#2d5235] transition-colors duration-300 mt-2">
                 Contactanos
             </a>
         </div>

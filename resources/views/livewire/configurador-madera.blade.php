@@ -4,7 +4,7 @@
     <section class="bg-[#f0e9de] border-b border-[#d4b896]/30 py-14 px-4 text-center">
         <div class="max-w-2xl mx-auto">
             <a href="{{ route('catalogo') }}" wire:navigate
-               class="inline-flex items-center gap-1.5 bg-[#386641] text-white mb-4 px-3 py-1.5 text-[11px] font-semibold tracking-wide hover:bg-[#2d5534] transition-colors duration-300">
+               class="inline-flex items-center gap-1.5 bg-[#386641] text-white mb-4 px-3 py-1.5 text-[11px] font-semibold tracking-wide rounded-lg hover:bg-[#2d5534] transition-colors duration-300">
                 <i class="fa-solid fa-arrow-left text-[10px]"></i> Volver al catálogo
             </a>
             <p class="text-[#8b5e3c]/70 tracking-[0.3em] uppercase text-[11px] font-medium mb-3">Armá tu madera</p>
@@ -41,12 +41,12 @@
             </div>
             <button wire:click="agregarAlCarrito"
                     @disabled($totalSeleccionado !== $madera->capacidad)
-                    class="flex-shrink-0 px-5 py-2 text-[12px] font-semibold tracking-wide transition-all duration-300
+                    class="flex-shrink-0 px-4 sm:px-5 py-2 text-[12px] font-semibold tracking-wide transition-all duration-300
                            {{ $totalSeleccionado === $madera->capacidad
                                ? 'bg-[#386641] text-white hover:bg-[#2d5534]'
                                : 'bg-[#d4b896]/40 text-[#8b5e3c]/40 cursor-not-allowed' }}">
-                <i class="fa-solid fa-basket-shopping text-[11px] mr-1.5"></i>
-                Agregar al carrito
+                <i class="fa-solid fa-basket-shopping text-[11px] sm:mr-1.5"></i>
+                <span class="hidden sm:inline">Agregar al carrito</span>
             </button>
         </div>
     </div>
@@ -56,7 +56,7 @@
         <div class="max-w-5xl mx-auto px-4 pt-6">
             <div class="bg-[#386641]/10 border border-[#386641]/30 text-[#386641] px-4 py-3 text-sm flex items-center gap-2">
                 <i class="fa-solid fa-check-circle"></i>
-                <span>¡Madera agregada al carrito! Podés seguir configurando otra o <a href="{{ route('checkout') }}" wire:navigate class="underline font-medium">finalizar el pedido</a>.</span>
+                <span>¡Selección guardada! Podés seguir configurando otra madera o <a href="{{ route('contacto') }}" wire:navigate class="underline font-medium">contactarnos para coordinar tu pedido</a>.</span>
             </div>
         </div>
     @endif

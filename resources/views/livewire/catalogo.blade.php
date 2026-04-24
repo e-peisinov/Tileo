@@ -60,7 +60,7 @@
                             @endif
                             <div class="flex items-center justify-end mt-auto pt-1">
                                 <a href="{{ route('configurar-madera', $madera->id) }}" wire:navigate
-                                   class="inline-flex items-center gap-1.5 bg-[#386641] text-white px-3 py-1.5 text-[11px] font-semibold tracking-wide hover:bg-[#2d5534] transition-colors duration-300">
+                                   class="inline-flex items-center gap-1.5 bg-[#386641] text-white px-3 py-1.5 text-[11px] font-semibold tracking-wide rounded-lg hover:bg-[#2d5534] transition-colors duration-300">
                                     <i class="fa-solid fa-sliders text-[10px]"></i>
                                     Configurar
                                 </a>
@@ -136,7 +136,7 @@
             @else
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach ($productos as $producto)
-                        <article class="flex flex-col bg-[#faf6f0]
+                        <article class="flex flex-col bg-[#faf6f0] rounded-xl overflow-hidden
                                         border border-[#d4b896]/25 hover:border-[#d4b896]/50
                                         hover:shadow-lg hover:-translate-y-1 transition-all duration-400">
 
@@ -176,10 +176,17 @@
                                 </div>
 
                                 @if($producto->descripcion)
-                                    <p class="text-sm text-[#2c1a0e]/55 leading-relaxed flex-1">
+                                    <p class="text-sm text-[#2c1a0e]/55 leading-relaxed line-clamp-3">
                                         {{ $producto->descripcion }}
                                     </p>
                                 @endif
+
+                                <div class="mt-auto pt-2">
+                                    <a href="{{ route('detalle-producto', $producto->id) }}" wire:navigate
+                                       class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#386641] border border-[#386641]/30 px-4 py-2 rounded-lg hover:bg-[#386641] hover:text-white transition-all duration-200">
+                                        Ver detalle <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                    </a>
+                                </div>
                             </div>
 
                         </article>

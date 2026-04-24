@@ -227,6 +227,7 @@
 
     {{-- FOOTER --}}
     <footer class="bg-[#2c1a0e] text-[#d4b896]">
+
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
 

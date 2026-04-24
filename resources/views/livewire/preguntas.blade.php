@@ -1,13 +1,29 @@
 <div>
     {{-- Encabezado --}}
-    <div class="py-14 px-4 text-center" style="background-color: #f0e9de;">
-        <p class="text-xs tracking-[0.3em] uppercase text-[#8b5e3c] mb-3 font-semibold">Tileo</p>
-        <h1 class="text-4xl md:text-5xl text-[#2c1a0e] mb-4" style="font-family: 'DM Serif Display', serif;">
-            Preguntas Frecuentes
-        </h1>
-        <p class="text-[#8b5e3c]/70 text-base max-w-xl mx-auto">
-            Todo lo que necesitás saber sobre nuestros productos, envíos y formas de pago.
-        </p>
+    <div class="relative py-20 px-4 text-center overflow-hidden" style="background-color: #f0e9de;">
+        {{-- Decoración de fondo --}}
+        <div class="absolute inset-0 pointer-events-none select-none" aria-hidden="true">
+            <div class="absolute -top-10 -left-10 w-56 h-56 rounded-full border border-[#386641]/8"></div>
+            <div class="absolute -top-4 -left-4 w-32 h-32 rounded-full border border-[#386641]/6"></div>
+            <div class="absolute -bottom-10 -right-10 w-56 h-56 rounded-full border border-[#8b5e3c]/8"></div>
+            <div class="absolute -bottom-4 -right-4 w-32 h-32 rounded-full border border-[#8b5e3c]/6"></div>
+        </div>
+        <div class="relative">
+            <div class="flex items-center justify-center gap-3 mb-5">
+                <div class="h-px w-10 bg-[#386641]/30"></div>
+                <div class="w-9 h-9 rounded-full bg-[#386641]/10 flex items-center justify-center">
+                    <i class="fa-solid fa-circle-question text-[#386641] text-sm"></i>
+                </div>
+                <div class="h-px w-10 bg-[#386641]/30"></div>
+            </div>
+            <p class="text-xs tracking-[0.3em] uppercase text-[#8b5e3c] mb-3 font-semibold">Tileo</p>
+            <h1 class="text-4xl md:text-5xl text-[#2c1a0e] mb-4" style="font-family: 'DM Serif Display', serif;">
+                Preguntas Frecuentes
+            </h1>
+            <p class="text-[#8b5e3c]/70 text-sm max-w-md mx-auto">
+                Todo lo que necesitás saber sobre nuestros productos, envíos y formas de pago.
+            </p>
+        </div>
     </div>
 
     {{-- Acordeones --}}
