@@ -33,7 +33,7 @@ class Contacto extends Component
 
         $emailAdmin = config('tileo.email_admin');
         try {
-            Mail::to($emailAdmin)->queue(new ContactoMail(
+            Mail::to($emailAdmin)->send(new ContactoMail(
                 $this->nombre,
                 $this->email,
                 $this->telefono,
@@ -41,14 +41,14 @@ class Contacto extends Component
                 $this->mensaje,
             ));
         } catch (\Exception $e) {
-            \Log::error('Error al encolar mensaje de contacto: ' . $e->getMessage());
+            \Log::error('Error al enviar mensaje de contacto: ' . $e->getMessage());
             $this->addError('mensaje', 'No se pudo enviar tu mensaje. Intentá de nuevo en unos minutos.');
             return;
         }
 
         // Confirmación al cliente (fallo no crítico)
         try {
-            Mail::to($this->email)->queue(new ConfirmacionContactoMail(
+            Mail::to($this->email)->send(new ConfirmacionContactoMail(
                 $this->nombre,
                 $this->asunto,
             ));
