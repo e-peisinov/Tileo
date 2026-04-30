@@ -1,7 +1,7 @@
 # CLAUDE.md — Proyecto Tileo
 
 ## Descripción del proyecto
-**Tileo** es una página web para un emprendimiento de hierbas, especias y condimentos artesanales ubicado en Mercedes, Buenos Aires. El sitio es **puramente informativo/vitrina**: los clientes exploran el catálogo y se contactan por WhatsApp para hacer pedidos. No hay checkout online ni carrito activo.
+**Tileo** es una página web para un emprendimiento de hierbas, especias y condimentos artesanales ubicado en Mercedes, Buenos Aires. Los clientes arman kits de especias eligiendo una **madera** (soporte de 6 o 12 frascos) y personalizando los condimentos de cada frasco. El carrito acumula las maderas configuradas y al finalizar redirige a **WhatsApp** con el detalle del pedido. No hay checkout online ni pago en el sitio.
 
 ## Stack tecnológico
 - **Backend:** Laravel 12
@@ -51,7 +51,8 @@ database/
 |---|---|
 | `users` | Usuarios del sistema. Columna `es_admin` (bool) distingue administradores |
 | `categorias` | Categorías de productos (`nombre`, `descripcion`, `activo`) |
-| `productos` | Productos (`nombre`, `descripcion`, `precio`, `stock`, `unidad`, `imagen`, `activo`, `destacado`, FK `categoria_id`) |
+| `productos` | Productos (`nombre`, `descripcion`, `precio`, `stock`, `unidad`, `imagen`, `activo`, `destacado`) — sin `categoria_id`, las categorías van por pivot |
+| `categoria_producto` | Tabla pivot many-to-many entre `categorias` y `productos` (`categoria_id`, `producto_id`) |
 | `maderas` | Soportes de madera para armar kits de especias (`nombre`, `descripcion`, `capacidad`, `precio`, `imagen`, `activo`). `capacidad` = cantidad de frascos que entran |
 | `pedidos` | Pedidos históricos (ya no se generan desde el sitio). `numero_pedido` = TIL-0001 (auto). `estado` enum. `costo_envio` nullable. `notas_cliente`, `notas_admin`. `codigo_descuento_id` nullable, `monto_descuento` decimal |
 | `pedido_items` | Ítems de pedidos históricos con snapshot de `nombre_producto` y `precio_unitario` |
@@ -67,8 +68,8 @@ database/
 | `uso_codigos_descuento` | Historial de uso de códigos de descuento (`codigo_descuento_id`, `pedido_id`, `email_cliente`, `monto_descontado`) |
 
 ## Modelos existentes
-- `Categoria` — `hasMany Producto`
-- `Producto` — `belongsTo Categoria`, `imagenesGaleria()` HasMany `ImagenProducto`, `avisos()` HasMany `AvisoStock`, `resenas()` HasMany `Resena`, `resenasAprobadas()` HasMany, `promedioCalificacion(): float`, `hayStock(int $cantidad)`
+- `Categoria` — `belongsToMany Producto` (pivot `categoria_producto`)
+- `Producto` — `categorias()` BelongsToMany `Categoria` (pivot `categoria_producto`), `imagenesGaleria()` HasMany `ImagenProducto`, `avisos()` HasMany `AvisoStock`, `resenas()` HasMany `Resena`, `resenasAprobadas()` HasMany, `promedioCalificacion(): float`, `hayStock(int $cantidad)`
 - `Madera` — soporte de madera para kits. Campos: `nombre`, `descripcion`, `capacidad` (int, cantidad de frascos), `precio`, `imagen`, `activo`
 - `Pedido` — genera `numero_pedido` en `booted()`, `etiquetaEstado()`, `colorEstado()`, `colorParaEstado()` (estático), `etiquetaParaEstado()` (estático), `historial()` → `PedidoHistorialEstado`, `codigoDescuento()` → `CodigoDescuento`
 - `PedidoItem` — snapshot de precio y nombre al momento del pedido
@@ -91,7 +92,7 @@ database/
 |---|---|---|
 | `Dashboard` | `/` | Página de inicio. Muestra banners vigentes, productos con `destacado=true` (fallback: todos activos, máx. 6), sección packaging y galería |
 | `Catalogo` | `/catalogo` | Catálogo con sección de maderas al tope, filtros por categoría, buscador en tiempo real (`$busqueda`), checkbox `soloConStock`, selector `ordenar` (nombre A-Z/Z-A, recientes), badge de stock bajo (≤5), paginación de 12 |
-| `DetalleProducto` | `/producto/{producto}` | Detalle completo: breadcrumb Inicio > Catálogo > Categoría > Producto, imagen con galería de miniaturas, descripción, badge stock bajo, botón "Consultar por WhatsApp", productos relacionados |
+| `DetalleProducto` | `/producto/{producto}` | Detalle completo: breadcrumb Inicio > Catálogo > Categoría > Producto, imagen con galería de miniaturas, descripción, badge stock bajo, botón "Armá tu madera" (redirige a `/catalogo#maderas`), productos relacionados |
 | `ConfiguradorMadera` | `/configurar-madera/{madera}` | Permite al cliente elegir los condimentos para armar un kit de madera. Barra de progreso sticky. Despacha evento `madera-configurada` al completar la selección |
 | `Nosotros` | `/nosotros` | Historia del emprendimiento + sección "Cómo usarlos" con 4 recetas de ejemplo |
 | `Contacto` | `/contacto` | Formulario de contacto (nombre, email, teléfono, asunto, mensaje). Envía `ContactoMail` al admin y `ConfirmacionContactoMail` al cliente |
@@ -102,8 +103,9 @@ database/
 | `NewsletterSuscripcion` | (componente embebido) | Formulario de suscripción al newsletter. Método: `suscribir()` |
 | `NotificarStock` | (componente embebido) | Permite al cliente dejar su email para ser avisado cuando un producto vuelva a tener stock. Requiere `$productoId` en `mount()` |
 | `FormularioResena` | (componente embebido) | Formulario para dejar reseña de un producto. Requiere `$productoId` en `mount()` |
+| `Carrito` | (embebido en `layouts/app.blade.php`) | Drawer lateral con las maderas configuradas. Botón flotante `bottom-6 right-6`. Al finalizar genera un mensaje con el detalle del pedido y abre WhatsApp. **No abre automáticamente al agregar.** Métodos: `abrirCarrito()`, `cerrarCarrito()`, `removerMadera()`, `vaciarCarrito()`. Escucha `producto-agregado` y `madera-configurada` vía `#[On]`. El carrito usa sesión (`carrito` y `carrito_maderas`). |
 
-> **Nota:** Los componentes `Carrito`, `Checkout`, `ConfirmacionPedido` y `SeguimientoPedido` existen en el código pero están sin rutas públicas activas y sin incluirse en el layout. El sitio es modo informativo: los pedidos se toman exclusivamente por WhatsApp.
+> **Nota:** Los componentes `Checkout`, `ConfirmacionPedido` y `SeguimientoPedido` existen en el código pero están sin rutas públicas activas. Los pedidos se coordinan exclusivamente por WhatsApp desde el drawer del `Carrito`.
 
 ### Admin (requieren `auth` + `es_admin`)
 | Componente | Ruta | Descripción |
@@ -147,7 +149,8 @@ Templates en `resources/views/emails/`: `contacto.blade.php`, `confirmacion-cont
 - Menú mobile con hamburguesa animada (Alpine.js)
 - Scroll animations: clases `fade-in`, `fade-desde-izq`, `fade-desde-der` con IntersectionObserver (**no usar en componentes Livewire** — el observer no re-observa tras re-render, dejando los elementos invisibles). Clases `stagger-1` a `stagger-5` para escalonar delays de transición.
 - Hero animations: clases `hero-enter`, `hero-delay-1/2/3/4` con `@keyframes heroSlideUp` para las páginas con hero de pantalla completa
-- Botón flotante de WhatsApp (`fixed bottom-6 right-6 z-40`, lee número desde `config('tileo.whatsapp')`)
+- Botón flotante de WhatsApp (`fixed bottom-24 right-6 z-40`, lee número desde `config('tileo.whatsapp')`) — posicionado arriba del botón del carrito
+- Componente `Carrito` embebido (`@livewire('carrito')`), botón flotante en `bottom-6 right-6 z-40`
 - `@stack('scripts')` antes del `</body>` — usar `@push('scripts')` en vistas que necesiten JS adicional (ej. Chart.js en admin)
 
 ## Paleta de colores (hex)
