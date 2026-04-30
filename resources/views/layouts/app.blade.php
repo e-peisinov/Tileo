@@ -205,6 +205,21 @@
                 <a href="{{ url('/contacto') }}" wire:navigate
                    class="self-start text-sm font-medium text-[#386641] border border-[#386641]/50 px-5 py-1.5 rounded-full hover:bg-[#386641] hover:text-[#faf6f0] transition-all duration-300"
                    @click="menuAbierto = false">Contacto</a>
+                @if (Auth::check())
+                    <div class="w-full h-px bg-[#d4b896]/40"></div>
+                    <a href="{{ route('admin.dashboard') }}" wire:navigate
+                       class="text-sm font-medium text-[#2c1a0e]/70 hover:text-[#386641] transition-colors"
+                       @click="menuAbierto = false">
+                        <i class="fas fa-gauge-high mr-1"></i> Dashboard Admin
+                    </a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                                class="text-sm font-medium text-red-600 hover:text-red-800 transition-colors">
+                            <i class="fas fa-sign-out-alt mr-1"></i> Cerrar Sesión
+                        </button>
+                    </form>
+                @endif
             </nav>
         </div>
     </header>
