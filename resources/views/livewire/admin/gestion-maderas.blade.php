@@ -128,11 +128,8 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-1.5">Capacidad *</label>
-                            <select wire:model="capacidad"
-                                    class="w-full border border-[#d4b896]/50 bg-[#faf6f0] px-4 py-2.5 text-sm text-[#2c1a0e] focus:outline-none focus:border-[#386641] transition-colors rounded-lg">
-                                <option value="6">6 frascos</option>
-                                <option value="12">12 frascos</option>
-                            </select>
+                            <input wire:model="capacidad" type="number" min="1" step="1" placeholder="Ej: 6"
+                                   class="w-full border border-[#d4b896]/50 bg-[#faf6f0] px-4 py-2.5 text-sm text-[#2c1a0e] focus:outline-none focus:border-[#386641] transition-colors rounded-lg">
                             @error('capacidad') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>

@@ -50,7 +50,7 @@ class GestionMaderas extends Component
         $this->validate([
             'nombre'        => 'required|min:2|max:120',
             'descripcion'   => 'nullable|max:500',
-            'capacidad'     => 'required|in:6,12',
+            'capacidad'     => 'required|integer|min:1',
             'precio'        => 'required|numeric|min:0',
             'activo'        => 'boolean',
             'imagenArchivo' => 'nullable|image|max:2048',
