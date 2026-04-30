@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Cache;
 
@@ -12,7 +12,7 @@ class Producto extends Model
     protected $table = 'productos';
 
     protected $fillable = [
-        'categoria_id', 'nombre', 'descripcion',
+        'nombre', 'descripcion',
         'precio', 'stock', 'unidad', 'imagen', 'activo', 'destacado',
     ];
 
@@ -22,9 +22,9 @@ class Producto extends Model
         'destacado' => 'boolean',
     ];
 
-    public function categoria(): BelongsTo
+    public function categorias(): BelongsToMany
     {
-        return $this->belongsTo(Categoria::class);
+        return $this->belongsToMany(Categoria::class, 'categoria_producto');
     }
 
     public function pedidoItems(): HasMany

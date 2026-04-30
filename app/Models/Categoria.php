@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Categoria extends Model
 {
@@ -13,8 +13,8 @@ class Categoria extends Model
 
     protected $casts = ['activo' => 'boolean'];
 
-    public function productos(): HasMany
+    public function productos(): BelongsToMany
     {
-        return $this->hasMany(Producto::class);
+        return $this->belongsToMany(Producto::class, 'categoria_producto');
     }
 }

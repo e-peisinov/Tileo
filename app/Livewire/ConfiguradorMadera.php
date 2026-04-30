@@ -88,11 +88,11 @@ class ConfiguradorMadera extends Component
     {
         $categorias = Categoria::where('activo', true)->orderBy('nombre')->get();
 
-        $productos = Producto::with('categoria')
+        $productos = Producto::with('categorias')
             ->where('activo', true)
             ->where('stock', '>', 0)
             ->when($this->categoriaActiva !== 'todos', function ($q) {
-                $q->whereHas('categoria', fn ($sub) => $sub->where('nombre', $this->categoriaActiva));
+                $q->whereHas('categorias', fn ($sub) => $sub->where('categorias.nombre', $this->categoriaActiva));
             })
             ->when($this->busqueda, fn ($q) => $q->where('nombre', 'like', "%{$this->busqueda}%"))
             ->orderBy('nombre')

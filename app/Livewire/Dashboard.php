@@ -10,14 +10,14 @@ class Dashboard extends Component
 {
     public function render()
     {
-        $productosDestacados = Producto::with('categoria')
+        $productosDestacados = Producto::with('categorias')
             ->where('activo', true)
             ->where('destacado', true)
             ->orderBy('nombre')
             ->get();
 
         if ($productosDestacados->isEmpty()) {
-            $productosDestacados = Producto::with('categoria')
+            $productosDestacados = Producto::with('categorias')
                 ->where('activo', true)
                 ->orderBy('nombre')
                 ->limit(6)

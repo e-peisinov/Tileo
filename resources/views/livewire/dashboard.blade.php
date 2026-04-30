@@ -162,7 +162,7 @@
                             <div class="p-5 flex items-center justify-between">
                                 <div>
                                     <span class="text-[10px] uppercase tracking-widest text-[#8b5e3c] font-semibold">
-                                        {{ $producto->categoria->nombre }}
+                                        {{ $producto->categorias->pluck('nombre')->join(' · ') }}
                                     </span>
                                     <h3 class="text-lg font-semibold text-[#2c1a0e] mt-0.5"
                                         style="font-family: 'DM Serif Display', serif;">

@@ -26,7 +26,7 @@
                 <p><strong>{{ $producto->nombre }}</strong> se quedó sin stock.</p>
             </div>
             <p><strong>Producto:</strong> {{ $producto->nombre }}</p>
-            <p><strong>Categoría:</strong> {{ $producto->categoria->nombre ?? 'Sin categoría' }}</p>
+            <p><strong>Categoría:</strong> {{ $producto->categorias->pluck('nombre')->join(', ') ?: 'Sin categoría' }}</p>
             <p><strong>Stock actual:</strong> 0 unidades</p>
             <p>Acordate de reponer el stock desde el panel de administración.</p>
             <a href="{{ route('admin.productos') }}" class="btn">Ir a productos</a>

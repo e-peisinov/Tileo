@@ -30,7 +30,7 @@ class Reportes extends Component
 
     public function exportarCsv(): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $items = PedidoItem::with(['pedido', 'producto.categoria'])
+        $items = PedidoItem::with(['pedido', 'producto.categorias'])
             ->whereHas('pedido', fn ($q) => $q
                 ->whereNotIn('estado', ['rechazado', 'cancelado'])
                 ->when($this->fechaDesde, fn ($s) => $s->whereDate('created_at', '>=', $this->fechaDesde))
@@ -46,7 +46,7 @@ class Reportes extends Component
                     $item->pedido->created_at->format('d/m/Y'),
                     $item->pedido->numero_pedido,
                     $item->nombre_producto,
-                    $item->producto?->categoria?->nombre ?? '',
+                    $item->producto?->categorias->pluck('nombre')->join(', ') ?? '',
                     $item->cantidad,
                     number_format($item->subtotal, 2, ',', '.'),
                 ], ';');
@@ -62,17 +62,18 @@ class Reportes extends Component
         $totalPedidos   = (clone $pedidosQuery)->count();
         $ticketPromedio = $totalPedidos > 0 ? $totalIngresos / $totalPedidos : 0;
 
-        $porCategoria = PedidoItem::select('productos.categoria_id')
+        $porCategoria = PedidoItem::select('categorias.id as categoria_id')
             ->selectRaw('categorias.nombre as categoria')
             ->selectRaw('SUM(pedido_items.cantidad) as total_unidades')
             ->selectRaw('SUM(pedido_items.subtotal) as total_ingresos')
             ->join('productos', 'pedido_items.producto_id', '=', 'productos.id')
-            ->join('categorias', 'productos.categoria_id', '=', 'categorias.id')
+            ->join('categoria_producto', 'productos.id', '=', 'categoria_producto.producto_id')
+            ->join('categorias', 'categoria_producto.categoria_id', '=', 'categorias.id')
             ->whereHas('pedido', fn ($q) => $q
                 ->whereNotIn('estado', ['rechazado', 'cancelado'])
                 ->when($this->fechaDesde, fn ($s) => $s->whereDate('created_at', '>=', $this->fechaDesde))
                 ->when($this->fechaHasta, fn ($s) => $s->whereDate('created_at', '<=', $this->fechaHasta)))
-            ->groupBy('productos.categoria_id', 'categorias.nombre')
+            ->groupBy('categorias.id', 'categorias.nombre')
             ->orderByDesc('total_ingresos')
             ->get();
 

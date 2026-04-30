@@ -29,7 +29,7 @@ class GestionProductos extends Component
     public string $stock = '';
     public string $unidad = 'frasco';
     public string $imagen = '';
-    public int $categoria_id = 0;
+    public array $categoriasSeleccionadas = [];
     public bool $activo = true;
     public bool $destacado = false;
 
@@ -65,7 +65,7 @@ class GestionProductos extends Component
         $this->stock        = (string) $producto->stock;
         $this->unidad       = $producto->unidad;
         $this->imagen       = $producto->imagen ?? '';
-        $this->categoria_id = $producto->categoria_id;
+        $this->categoriasSeleccionadas = $producto->categorias->pluck('id')->toArray();
         $this->activo       = $producto->activo;
         $this->destacado    = $producto->destacado;
         $this->galeriaExistente = $producto->imagenesGaleria()
@@ -85,7 +85,8 @@ class GestionProductos extends Component
             'stock'          => 'required|integer|min:0',
             'unidad'         => 'required|max:30',
             'imagen'         => 'nullable|max:255',
-            'categoria_id'   => ['required', Rule::exists('categorias', 'id')->where('activo', true)],
+            'categoriasSeleccionadas'   => ['required', 'array', 'min:1'],
+            'categoriasSeleccionadas.*' => [Rule::exists('categorias', 'id')->where('activo', true)],
             'imagenArchivo'  => 'nullable|image|max:2048',
             'galeriaArchivo0' => 'nullable|image|max:2048',
             'galeriaArchivo1' => 'nullable|image|max:2048',
@@ -119,15 +120,14 @@ class GestionProductos extends Component
         }
 
         $datos = [
-            'nombre'       => $this->nombre,
-            'descripcion'  => $this->descripcion ?: null,
-            'precio'       => $this->precio,
-            'stock'        => $this->stock,
-            'unidad'       => $this->unidad,
-            'imagen'       => $this->imagen ?: null,
-            'categoria_id' => $this->categoria_id,
-            'activo'       => $this->activo,
-            'destacado'    => $this->destacado,
+            'nombre'      => $this->nombre,
+            'descripcion' => $this->descripcion ?: null,
+            'precio'      => $this->precio,
+            'stock'       => $this->stock,
+            'unidad'      => $this->unidad,
+            'imagen'      => $this->imagen ?: null,
+            'activo'      => $this->activo,
+            'destacado'   => $this->destacado,
         ];
 
         if ($this->editandoId) {
@@ -136,6 +136,8 @@ class GestionProductos extends Component
         } else {
             $producto = Producto::create($datos);
         }
+
+        $producto->categorias()->sync($this->categoriasSeleccionadas);
 
         // Guardar imágenes de galería adicionales
         $galeriaSlots = ['galeriaArchivo0', 'galeriaArchivo1', 'galeriaArchivo2', 'galeriaArchivo3'];
@@ -227,7 +229,7 @@ class GestionProductos extends Component
     {
         $this->nombre = $this->descripcion = $this->precio = $this->stock = $this->imagen = '';
         $this->unidad = 'frasco';
-        $this->categoria_id = 0;
+        $this->categoriasSeleccionadas = [];
         $this->activo = true;
         $this->destacado = false;
         $this->imagenArchivo = null;
@@ -241,7 +243,7 @@ class GestionProductos extends Component
 
     public function render()
     {
-        $productos = Producto::with('categoria')
+        $productos = Producto::with('categorias')
             ->when($this->busqueda, fn($q) => $q->where('nombre', 'like', "%{$this->busqueda}%"))
             ->latest()
             ->paginate(20);

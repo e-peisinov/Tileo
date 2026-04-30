@@ -54,9 +54,13 @@
                             <p class="text-[11px] text-[#8b5e3c]/60">{{ $producto->unidad }}</p>
                         </td>
                         <td class="px-4 py-3.5 hidden md:table-cell">
-                            <span class="inline-block text-[11px] px-2.5 py-1 rounded-lg font-medium text-[#8b5e3c]" style="background-color: rgba(139,94,60,0.08);">
-                                {{ $producto->categoria->nombre }}
-                            </span>
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($producto->categorias as $cat)
+                                    <span class="inline-block text-[11px] px-2.5 py-1 rounded-lg font-medium text-[#8b5e3c]" style="background-color: rgba(139,94,60,0.08);">
+                                        {{ $cat->nombre }}
+                                    </span>
+                                @endforeach
+                            </div>
                         </td>
                         <td class="px-4 py-3.5 text-right font-semibold text-[#2c1a0e]">
                             @if($producto->precio > 0)
@@ -176,16 +180,19 @@
                         @error('nombre') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-1.5 font-semibold">Categoría *</label>
-                        <select wire:model="categoria_id"
-                                class="w-full border border-[#d4b896]/50 bg-[#faf6f0] rounded-lg px-3 py-2.5 text-sm text-[#2c1a0e]
-                                       focus:outline-none focus:ring-2 focus:ring-[#386641]/20 focus:border-[#386641] transition-all duration-200">
-                            <option value="0">Seleccioná una categoría</option>
+                        <label class="block text-xs tracking-wider text-[#8b5e3c] uppercase mb-1.5 font-semibold">Categorías * <span class="normal-case text-[#8b5e3c]/50 font-normal">(seleccioná una o más)</span></label>
+                        <div class="border border-[#d4b896]/50 bg-[#faf6f0] rounded-lg px-3 py-2.5 flex flex-wrap gap-x-4 gap-y-2">
                             @foreach($categorias as $cat)
-                                <option value="{{ $cat->id }}">{{ $cat->nombre }}</option>
+                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                    <input type="checkbox"
+                                           wire:model="categoriasSeleccionadas"
+                                           value="{{ $cat->id }}"
+                                           class="rounded border-[#d4b896] text-[#386641] focus:ring-[#386641] focus:ring-offset-0">
+                                    <span class="text-sm text-[#2c1a0e]">{{ $cat->nombre }}</span>
+                                </label>
                             @endforeach
-                        </select>
-                        @error('categoria_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                        @error('categoriasSeleccionadas') <p class="text-red-500 text-xs mt-1">Seleccioná al menos una categoría.</p> @enderror
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>

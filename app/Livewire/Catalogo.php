@@ -20,16 +20,17 @@ class Catalogo extends Component
     public function updatingOrdenar(): void { $this->resetPage(); }
     public function updatingSoloConStock(): void { $this->resetPage(); }
 
+
     public function render()
     {
         $categorias = Categoria::where('activo', true)->orderBy('nombre')->get();
 
         $maderas = \App\Models\Madera::where('activo', true)->orderBy('capacidad')->get();
 
-        $productos = Producto::with('categoria')
+        $productos = Producto::with('categorias')
             ->where('activo', true)
             ->when((int) $this->categoriaActiva > 0, fn($q) =>
-                $q->where('categoria_id', (int) $this->categoriaActiva)
+                $q->whereHas('categorias', fn($sub) => $sub->where('categorias.id', (int) $this->categoriaActiva))
             )
             ->when($this->busqueda, fn($q) => $q->where('nombre', 'like', "%{$this->busqueda}%"))
             ->when($this->soloConStock, fn($q) => $q->where('stock', '>', 0))

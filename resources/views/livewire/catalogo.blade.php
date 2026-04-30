@@ -22,7 +22,7 @@
 
     {{-- SECCIÓN MADERAS --}}
     @if(isset($maderas) && $maderas->count() > 0)
-    <section class="bg-white border-b border-[#d4b896]/30 py-14 px-4">
+    <section id="maderas" class="bg-white border-b border-[#d4b896]/30 py-14 px-4">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-10">
                 <p class="text-[#8b5e3c]/70 tracking-[0.3em] uppercase text-[11px] font-medium mb-3">Regalos y colecciones</p>
@@ -150,10 +150,12 @@
                                         <i class="fa-solid fa-leaf text-5xl text-[#386641]/30"></i>
                                     </div>
                                 @endif
-                                <div class="absolute top-3 left-3">
-                                    <span class="bg-[#faf6f0]/90 text-[#8b5e3c] text-[10px] tracking-[0.18em] uppercase font-medium px-2.5 py-1">
-                                        {{ $producto->categoria->nombre }}
-                                    </span>
+                                <div class="absolute top-3 left-3 flex flex-wrap gap-1">
+                                    @foreach($producto->categorias as $cat)
+                                        <span class="bg-[#faf6f0]/90 text-[#8b5e3c] text-[10px] tracking-[0.18em] uppercase font-medium px-2.5 py-1">
+                                            {{ $cat->nombre }}
+                                        </span>
+                                    @endforeach
                                 </div>
                                 @if($producto->stock > 0 && $producto->stock <= config('tileo.stock_bajo_umbral'))
                                     <div class="absolute top-3 right-3">
