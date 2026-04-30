@@ -9,7 +9,7 @@ class DetalleProducto extends Component
 {
     public Producto $producto;
 
-    public function render()
+public function render()
     {
         $relacionados = Producto::with('categoria')
             ->where('activo', true)

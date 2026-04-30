@@ -6,9 +6,9 @@
             <a href="{{ url('/') }}" wire:navigate class="hover:text-[#386641] transition-colors">Inicio</a>
             <i class="fa-solid fa-chevron-right text-[9px] text-[#d4b896]"></i>
             <a href="{{ route('catalogo') }}" wire:navigate class="hover:text-[#386641] transition-colors">Catálogo</a>
-            @if($producto->categoria)
+            @if($producto->categorias->isNotEmpty())
                 <i class="fa-solid fa-chevron-right text-[9px] text-[#d4b896]"></i>
-                <span>{{ $producto->categoria->nombre }}</span>
+                <span>{{ $producto->categorias->first()->nombre }}</span>
             @endif
             <i class="fa-solid fa-chevron-right text-[9px] text-[#d4b896]"></i>
             <span class="text-[#2c1a0e]/70 font-medium truncate max-w-[160px] sm:max-w-none">{{ $producto->nombre }}</span>
@@ -57,12 +57,16 @@
                 {{-- Información del producto --}}
                 <div class="space-y-5">
 
-                    {{-- Badge de categoría --}}
-                    @if($producto->categoria)
-                        <span class="inline-block text-xs font-semibold px-3 py-1 rounded-full text-white"
-                              style="background-color: #a7c957; color: #2c1a0e;">
-                            {{ $producto->categoria->nombre }}
-                        </span>
+                    {{-- Badges de categorías --}}
+                    @if($producto->categorias->isNotEmpty())
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($producto->categorias as $cat)
+                                <span class="inline-block text-xs font-semibold px-3 py-1 rounded-full"
+                                      style="background-color: #a7c957; color: #2c1a0e;">
+                                    {{ $cat->nombre }}
+                                </span>
+                            @endforeach
+                        </div>
                     @endif
 
                     {{-- Nombre --}}
@@ -92,24 +96,15 @@
                         </div>
                     @endif
 
-                    {{-- Botón WhatsApp --}}
+                    {{-- CTA: armar madera --}}
                     <div class="pt-2">
-                        @if($producto->hayStock())
-                            <a href="https://wa.me/{{ preg_replace('/\D/', '', config('tileo.whatsapp', '')) }}?text={{ urlencode('Hola! Me interesa el producto: ' . $producto->nombre) }}"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold shadow-sm
-                                      hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
-                               style="background-color: #25D366;">
-                                <i class="fa-brands fa-whatsapp text-lg"></i>
-                                Consultar por WhatsApp
-                            </a>
-                        @else
-                            <span class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-sm font-semibold cursor-not-allowed"
-                                  style="background-color: rgba(139,94,60,0.12); color: #8b5e3c;">
-                                <i class="fa-solid fa-ban text-xs"></i> Sin stock
-                            </span>
-                        @endif
+                        <a href="{{ route('catalogo') }}#maderas" wire:navigate
+                           class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-[#faf6f0] text-sm font-semibold
+                                  hover:bg-[#2d5534] active:scale-95 transition-all duration-200"
+                           style="background-color: #386641;">
+                            <i class="fa-solid fa-box-open"></i>
+                            Armá tu madera
+                        </a>
                     </div>
 
                 </div>
@@ -136,7 +131,7 @@
                                     @endif
                                 </div>
                                 <div class="p-4">
-                                    <p class="text-xs text-[#8b5e3c]/60 mb-1">{{ $relacionado->categoria->nombre ?? '' }}</p>
+                                    <p class="text-xs text-[#8b5e3c]/60 mb-1">{{ $relacionado->categorias->first()?->nombre ?? '' }}</p>
                                     <h3 class="text-[#2c1a0e] font-semibold text-sm group-hover:text-[#386641] transition-colors">
                                         {{ $relacionado->nombre }}
                                     </h3>

@@ -56,7 +56,7 @@
         <div class="max-w-5xl mx-auto px-4 pt-6">
             <div class="bg-[#386641]/10 border border-[#386641]/30 text-[#386641] px-4 py-3 text-sm flex items-center gap-2">
                 <i class="fa-solid fa-check-circle"></i>
-                <span>¡Selección guardada! Podés seguir configurando otra madera o <a href="{{ route('contacto') }}" wire:navigate class="underline font-medium">contactarnos para coordinar tu pedido</a>.</span>
+                <span>¡Selección guardada! Podés seguir configurando otra madera o ir al carrito y finalizar el pedido por WhatsApp.</span>
             </div>
         </div>
     @endif

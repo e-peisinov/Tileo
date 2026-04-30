@@ -234,11 +234,14 @@
        target="_blank"
        rel="noopener noreferrer"
        title="Consultanos por WhatsApp"
-       class="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-lg
+       class="fixed bottom-24 right-6 z-40 w-14 h-14 rounded-full flex items-center justify-center shadow-lg
               hover:scale-110 active:scale-95 transition-all duration-200"
        style="background-color: #25D366;">
         <i class="fa-brands fa-whatsapp text-white text-2xl"></i>
     </a>
+
+    {{-- CARRITO --}}
+    @livewire('carrito')
 
     {{-- FOOTER --}}
     <footer class="bg-[#2c1a0e] text-[#d4b896]">

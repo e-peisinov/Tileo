@@ -168,11 +168,31 @@
                         <span class="text-sm text-[#2c1a0e]/70">Subtotal</span>
                         <span class="text-base font-semibold text-[#2c1a0e]">${{ number_format($total, 2, ',', '.') }}</span>
                     </div>
-                    <p class="text-[11px] text-[#8b5e3c]/60">El costo de envío se calcula al finalizar el pedido.</p>
-                    <a href="{{ route('checkout') }}" wire:navigate
-                       class="block w-full text-center bg-[#386641] text-[#faf6f0] py-3 text-[13px] tracking-wider font-medium
-                              hover:bg-[#2d5534] transition-colors duration-300">
-                        Finalizar pedido
+                    <p class="text-[11px] text-[#8b5e3c]/60">Los precios son orientativos. El costo de envío se coordina por WhatsApp.</p>
+                    @php
+                        $lineas = [];
+                        foreach ($items as $item) {
+                            $lineas[] = '• ' . $item['nombre'] . ' x' . $item['cantidad'] . ' (' . $item['unidad'] . ') — $' . number_format($item['subtotal'], 2, ',', '.');
+                        }
+                        foreach ($maderas as $madera) {
+                            $condNombres = collect($madera['condimentos'])
+                                ->map(fn($c) => $c['nombre'] . ($c['cantidad'] > 1 ? ' x' . $c['cantidad'] : ''))
+                                ->join(', ');
+                            $lineas[] = '• ' . $madera['nombre'] . ' — $' . number_format($madera['subtotal'], 2, ',', '.') . "\n  Condimentos: " . $condNombres;
+                        }
+                        $itemsTexto  = implode("\n", $lineas);
+                        $totalTexto  = '$' . number_format($total, 2, ',', '.');
+                        $waMensaje   = "¡Hola! Quisiera hacer el siguiente pedido:\n\n{$itemsTexto}\n\n*Total estimado: {$totalTexto}*\n\n¿Me confirman disponibilidad y forma de pago? ¡Gracias!";
+                        $waNumero    = preg_replace('/\D/', '', config('tileo.whatsapp', ''));
+                        $waUrl       = 'https://wa.me/' . $waNumero . '?text=' . rawurlencode($waMensaje);
+                    @endphp
+                    <a href="{{ $waUrl }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="flex items-center justify-center gap-2 w-full text-center text-[#faf6f0] py-3 text-[13px] tracking-wider font-medium transition-colors duration-300"
+                       style="background-color: #25D366;">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        Finalizar compra por WhatsApp
                     </a>
                     <button wire:click="vaciarCarrito"
                             class="block w-full text-center text-[#8b5e3c]/60 text-[11px] hover:text-[#c0392b] transition-colors">

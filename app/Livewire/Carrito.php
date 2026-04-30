@@ -57,7 +57,6 @@ class Carrito extends Component
         }
 
         session(['carrito' => $carrito]);
-        $this->abierto = true;
     }
 
     #[On('madera-configurada')]
@@ -92,7 +91,6 @@ class Carrito extends Component
         ];
 
         session(['carrito_maderas' => $maderas]);
-        $this->abierto = true;
     }
 
     public function removerItem(int $productoId): void
