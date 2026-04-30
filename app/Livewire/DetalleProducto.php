@@ -11,10 +11,14 @@ class DetalleProducto extends Component
 
 public function render()
     {
-        $relacionados = Producto::with('categoria')
+        $categoriaIds = $this->producto->categorias->pluck('id');
+
+        $relacionados = Producto::with('categorias')
             ->where('activo', true)
-            ->where('categoria_id', $this->producto->categoria_id)
             ->where('id', '!=', $this->producto->id)
+            ->when($categoriaIds->isNotEmpty(), fn($q) =>
+                $q->whereHas('categorias', fn($sub) => $sub->whereIn('categorias.id', $categoriaIds))
+            )
             ->limit(3)
             ->get();
 
