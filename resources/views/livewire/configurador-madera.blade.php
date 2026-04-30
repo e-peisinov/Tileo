@@ -59,6 +59,13 @@
                 <span>¡Selección guardada! Podés seguir configurando otra madera o ir al carrito y finalizar el pedido por WhatsApp.</span>
             </div>
         </div>
+
+        <div class="max-w-5xl mx-auto px-4 mt-4 flex justify-center">
+            <a href="{{ route('catalogo') }}" wire:navigate
+                class="inline-flex items-center gap-1.5 bg-[#386641] text-white mb-4 px-3 py-1.5 text-[11px] font-semibold tracking-wide rounded-lg hover:bg-[#2d5534] transition-colors duration-300">
+                <i class="fa-solid fa-arrow-left text-[10px]"></i> Seguir comprando
+            </a>
+        </div>
     @endif
 
     {{-- Filtros --}}
